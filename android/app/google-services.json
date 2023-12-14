@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "316659430730",
+    "project_id": "hiremeinindia-14695",
+    "storage_bucket": "hiremeinindia-14695.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:316659430730:android:709db8c199bd3bbecffdb3",
+        "android_client_info": {
+          "package_name": "com.example.hiremeinindiaapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChi1F_REeBNNI8G5jy7_sQpIOZ4NSrTtw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
