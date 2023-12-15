@@ -5,30 +5,32 @@ import 'package:hiremeinindiaapp/widgets/textstylebutton.dart';
 @immutable
 final class CustomTextfield extends StatelessWidget {
   Function(String)? onsaved;
-  final String text;
+  final String? text;
   final String? text1;
   final TextEditingController? controller;
   final List<Color>? colors;
   final double? dynamicHeight;
+  String? Function(String?)? validator;
 
   CustomTextfield({
     this.controller,
     super.key,
     this.text1,
-    required this.text,
+    this.text,
     this.colors,
     this.dynamicHeight,
     this.onsaved,
+    this.validator,
   });
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
       height: 30,
-      child: TextField(
+      child: TextFormField(
+        validator: validator,
         controller: controller,
         decoration: InputDecoration(
-          labelText: text,
           errorText: text1,
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(1))),
