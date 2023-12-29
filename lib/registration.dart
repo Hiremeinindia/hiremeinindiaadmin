@@ -4,7 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:get/get_instance/get_instance.dart';
 import 'package:get/route_manager.dart';
+import 'package:email_otp/email_otp.dart';
 
+import 'package:flutter_dialogs/flutter_dialogs.dart';
 import 'package:hiremeinindiaapp/Models/register_model.dart';
 import 'package:hiremeinindiaapp/userpayment.dart';
 
@@ -27,8 +29,19 @@ class _RegistrationState extends State<Registration> {
   final _formKey = GlobalKey<FormState>();
   final DatabaseReference _userRef =
       FirebaseDatabase.instance.reference().child('users');
+  EmailOTP myauth = EmailOTP();
+  static const Skill = [
+    'Plumber',
+    'Senior Plumber',
+    'Junior Plumber',
+    'Skill 1',
+    'Electrician',
+    'Senior Electrician',
+    'Junior Electrician',
+    'Skill 2',
+  ];
 
-  static const mockResults = [
+  static const Workin = [
     'Plumber',
     'Senior Plumber',
     'Junior Plumber',
@@ -40,8 +53,9 @@ class _RegistrationState extends State<Registration> {
   ];
 
   List<String> _values = [];
+  List<String> _value = [];
+
   final FocusNode _focusNode = FocusNode();
-  final TextEditingController _textEditingController = TextEditingController();
   bool focusTagEnabled = false;
 
   _onDelete(index) {
@@ -50,10 +64,15 @@ class _RegistrationState extends State<Registration> {
     });
   }
 
+  _onDeletee(indexx) {
+    _value.removeAt(indexx);
+  }
+
   /// This is just an example for using `TextEditingController` to manipulate
   /// the the `TextField` just like a normal `TextField`.
 
-  bool isChecked = false; // Add this line to manage the checkbox state
+  bool blueChecked = false;
+  bool greyChecked = false; // Add this line to manage the checkbox state
 
   var isLoading = false;
 
@@ -201,10 +220,10 @@ class _RegistrationState extends State<Registration> {
                 child: Row(
                   children: [
                     Checkbox(
-                      value: isChecked,
+                      value: blueChecked,
                       onChanged: (bool? value) {
                         setState(() {
-                          isChecked = value ?? false;
+                          blueChecked = value ?? false;
                         });
                       },
                       fillColor: MaterialStateProperty.resolveWith<Color>(
@@ -215,32 +234,32 @@ class _RegistrationState extends State<Registration> {
                           return Colors.transparent;
                         },
                       ),
-                      checkColor: Colors.black,
+                      checkColor: Colors.white,
                       side: BorderSide(
-                        color: Colors.black,
-                        width: 2.0,
+                        color: Colors.indigo.shade900,
+                        width: 3.5,
                       ),
                     ),
                     Text("Blue Collar"),
                     Checkbox(
-                      value: isChecked,
+                      value: greyChecked,
                       onChanged: (bool? value) {
                         setState(() {
-                          isChecked = value ?? false;
+                          greyChecked = value ?? false;
                         });
                       },
                       fillColor: MaterialStateProperty.resolveWith<Color>(
                         (Set<MaterialState> states) {
                           if (states.contains(MaterialState.selected)) {
-                            return Colors.grey;
+                            return Colors.indigo.shade900;
                           }
                           return Colors.transparent;
                         },
                       ),
-                      checkColor: Colors.black,
+                      checkColor: Colors.white,
                       side: BorderSide(
-                        color: Colors.black,
-                        width: 2.0,
+                        color: Colors.indigo.shade900,
+                        width: 3.5,
                       ),
                     ),
                     Text("Grey Collar"),
@@ -303,7 +322,6 @@ class _RegistrationState extends State<Registration> {
                                 CustomTextfield(
                                   validator: nameValidator,
                                   controller: controller.worktitle,
-                                  text: 'Enter Work Title',
                                 ),
                                 SizedBox(
                                   height: 40,
@@ -318,7 +336,6 @@ class _RegistrationState extends State<Registration> {
                                     return null;
                                   },
                                   controller: controller.aadharno,
-                                  text: 'Enter Aadhar No',
                                 ),
                               ],
                             ),
@@ -360,22 +377,20 @@ class _RegistrationState extends State<Registration> {
                                 CustomTextfield(
                                   validator: nameValidator,
                                   controller: controller.gender,
-                                  text: 'Enter gender',
                                 ),
                                 SizedBox(
                                   height: 40,
                                 ),
                                 CustomTextfield(
-                                    validator: workexpValidator,
-                                    controller: controller.workexp,
-                                    text: 'Enter Work experience'),
+                                  validator: workexpValidator,
+                                  controller: controller.workexp,
+                                ),
                                 SizedBox(
                                   height: 40,
                                 ),
                                 CustomTextfield(
                                   validator: nameValidator,
                                   controller: controller.state,
-                                  text: 'Enter State',
                                 ),
                               ],
                             ),
@@ -396,7 +411,6 @@ class _RegistrationState extends State<Registration> {
                         Expanded(
                             child: CustomTextfield(
                           validator: workexpValidator,
-                          text: 'Enter address',
                           controller: controller.address,
                         )),
                       ]),
@@ -449,7 +463,22 @@ class _RegistrationState extends State<Registration> {
                                 ]))),
                         CustomButton(
                           text: 'Verify',
-                          onPressed: () {},
+                          onPressed: () async {
+                            myauth.setConfig(
+                                appEmail: "mail@gmail.com",
+                                appName: "Email otp",
+                                userEmail: controller.email.text,
+                                otpLength: 4,
+                                otpType: OTPType.digitsOnly);
+                            if (await myauth.sendOTP() == true) {
+                              _showAlert(context);
+                            } else {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(const SnackBar(
+                                content: Text("OTP has been sent"),
+                              ));
+                            }
+                          },
                         ),
                       ]),
                       SizedBox(
@@ -474,18 +503,17 @@ class _RegistrationState extends State<Registration> {
                               child: ListView(
                                 children: <Widget>[
                                   TagEditor<String>(
-                                    length: _values.length,
-                                    controller: _textEditingController,
+                                    length: _value.length,
+                                    controller: controller.skills,
                                     focusNode: _focusNode,
                                     delimiters: [',', ' '],
-                                    hasAddButton: true,
                                     resetTextOnSubmitted: true,
                                     // This is set to grey just to illustrate the `textStyle` prop
                                     textStyle:
                                         const TextStyle(color: Colors.black),
                                     onSubmitted: (outstandingValue) {
                                       setState(() {
-                                        _values.add(outstandingValue);
+                                        _value.add(outstandingValue);
                                       });
                                     },
                                     inputDecoration: const InputDecoration(
@@ -493,18 +521,18 @@ class _RegistrationState extends State<Registration> {
                                     ),
                                     onTagChanged: (newValue) {
                                       setState(() {
-                                        _values.add(newValue);
+                                        _value.add(newValue);
                                       });
                                     },
                                     tagBuilder: (context, index) => Container(
                                       color: focusTagEnabled &&
-                                              index == _values.length - 1
+                                              index == _value.length - 1
                                           ? Colors.redAccent
                                           : Colors.white,
                                       child: _Chip(
                                         index: index,
-                                        label: _values[index],
-                                        onDeleted: _onDelete,
+                                        label: _value[index],
+                                        onDeleted: _onDeletee,
                                       ),
                                     ),
                                     // InputFormatters example, this disallow \ and /
@@ -535,7 +563,7 @@ class _RegistrationState extends State<Registration> {
                                       return InkWell(
                                         onTap: () {
                                           setState(() {
-                                            _values.add(data);
+                                            _value.add(data);
                                           });
                                           state.resetTextField();
                                           state.closeSuggestionBox();
@@ -562,15 +590,15 @@ class _RegistrationState extends State<Registration> {
                                       });
                                     },
                                     onDeleteTagAction: () {
-                                      if (_values.isNotEmpty) {
+                                      if (_value.isNotEmpty) {
                                         setState(() {
-                                          _values.removeLast();
+                                          _value.removeLast();
                                         });
                                       }
                                     },
                                     onSelectOptionAction: (item) {
                                       setState(() {
-                                        _values.add(item);
+                                        _value.add(item);
                                       });
                                     },
                                     suggestionsBoxElevation: 5,
@@ -578,7 +606,7 @@ class _RegistrationState extends State<Registration> {
                                       if (query.isNotEmpty) {
                                         var lowercaseQuery =
                                             query.toLowerCase();
-                                        return mockResults.where((profile) {
+                                        return Skill.where((profile) {
                                           return profile.toLowerCase().contains(
                                                   query.toLowerCase()) ||
                                               profile.toLowerCase().contains(
@@ -623,10 +651,9 @@ class _RegistrationState extends State<Registration> {
                                 children: <Widget>[
                                   TagEditor<String>(
                                     length: _values.length,
-                                    controller: _textEditingController,
+                                    controller: controller.workin,
                                     focusNode: _focusNode,
                                     delimiters: [',', ' '],
-                                    hasAddButton: true,
                                     resetTextOnSubmitted: true,
                                     // This is set to grey just to illustrate the `textStyle` prop
                                     textStyle:
@@ -726,7 +753,7 @@ class _RegistrationState extends State<Registration> {
                                       if (query.isNotEmpty) {
                                         var lowercaseQuery =
                                             query.toLowerCase();
-                                        return mockResults.where((profile) {
+                                        return Workin.where((profile) {
                                           return profile.toLowerCase().contains(
                                                   query.toLowerCase()) ||
                                               profile.toLowerCase().contains(
@@ -861,4 +888,22 @@ class _Chip extends StatelessWidget {
       },
     );
   }
+}
+
+_showAlert(BuildContext context) {
+  showPlatformDialog(
+    context: context,
+    builder: (_) => BasicDialogAlert(
+      title: Text("Current Location Not Available"),
+      content: Text("Your current location cannot be determined at this time."),
+      actions: <Widget>[
+        BasicDialogAction(
+          title: Text("OK"),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    ),
+  );
 }
