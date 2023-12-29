@@ -2,17 +2,19 @@ import 'package:flutter/material.dart';
 
 @immutable
 final class CustomButton extends StatelessWidget {
-  final String text;
+  final String? text;
+  Widget? child;
   final Function()? onPressed;
 
   final List<Color>? colors;
   final double? dynamicHeight;
-  const CustomButton({
+  CustomButton({
     super.key,
-    required this.text,
+    this.text,
     this.onPressed,
     this.colors,
     this.dynamicHeight,
+    this.child,
   });
 
   @override
@@ -29,7 +31,7 @@ final class CustomButton extends StatelessWidget {
           ),
         ),
         child: Text(
-          text,
+          text!,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.normal,
@@ -37,6 +39,41 @@ final class CustomButton extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+@immutable
+final class CustomButtonLogin extends StatelessWidget {
+  late final String? text;
+  Widget? child;
+  late final Function()? onPressed;
+
+  late final List<Color>? colors;
+  late final double? dynamicHeight;
+  CustomButtonLogin({
+    super.key,
+    this.text,
+    this.onPressed,
+    this.colors,
+    this.dynamicHeight,
+    this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 30,
+      child: ElevatedButton(
+          onPressed: onPressed,
+          style: ElevatedButton.styleFrom(
+            primary: Colors.indigo.shade900,
+            shape: RoundedRectangleBorder(
+              borderRadius:
+                  BorderRadius.circular(0.1), // Adjust border radius as needed
+            ),
+          ),
+          child: child),
     );
   }
 }
