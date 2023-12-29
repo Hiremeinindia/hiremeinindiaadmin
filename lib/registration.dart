@@ -1,13 +1,17 @@
-import 'package:chips_input/chips_input.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_simple_multiselect/flutter_simple_multiselect.dart';
 import 'package:form_field_validator/form_field_validator.dart';
+import 'package:get/get_instance/get_instance.dart';
+import 'package:get/route_manager.dart';
+
+import 'package:hiremeinindiaapp/Models/register_model.dart';
 import 'package:hiremeinindiaapp/userpayment.dart';
-import 'package:select2dot1/select2dot1.dart';
+
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:super_tag_editor/widgets/rich_text_widget.dart';
 
+import 'controllers/signupcontroller.dart';
 import 'widgets/custombutton.dart';
 import 'widgets/customtextfield.dart';
 import 'widgets/hiremeinindia.dart';
@@ -19,22 +23,10 @@ class Registration extends StatefulWidget {
 }
 
 class _RegistrationState extends State<Registration> {
+  final controller = Get.put(SignUpController());
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _worktitleController = TextEditingController();
-  final TextEditingController _aadharnoController = TextEditingController();
-  final TextEditingController _genderController = TextEditingController();
-  final TextEditingController _workexpController = TextEditingController();
-  final TextEditingController _stateController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _mobileController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _skillsController = TextEditingController();
-  final TextEditingController _workinController = TextEditingController();
-  void dispose() {
-    _nameController.dispose();
-    super.dispose();
-  }
+  final DatabaseReference _userRef =
+      FirebaseDatabase.instance.reference().child('users');
 
   static const mockResults = [
     'Plumber',
@@ -303,14 +295,14 @@ class _RegistrationState extends State<Registration> {
                               children: [
                                 CustomTextfield(
                                   validator: nameValidator,
-                                  controller: _nameController,
+                                  controller: controller.name,
                                 ),
                                 SizedBox(
                                   height: 40,
                                 ),
                                 CustomTextfield(
                                   validator: nameValidator,
-                                  controller: _worktitleController,
+                                  controller: controller.worktitle,
                                   text: 'Enter Work Title',
                                 ),
                                 SizedBox(
@@ -325,7 +317,7 @@ class _RegistrationState extends State<Registration> {
                                     }
                                     return null;
                                   },
-                                  controller: _aadharnoController,
+                                  controller: controller.aadharno,
                                   text: 'Enter Aadhar No',
                                 ),
                               ],
@@ -367,7 +359,7 @@ class _RegistrationState extends State<Registration> {
                               children: [
                                 CustomTextfield(
                                   validator: nameValidator,
-                                  controller: _genderController,
+                                  controller: controller.gender,
                                   text: 'Enter gender',
                                 ),
                                 SizedBox(
@@ -375,14 +367,14 @@ class _RegistrationState extends State<Registration> {
                                 ),
                                 CustomTextfield(
                                     validator: workexpValidator,
-                                    controller: _workexpController,
+                                    controller: controller.workexp,
                                     text: 'Enter Work experience'),
                                 SizedBox(
                                   height: 40,
                                 ),
                                 CustomTextfield(
                                   validator: nameValidator,
-                                  controller: _stateController,
+                                  controller: controller.state,
                                   text: 'Enter State',
                                 ),
                               ],
@@ -405,7 +397,7 @@ class _RegistrationState extends State<Registration> {
                             child: CustomTextfield(
                           validator: workexpValidator,
                           text: 'Enter address',
-                          controller: _addressController,
+                          controller: controller.address,
                         )),
                       ]),
                       SizedBox(
@@ -419,7 +411,9 @@ class _RegistrationState extends State<Registration> {
                               fontWeight: FontWeight.bold),
                         ),
                         SizedBox(width: 65),
-                        Expanded(child: CustomTextfield(
+                        Expanded(
+                            child: CustomTextfield(
+                          controller: controller.mobile,
                           validator: (value) {
                             if (value!.length != 10)
                               return 'Mobile Number must be of 10 digit';
@@ -447,10 +441,12 @@ class _RegistrationState extends State<Registration> {
                         SizedBox(width: 55),
                         Expanded(
                             child: CustomTextfield(
+                                controller: controller.email,
                                 validator: MultiValidator([
-                          RequiredValidator(errorText: "* Required"),
-                          EmailValidator(errorText: "Enter valid email id"),
-                        ]))),
+                                  RequiredValidator(errorText: "* Required"),
+                                  EmailValidator(
+                                      errorText: "Enter valid email id"),
+                                ]))),
                         CustomButton(
                           text: 'Verify',
                           onPressed: () {},
@@ -460,7 +456,6 @@ class _RegistrationState extends State<Registration> {
                         height: 40,
                       ),
                       Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
                             "Skills",
@@ -468,18 +463,147 @@ class _RegistrationState extends State<Registration> {
                                 fontFamily: 'Poppins',
                                 fontWeight: FontWeight.bold),
                           ),
-                          SizedBox(width: 80),
+                          SizedBox(width: 10),
                           Expanded(
-                              child: CustomTextfield(
-                            text: 'ggf',
-                          )),
+                            child: Container(
+                              height: 35,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(1),
+                                  border: Border(
+                                      bottom: BorderSide(color: Colors.black))),
+                              child: ListView(
+                                children: <Widget>[
+                                  TagEditor<String>(
+                                    length: _values.length,
+                                    controller: _textEditingController,
+                                    focusNode: _focusNode,
+                                    delimiters: [',', ' '],
+                                    hasAddButton: true,
+                                    resetTextOnSubmitted: true,
+                                    // This is set to grey just to illustrate the `textStyle` prop
+                                    textStyle:
+                                        const TextStyle(color: Colors.black),
+                                    onSubmitted: (outstandingValue) {
+                                      setState(() {
+                                        _values.add(outstandingValue);
+                                      });
+                                    },
+                                    inputDecoration: const InputDecoration(
+                                      border: InputBorder.none,
+                                    ),
+                                    onTagChanged: (newValue) {
+                                      setState(() {
+                                        _values.add(newValue);
+                                      });
+                                    },
+                                    tagBuilder: (context, index) => Container(
+                                      color: focusTagEnabled &&
+                                              index == _values.length - 1
+                                          ? Colors.redAccent
+                                          : Colors.white,
+                                      child: _Chip(
+                                        index: index,
+                                        label: _values[index],
+                                        onDeleted: _onDelete,
+                                      ),
+                                    ),
+                                    // InputFormatters example, this disallow \ and /
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.deny(
+                                          RegExp(r'[/\\]'))
+                                    ],
+                                    suggestionBuilder: (context,
+                                        state,
+                                        data,
+                                        index,
+                                        length,
+                                        highlight,
+                                        suggestionValid) {
+                                      var borderRadius = const BorderRadius.all(
+                                          Radius.circular(30));
+                                      if (index == 0) {
+                                        borderRadius = const BorderRadius.only(
+                                          topLeft: Radius.circular(30),
+                                          topRight: Radius.circular(30),
+                                        );
+                                      } else if (index == length - 1) {
+                                        borderRadius = const BorderRadius.only(
+                                          bottomRight: Radius.circular(30),
+                                          bottomLeft: Radius.circular(30),
+                                        );
+                                      }
+                                      return InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            _values.add(data);
+                                          });
+                                          state.resetTextField();
+                                          state.closeSuggestionBox();
+                                        },
+                                        child: Container(
+                                            width: 600,
+                                            decoration: highlight
+                                                ? BoxDecoration(
+                                                    color: Theme.of(context)
+                                                        .focusColor,
+                                                    borderRadius: borderRadius)
+                                                : null,
+                                            padding: const EdgeInsets.all(16),
+                                            child: RichTextWidget(
+                                              wordSearched:
+                                                  suggestionValid ?? '',
+                                              textOrigin: data,
+                                            )),
+                                      );
+                                    },
+                                    onFocusTagAction: (focused) {
+                                      setState(() {
+                                        focusTagEnabled = focused;
+                                      });
+                                    },
+                                    onDeleteTagAction: () {
+                                      if (_values.isNotEmpty) {
+                                        setState(() {
+                                          _values.removeLast();
+                                        });
+                                      }
+                                    },
+                                    onSelectOptionAction: (item) {
+                                      setState(() {
+                                        _values.add(item);
+                                      });
+                                    },
+                                    suggestionsBoxElevation: 5,
+                                    findSuggestions: (String query) {
+                                      if (query.isNotEmpty) {
+                                        var lowercaseQuery =
+                                            query.toLowerCase();
+                                        return mockResults.where((profile) {
+                                          return profile.toLowerCase().contains(
+                                                  query.toLowerCase()) ||
+                                              profile.toLowerCase().contains(
+                                                  query.toLowerCase());
+                                        }).toList(growable: false)
+                                          ..sort((a, b) => a
+                                              .toLowerCase()
+                                              .indexOf(lowercaseQuery)
+                                              .compareTo(b
+                                                  .toLowerCase()
+                                                  .indexOf(lowercaseQuery)));
+                                      }
+                                      return [];
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                       SizedBox(
                         height: 40,
                       ),
                       Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
                             "Looking for Work in",
@@ -489,142 +613,143 @@ class _RegistrationState extends State<Registration> {
                           ),
                           SizedBox(width: 10),
                           Expanded(
-                              child: CustomTextfield(
-                            text: 'ggf',
-                          )),
+                            child: Container(
+                              height: 35,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(1),
+                                  border: Border(
+                                      bottom: BorderSide(color: Colors.black))),
+                              child: ListView(
+                                children: <Widget>[
+                                  TagEditor<String>(
+                                    length: _values.length,
+                                    controller: _textEditingController,
+                                    focusNode: _focusNode,
+                                    delimiters: [',', ' '],
+                                    hasAddButton: true,
+                                    resetTextOnSubmitted: true,
+                                    // This is set to grey just to illustrate the `textStyle` prop
+                                    textStyle:
+                                        const TextStyle(color: Colors.black),
+                                    onSubmitted: (outstandingValue) {
+                                      setState(() {
+                                        _values.add(outstandingValue);
+                                      });
+                                    },
+                                    inputDecoration: const InputDecoration(
+                                      border: InputBorder.none,
+                                    ),
+                                    onTagChanged: (newValue) {
+                                      setState(() {
+                                        _values.add(newValue);
+                                      });
+                                    },
+                                    tagBuilder: (context, index) => Container(
+                                      color: focusTagEnabled &&
+                                              index == _values.length - 1
+                                          ? Colors.redAccent
+                                          : Colors.white,
+                                      child: _Chip(
+                                        index: index,
+                                        label: _values[index],
+                                        onDeleted: _onDelete,
+                                      ),
+                                    ),
+                                    // InputFormatters example, this disallow \ and /
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.deny(
+                                          RegExp(r'[/\\]'))
+                                    ],
+                                    suggestionBuilder: (context,
+                                        state,
+                                        data,
+                                        index,
+                                        length,
+                                        highlight,
+                                        suggestionValid) {
+                                      var borderRadius = const BorderRadius.all(
+                                          Radius.circular(30));
+                                      if (index == 0) {
+                                        borderRadius = const BorderRadius.only(
+                                          topLeft: Radius.circular(30),
+                                          topRight: Radius.circular(30),
+                                        );
+                                      } else if (index == length - 1) {
+                                        borderRadius = const BorderRadius.only(
+                                          bottomRight: Radius.circular(30),
+                                          bottomLeft: Radius.circular(30),
+                                        );
+                                      }
+                                      return InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            _values.add(data);
+                                          });
+                                          state.resetTextField();
+                                          state.closeSuggestionBox();
+                                        },
+                                        child: Container(
+                                            width: 600,
+                                            decoration: highlight
+                                                ? BoxDecoration(
+                                                    color: Theme.of(context)
+                                                        .focusColor,
+                                                    borderRadius: borderRadius)
+                                                : null,
+                                            padding: const EdgeInsets.all(16),
+                                            child: RichTextWidget(
+                                              wordSearched:
+                                                  suggestionValid ?? '',
+                                              textOrigin: data,
+                                            )),
+                                      );
+                                    },
+                                    onFocusTagAction: (focused) {
+                                      setState(() {
+                                        focusTagEnabled = focused;
+                                      });
+                                    },
+                                    onDeleteTagAction: () {
+                                      if (_values.isNotEmpty) {
+                                        setState(() {
+                                          _values.removeLast();
+                                        });
+                                      }
+                                    },
+                                    onSelectOptionAction: (item) {
+                                      setState(() {
+                                        _values.add(item);
+                                      });
+                                    },
+                                    suggestionsBoxElevation: 5,
+                                    findSuggestions: (String query) {
+                                      if (query.isNotEmpty) {
+                                        var lowercaseQuery =
+                                            query.toLowerCase();
+                                        return mockResults.where((profile) {
+                                          return profile.toLowerCase().contains(
+                                                  query.toLowerCase()) ||
+                                              profile.toLowerCase().contains(
+                                                  query.toLowerCase());
+                                        }).toList(growable: false)
+                                          ..sort((a, b) => a
+                                              .toLowerCase()
+                                              .indexOf(lowercaseQuery)
+                                              .compareTo(b
+                                                  .toLowerCase()
+                                                  .indexOf(lowercaseQuery)));
+                                      }
+                                      return [];
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                       SizedBox(
                         height: 35,
-                      ),
-                      Container(
-                        height: 50,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(1),
-                            border: Border(
-                                bottom: BorderSide(color: Colors.black))),
-                        child: ListView(
-                          children: <Widget>[
-                            TagEditor<String>(
-                              length: _values.length,
-                              controller: _textEditingController,
-                              focusNode: _focusNode,
-                              delimiters: [',', ' '],
-                              hasAddButton: true,
-                              resetTextOnSubmitted: true,
-                              // This is set to grey just to illustrate the `textStyle` prop
-                              textStyle: const TextStyle(color: Colors.black),
-                              onSubmitted: (outstandingValue) {
-                                setState(() {
-                                  _values.add(outstandingValue);
-                                });
-                              },
-                              inputDecoration: const InputDecoration(
-                                border: InputBorder.none,
-                              ),
-                              onTagChanged: (newValue) {
-                                setState(() {
-                                  _values.add(newValue);
-                                });
-                              },
-                              tagBuilder: (context, index) => Container(
-                                color: focusTagEnabled &&
-                                        index == _values.length - 1
-                                    ? Colors.redAccent
-                                    : Colors.white,
-                                child: _Chip(
-                                  index: index,
-                                  label: _values[index],
-                                  onDeleted: _onDelete,
-                                ),
-                              ),
-                              // InputFormatters example, this disallow \ and /
-                              inputFormatters: [
-                                FilteringTextInputFormatter.deny(
-                                    RegExp(r'[/\\]'))
-                              ],
-                              suggestionBuilder: (context, state, data, index,
-                                  length, highlight, suggestionValid) {
-                                var borderRadius =
-                                    const BorderRadius.all(Radius.circular(30));
-                                if (index == 0) {
-                                  borderRadius = const BorderRadius.only(
-                                    topLeft: Radius.circular(30),
-                                    topRight: Radius.circular(30),
-                                  );
-                                } else if (index == length - 1) {
-                                  borderRadius = const BorderRadius.only(
-                                    bottomRight: Radius.circular(30),
-                                    bottomLeft: Radius.circular(30),
-                                  );
-                                }
-                                return InkWell(
-                                  onTap: () {
-                                    setState(() {
-                                      _values.add(data);
-                                    });
-                                    state.resetTextField();
-                                    state.closeSuggestionBox();
-                                  },
-                                  child: Container(
-                                      width: 600,
-                                      decoration: highlight
-                                          ? BoxDecoration(
-                                              color:
-                                                  Theme.of(context).focusColor,
-                                              borderRadius: borderRadius)
-                                          : null,
-                                      padding: const EdgeInsets.all(16),
-                                      child: RichTextWidget(
-                                        wordSearched: suggestionValid ?? '',
-                                        textOrigin: data,
-                                      )),
-                                );
-                              },
-                              onFocusTagAction: (focused) {
-                                setState(() {
-                                  focusTagEnabled = focused;
-                                });
-                              },
-                              onDeleteTagAction: () {
-                                if (_values.isNotEmpty) {
-                                  setState(() {
-                                    _values.removeLast();
-                                  });
-                                }
-                              },
-                              onSelectOptionAction: (item) {
-                                setState(() {
-                                  _values.add(item);
-                                });
-                              },
-                              suggestionsBoxElevation: 5,
-                              findSuggestions: (String query) {
-                                if (query.isNotEmpty) {
-                                  var lowercaseQuery = query.toLowerCase();
-                                  return mockResults.where((profile) {
-                                    return profile
-                                            .toLowerCase()
-                                            .contains(query.toLowerCase()) ||
-                                        profile
-                                            .toLowerCase()
-                                            .contains(query.toLowerCase());
-                                  }).toList(growable: false)
-                                    ..sort((a, b) => a
-                                        .toLowerCase()
-                                        .indexOf(lowercaseQuery)
-                                        .compareTo(b
-                                            .toLowerCase()
-                                            .indexOf(lowercaseQuery)));
-                                }
-                                return [];
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 40,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -635,12 +760,30 @@ class _RegistrationState extends State<Registration> {
                           ),
                           SizedBox(width: 50),
                           CustomButton(
-                              text: 'Next',
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  // use the information provided
-                                }
-                              }),
+                            text: 'Next',
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                final user = RegisterModal(
+                                    name: controller.name.text.trim(),
+                                    gender: controller.gender.text.trim(),
+                                    workexp: controller.workexp.text.trim(),
+                                    worktitle: controller.worktitle.text.trim(),
+                                    aadharno: controller.aadharno.text.trim(),
+                                    state: controller.state.text.trim(),
+                                    address: controller.address.text.trim(),
+                                    mobile: controller.mobile.text.trim(),
+                                    email: controller.email.text.trim(),
+                                    skills: controller.skills.text.trim(),
+                                    workin: controller.workin.text.trim());
+                                _userRef.push().set(user.tojson());
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => NewUserPayment(),
+                                  ),
+                                );
+                              }
+                            },
+                          ),
                         ],
                       )
                     ],

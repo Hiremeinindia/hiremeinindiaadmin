@@ -1,12 +1,7 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
-import 'package:hiremeinindiaapp/userdashboard.dart';
-import 'package:hiremeinindiaapp/widgets/customtextfield.dart';
 import 'package:hiremeinindiaapp/widgets/hiremeinindia.dart';
 import 'package:hiremeinindiaapp/widgets/textstylebutton.dart';
-
-import 'widgets/custombutton.dart';
-import 'widgets/customcard.dart';
 
 class CorporateConsole extends StatefulWidget {
   const CorporateConsole();
@@ -16,7 +11,6 @@ class CorporateConsole extends StatefulWidget {
 
 class _AdminDashboard extends State<CorporateConsole> {
   @override
-  bool isChecked = false;
   final List<String> items = [
     'Item1',
     'Item2',

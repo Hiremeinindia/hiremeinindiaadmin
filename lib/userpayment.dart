@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hiremeinindiaapp/userdashboard.dart';
-import 'package:hiremeinindiaapp/widgets/customtextfield.dart';
-
 import 'widgets/custombutton.dart';
 import 'widgets/hiremeinindia.dart';
 

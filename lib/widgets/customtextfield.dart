@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hiremeinindiaapp/widgets/customtextstyle.dart';
-import 'package:hiremeinindiaapp/widgets/textstylebutton.dart';
 
 @immutable
 final class CustomTextfield extends StatelessWidget {
@@ -31,6 +29,7 @@ final class CustomTextfield extends StatelessWidget {
         validator: validator,
         controller: controller,
         decoration: InputDecoration(
+          hintText: text,
           errorText: text1,
           border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(1))),
