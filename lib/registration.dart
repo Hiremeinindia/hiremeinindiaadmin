@@ -1143,43 +1143,21 @@ _showAlert(BuildContext context) {
 }
 
 class DatabaseService {
-  // Replace these placeholders with your actual database and blocklist logic
-
-  // Check if the user is registered
   Future<bool> isUserRegistered(String mobileNumber) async {
-    // Assuming you have a 'users' collection/table
-    // Query the database to check if the mobile number exists in the 'users' collection/table
-    // Replace this with your actual database query logic
     bool userExists = await yourDatabaseQueryToCheckUserExists(mobileNumber);
     return userExists;
   }
 
-  // Check if the user is in the blocklist
   Future<bool> isUserInBlocklist(String mobileNumber) async {
-    // Assuming you have a 'blocklist' collection/table
-    // Query the blocklist to check if the mobile number is present
-    // Replace this with your actual blocklist query logic
     bool userInBlocklist = await yourBlocklistQueryToCheckUser(mobileNumber);
     return userInBlocklist;
   }
 
-  // Replace these placeholders with your actual database and blocklist query logic
-
-  // Placeholder for checking user existence in the 'users' collection/table
   Future<bool> yourDatabaseQueryToCheckUserExists(String mobileNumber) async {
-    // Replace this with your actual database query logic
-    // For example, if using Firebase Firestore, it might look like:
-    // var querySnapshot = await FirebaseFirestore.instance.collection('users').where('mobileNumber', isEqualTo: mobileNumber).get();
-    // return querySnapshot.docs.isNotEmpty;
     return false;
   }
 
-  // Placeholder for checking user existence in the 'blocklist' collection/table
   Future<bool> yourBlocklistQueryToCheckUser(String mobileNumber) async {
-    // Replace this with your actual blocklist query logic
-    // For example, if using Firebase Firestore, it might look like:
-    // var querySnapshot = await FirebaseFirestore.instance.collection('blocklist').where('mobileNumber', isEqualTo: mobileNumber).get();
-    // return querySnapshot.docs.isNotEmpty;
     return false;
   }
 }
