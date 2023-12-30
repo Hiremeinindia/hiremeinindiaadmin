@@ -16,6 +16,10 @@ class SignUpController extends GetxController {
   final skills = TextEditingController();
   final workin = TextEditingController();
   final password = TextEditingController();
+
+  final code = TextEditingController();
+
+  final otp = TextEditingController();
   void registerUser(String email, String password) {
     String? error = AuthenticationRepository.instance
         .createUserWithEmailAndPassword(email, password) as String?;

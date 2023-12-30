@@ -1,10 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:get/get_instance/get_instance.dart';
 import 'package:get/route_manager.dart';
+import 'package:email_otp/email_otp.dart';
 
+import 'package:flutter_dialogs/flutter_dialogs.dart';
 import 'package:hiremeinindiaapp/Models/register_model.dart';
 import 'package:hiremeinindiaapp/userpayment.dart';
 
@@ -27,8 +30,252 @@ class _RegistrationState extends State<Registration> {
   final _formKey = GlobalKey<FormState>();
   final DatabaseReference _userRef =
       FirebaseDatabase.instance.reference().child('users');
+  void dispose() {
+    controller.name.dispose();
+    super.dispose();
+  }
 
-  static const mockResults = [
+  Future<bool> checkUserInBlocklist(String mobileNumber) async {
+    // Implement the logic to check if the user is in the blocklist
+    // For example, you can use the DatabaseService class mentioned earlier
+    return await DatabaseService().isUserInBlocklist(mobileNumber);
+  }
+
+  _signInWithMobileNumber() async {
+    String mobileNumber = controller.mobile.text;
+    FirebaseAuth _auth = FirebaseAuth.instance;
+
+    try {
+      // Check if the mobile number is already registered in Firebase Realtime Database
+      bool isNumberRegistered = await checkIfNumberRegistered(mobileNumber);
+
+      if (isNumberRegistered) {
+        print("number registered ");
+        // Display a popup message if the number is already registered
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text("Mobile Number Already Registered"),
+            content: Text("This mobile number is already registered."),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text("OK"),
+              ),
+            ],
+          ),
+        );
+      } else {
+        // If the number is not registered, proceed with phone number verification
+        await _auth.verifyPhoneNumber(
+          phoneNumber: "+91${controller.mobile.text}",
+          verificationCompleted: (PhoneAuthCredential authCredential) async {
+            await _auth.signInWithCredential(authCredential).then((value) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Registration()),
+              );
+            });
+          },
+          verificationFailed: (FirebaseAuthException error) {
+            print("Verification Failed: ${error.message}");
+          },
+          codeSent: (String verificationId, [int? forceResendingToken]) {
+            // Store the verification ID for later use (e.g., resend OTP)
+            // You can use the verificationId in your app to implement features like OTP resend.
+            // For simplicity, this example does not include resend functionality.
+            String storedVerificationId = verificationId;
+
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => AlertDialog(
+                title: Text("Enter OTP"),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: controller.code,
+                    ),
+                  ],
+                ),
+                actions: [
+                  ElevatedButton(
+                    onPressed: () {
+                      FirebaseAuth auth = FirebaseAuth.instance;
+                      String smsCode = controller.code.text;
+                      PhoneAuthCredential _credential =
+                          PhoneAuthProvider.credential(
+                        verificationId: storedVerificationId,
+                        smsCode: smsCode,
+                      );
+
+                      auth.signInWithCredential(_credential).then((result) {
+                        if (result != null) {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Registration()),
+                          );
+                        }
+                      }).catchError((e) {
+                        print("Error signing in with credential: $e");
+                      });
+                    },
+                    child: Text("Done"),
+                  ),
+                ],
+              ),
+            );
+          },
+          codeAutoRetrievalTimeout: (String verificationId) {
+            verificationId = verificationId;
+          },
+          timeout: Duration(seconds: 45),
+        );
+      }
+    } catch (e) {
+      print("Error during phone number verification: $e");
+    }
+  }
+
+// Function to check if the mobile number is already registered in Firebase Realtime Database
+  Future<bool> checkIfNumberRegistered(String mobileNumber) async {
+    DatabaseReference databaseReference = FirebaseDatabase.instance.reference();
+    String path = 'users';
+
+    try {
+      DatabaseEvent databaseEvent = await databaseReference.child(path).once();
+      DataSnapshot dataSnapshot = databaseEvent.snapshot;
+
+      if (dataSnapshot.value != null) {
+        Map<dynamic, dynamic>? usersData =
+            dataSnapshot.value as Map<dynamic, dynamic>?;
+
+        if (usersData != null) {
+          bool isNumberRegistered = usersData.values.any((userData) {
+            return userData['mobileNumber'] == mobileNumber;
+          });
+
+          return isNumberRegistered;
+        }
+      }
+
+      return false;
+    } catch (error) {
+      print('Error checking if number is registered: $error');
+      return false;
+    }
+  }
+
+  Future<void> _showOtpDialog(BuildContext context, String mobileNumber) async {
+    print("dialog1");
+    String otp = ''; // Use a variable to store the entered OTP
+
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Enter OTP for $mobileNumber'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                TextField(
+                  onChanged: (value) {
+                    otp = value;
+                  },
+                  decoration: InputDecoration(labelText: 'OTP'),
+                  keyboardType: TextInputType.number,
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                print("phone1");
+                // Perform verification logic with entered OTP
+                // For example, you can call a function like _verifyOtp(otp)
+                // and handle the verification process there.
+                bool isOtpValid = await _verifyOtp(otp);
+
+                if (isOtpValid) {
+                  print("otp1");
+                  // Update UI after successful verification
+                  Navigator.of(context).pop(); // Close the dialog
+                  _showVerificationSuccessDialog(context);
+                } else {
+                  print("otp2");
+                  // Handle case where OTP verification fails
+                  // You can show an error message or take other actions
+                  print('Incorrect OTP');
+                  // Optionally, show an error message to the user
+                }
+              },
+              child: Text('Verify'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showVerificationSuccessDialog(BuildContext context) {
+    print("verified1");
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        print("verified2");
+        return AlertDialog(
+          title: Text('Verification Successful'),
+          content:
+              Text('Congratulations! Your mobile number has been verified.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                print("verified3");
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<bool> _verifyOtp(String otp) async {
+    // Implement your OTP verification logic here
+    // Return true if OTP is valid, false otherwise
+    // For example, you might make an API call to your server for verification
+    // Replace the following line with your actual verification logic
+    bool isOtpValid = (otp == '1234'); // Replace '1234' with the correct OTP
+    return isOtpValid;
+  }
+
+  EmailOTP myauth = EmailOTP();
+  static const Skill = [
+    'Plumber',
+    'Senior Plumber',
+    'Junior Plumber',
+    'Skill 1',
+    'Electrician',
+    'Senior Electrician',
+    'Junior Electrician',
+    'Skill 2',
+  ];
+
+  static const Workin = [
     'Plumber',
     'Senior Plumber',
     'Junior Plumber',
@@ -40,8 +287,9 @@ class _RegistrationState extends State<Registration> {
   ];
 
   List<String> _values = [];
+  List<String> _value = [];
+
   final FocusNode _focusNode = FocusNode();
-  final TextEditingController _textEditingController = TextEditingController();
   bool focusTagEnabled = false;
 
   _onDelete(index) {
@@ -50,10 +298,15 @@ class _RegistrationState extends State<Registration> {
     });
   }
 
+  _onDeletee(indexx) {
+    _value.removeAt(indexx);
+  }
+
   /// This is just an example for using `TextEditingController` to manipulate
   /// the the `TextField` just like a normal `TextField`.
 
-  bool isChecked = false; // Add this line to manage the checkbox state
+  bool blueChecked = false;
+  bool greyChecked = false; // Add this line to manage the checkbox state
 
   var isLoading = false;
 
@@ -201,10 +454,10 @@ class _RegistrationState extends State<Registration> {
                 child: Row(
                   children: [
                     Checkbox(
-                      value: isChecked,
+                      value: blueChecked,
                       onChanged: (bool? value) {
                         setState(() {
-                          isChecked = value ?? false;
+                          blueChecked = value ?? false;
                         });
                       },
                       fillColor: MaterialStateProperty.resolveWith<Color>(
@@ -215,32 +468,32 @@ class _RegistrationState extends State<Registration> {
                           return Colors.transparent;
                         },
                       ),
-                      checkColor: Colors.black,
+                      checkColor: Colors.white,
                       side: BorderSide(
-                        color: Colors.black,
-                        width: 2.0,
+                        color: Colors.indigo.shade900,
+                        width: 3.5,
                       ),
                     ),
                     Text("Blue Collar"),
                     Checkbox(
-                      value: isChecked,
+                      value: greyChecked,
                       onChanged: (bool? value) {
                         setState(() {
-                          isChecked = value ?? false;
+                          greyChecked = value ?? false;
                         });
                       },
                       fillColor: MaterialStateProperty.resolveWith<Color>(
                         (Set<MaterialState> states) {
                           if (states.contains(MaterialState.selected)) {
-                            return Colors.grey;
+                            return Colors.indigo.shade900;
                           }
                           return Colors.transparent;
                         },
                       ),
-                      checkColor: Colors.black,
+                      checkColor: Colors.white,
                       side: BorderSide(
-                        color: Colors.black,
-                        width: 2.0,
+                        color: Colors.indigo.shade900,
+                        width: 3.5,
                       ),
                     ),
                     Text("Grey Collar"),
@@ -303,7 +556,6 @@ class _RegistrationState extends State<Registration> {
                                 CustomTextfield(
                                   validator: nameValidator,
                                   controller: controller.worktitle,
-                                  text: 'Enter Work Title',
                                 ),
                                 SizedBox(
                                   height: 40,
@@ -318,7 +570,6 @@ class _RegistrationState extends State<Registration> {
                                     return null;
                                   },
                                   controller: controller.aadharno,
-                                  text: 'Enter Aadhar No',
                                 ),
                               ],
                             ),
@@ -360,22 +611,20 @@ class _RegistrationState extends State<Registration> {
                                 CustomTextfield(
                                   validator: nameValidator,
                                   controller: controller.gender,
-                                  text: 'Enter gender',
                                 ),
                                 SizedBox(
                                   height: 40,
                                 ),
                                 CustomTextfield(
-                                    validator: workexpValidator,
-                                    controller: controller.workexp,
-                                    text: 'Enter Work experience'),
+                                  validator: workexpValidator,
+                                  controller: controller.workexp,
+                                ),
                                 SizedBox(
                                   height: 40,
                                 ),
                                 CustomTextfield(
                                   validator: nameValidator,
                                   controller: controller.state,
-                                  text: 'Enter State',
                                 ),
                               ],
                             ),
@@ -396,7 +645,6 @@ class _RegistrationState extends State<Registration> {
                         Expanded(
                             child: CustomTextfield(
                           validator: workexpValidator,
-                          text: 'Enter address',
                           controller: controller.address,
                         )),
                       ]),
@@ -449,7 +697,22 @@ class _RegistrationState extends State<Registration> {
                                 ]))),
                         CustomButton(
                           text: 'Verify',
-                          onPressed: () {},
+                          onPressed: () async {
+                            myauth.setConfig(
+                                appEmail: "mail@gmail.com",
+                                appName: "Email otp",
+                                userEmail: controller.email.text,
+                                otpLength: 4,
+                                otpType: OTPType.digitsOnly);
+                            if (await myauth.sendOTP() == true) {
+                              _showAlert(context);
+                            } else {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(const SnackBar(
+                                content: Text("OTP has been sent"),
+                              ));
+                            }
+                          },
                         ),
                       ]),
                       SizedBox(
@@ -474,18 +737,17 @@ class _RegistrationState extends State<Registration> {
                               child: ListView(
                                 children: <Widget>[
                                   TagEditor<String>(
-                                    length: _values.length,
-                                    controller: _textEditingController,
+                                    length: _value.length,
+                                    controller: controller.skills,
                                     focusNode: _focusNode,
                                     delimiters: [',', ' '],
-                                    hasAddButton: true,
                                     resetTextOnSubmitted: true,
                                     // This is set to grey just to illustrate the `textStyle` prop
                                     textStyle:
                                         const TextStyle(color: Colors.black),
                                     onSubmitted: (outstandingValue) {
                                       setState(() {
-                                        _values.add(outstandingValue);
+                                        _value.add(outstandingValue);
                                       });
                                     },
                                     inputDecoration: const InputDecoration(
@@ -493,18 +755,18 @@ class _RegistrationState extends State<Registration> {
                                     ),
                                     onTagChanged: (newValue) {
                                       setState(() {
-                                        _values.add(newValue);
+                                        _value.add(newValue);
                                       });
                                     },
                                     tagBuilder: (context, index) => Container(
                                       color: focusTagEnabled &&
-                                              index == _values.length - 1
+                                              index == _value.length - 1
                                           ? Colors.redAccent
                                           : Colors.white,
                                       child: _Chip(
                                         index: index,
-                                        label: _values[index],
-                                        onDeleted: _onDelete,
+                                        label: _value[index],
+                                        onDeleted: _onDeletee,
                                       ),
                                     ),
                                     // InputFormatters example, this disallow \ and /
@@ -535,7 +797,7 @@ class _RegistrationState extends State<Registration> {
                                       return InkWell(
                                         onTap: () {
                                           setState(() {
-                                            _values.add(data);
+                                            _value.add(data);
                                           });
                                           state.resetTextField();
                                           state.closeSuggestionBox();
@@ -562,15 +824,15 @@ class _RegistrationState extends State<Registration> {
                                       });
                                     },
                                     onDeleteTagAction: () {
-                                      if (_values.isNotEmpty) {
+                                      if (_value.isNotEmpty) {
                                         setState(() {
-                                          _values.removeLast();
+                                          _value.removeLast();
                                         });
                                       }
                                     },
                                     onSelectOptionAction: (item) {
                                       setState(() {
-                                        _values.add(item);
+                                        _value.add(item);
                                       });
                                     },
                                     suggestionsBoxElevation: 5,
@@ -578,7 +840,7 @@ class _RegistrationState extends State<Registration> {
                                       if (query.isNotEmpty) {
                                         var lowercaseQuery =
                                             query.toLowerCase();
-                                        return mockResults.where((profile) {
+                                        return Skill.where((profile) {
                                           return profile.toLowerCase().contains(
                                                   query.toLowerCase()) ||
                                               profile.toLowerCase().contains(
@@ -623,10 +885,9 @@ class _RegistrationState extends State<Registration> {
                                 children: <Widget>[
                                   TagEditor<String>(
                                     length: _values.length,
-                                    controller: _textEditingController,
+                                    controller: controller.workin,
                                     focusNode: _focusNode,
                                     delimiters: [',', ' '],
-                                    hasAddButton: true,
                                     resetTextOnSubmitted: true,
                                     // This is set to grey just to illustrate the `textStyle` prop
                                     textStyle:
@@ -726,7 +987,7 @@ class _RegistrationState extends State<Registration> {
                                       if (query.isNotEmpty) {
                                         var lowercaseQuery =
                                             query.toLowerCase();
-                                        return mockResults.where((profile) {
+                                        return Workin.where((profile) {
                                           return profile.toLowerCase().contains(
                                                   query.toLowerCase()) ||
                                               profile.toLowerCase().contains(
@@ -860,5 +1121,65 @@ class _Chip extends StatelessWidget {
         onDeleted(index);
       },
     );
+  }
+}
+
+_showAlert(BuildContext context) {
+  showPlatformDialog(
+    context: context,
+    builder: (_) => BasicDialogAlert(
+      title: Text("Current Location Not Available"),
+      content: Text("Your current location cannot be determined at this time."),
+      actions: <Widget>[
+        BasicDialogAction(
+          title: Text("OK"),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    ),
+  );
+}
+
+class DatabaseService {
+  // Replace these placeholders with your actual database and blocklist logic
+
+  // Check if the user is registered
+  Future<bool> isUserRegistered(String mobileNumber) async {
+    // Assuming you have a 'users' collection/table
+    // Query the database to check if the mobile number exists in the 'users' collection/table
+    // Replace this with your actual database query logic
+    bool userExists = await yourDatabaseQueryToCheckUserExists(mobileNumber);
+    return userExists;
+  }
+
+  // Check if the user is in the blocklist
+  Future<bool> isUserInBlocklist(String mobileNumber) async {
+    // Assuming you have a 'blocklist' collection/table
+    // Query the blocklist to check if the mobile number is present
+    // Replace this with your actual blocklist query logic
+    bool userInBlocklist = await yourBlocklistQueryToCheckUser(mobileNumber);
+    return userInBlocklist;
+  }
+
+  // Replace these placeholders with your actual database and blocklist query logic
+
+  // Placeholder for checking user existence in the 'users' collection/table
+  Future<bool> yourDatabaseQueryToCheckUserExists(String mobileNumber) async {
+    // Replace this with your actual database query logic
+    // For example, if using Firebase Firestore, it might look like:
+    // var querySnapshot = await FirebaseFirestore.instance.collection('users').where('mobileNumber', isEqualTo: mobileNumber).get();
+    // return querySnapshot.docs.isNotEmpty;
+    return false;
+  }
+
+  // Placeholder for checking user existence in the 'blocklist' collection/table
+  Future<bool> yourBlocklistQueryToCheckUser(String mobileNumber) async {
+    // Replace this with your actual blocklist query logic
+    // For example, if using Firebase Firestore, it might look like:
+    // var querySnapshot = await FirebaseFirestore.instance.collection('blocklist').where('mobileNumber', isEqualTo: mobileNumber).get();
+    // return querySnapshot.docs.isNotEmpty;
+    return false;
   }
 }

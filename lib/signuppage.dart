@@ -1,18 +1,13 @@
-import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
-import 'package:hiremeinindiaapp/gethired.dart';
 import 'package:get/get.dart';
 import 'package:hiremeinindiaapp/homepage.dart';
-import 'package:hiremeinindiaapp/services/functions/authFunctions.dart';
-import 'package:hiremeinindiaapp/userdashboard.dart';
 import 'package:hiremeinindiaapp/widgets/customtextfield.dart';
 import 'controllers/signupcontroller.dart';
 import 'registration.dart';
 import 'widgets/custombutton.dart';
 import 'widgets/hiremeinindia.dart';
-import 'widgets/textstylebutton.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage();

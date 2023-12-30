@@ -23,16 +23,21 @@ final class CustomTextfield extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 30,
-      child: TextFormField(
-        validator: validator,
-        controller: controller,
-        decoration: InputDecoration(
-          hintText: text,
-          errorText: text1,
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(1))),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        height: 30,
+        child: TextFormField(
+          style: TextStyle(height: 1),
+          validator: validator,
+          controller: controller,
+          decoration: InputDecoration(
+            contentPadding: EdgeInsets.all(5.0),
+            hintText: text,
+            errorText: text1,
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(1))),
+          ),
         ),
       ),
     );
