@@ -180,7 +180,6 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                     SizedBox(height: 10),
                     CustomTextfield(
-                      validator: nameValidator,
                       controller: controller.name,
                     ),
                     SizedBox(
