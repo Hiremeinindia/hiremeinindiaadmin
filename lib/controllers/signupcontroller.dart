@@ -17,6 +17,8 @@ class SignUpController extends GetxController {
   final workin = TextEditingController();
   final password = TextEditingController();
 
+  final code = TextEditingController();
+
   final otp = TextEditingController();
   void registerUser(String email, String password) {
     String? error = AuthenticationRepository.instance
