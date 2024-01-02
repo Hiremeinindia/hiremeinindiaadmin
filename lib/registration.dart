@@ -1,3 +1,4 @@
+import 'package:email_auth/email_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -8,13 +9,17 @@ import 'package:get/route_manager.dart';
 import 'package:email_otp/email_otp.dart';
 import 'package:flutter_dialogs/flutter_dialogs.dart';
 import 'package:hiremeinindiaapp/Models/register_model.dart';
+import 'package:hiremeinindiaapp/controllers/email_auth_controller.dart';
+import 'package:hiremeinindiaapp/homepage.dart';
 import 'package:hiremeinindiaapp/userpayment.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:super_tag_editor/widgets/rich_text_widget.dart';
 import 'controllers/signupcontroller.dart';
+import 'otpscreen.dart';
 import 'widgets/custombutton.dart';
 import 'widgets/customtextfield.dart';
 import 'widgets/hiremeinindia.dart';
+import 'package:http/http.dart' as http;
 
 class Registration extends StatefulWidget {
   const Registration();
@@ -38,11 +43,10 @@ class _RegistrationState extends State<Registration> {
 
   var isLoading = false;
 
-  EmailOTP myauth = EmailOTP();
-
   final FocusNode _focusNode = FocusNode();
   final controller = Get.put(SignUpController());
   final _formKey = GlobalKey<FormState>();
+  EmailOTP myauth = EmailOTP();
   final DatabaseReference _userRef =
       FirebaseDatabase.instance.reference().child('users');
 
@@ -416,6 +420,16 @@ class _RegistrationState extends State<Registration> {
         );
       },
     );
+  }
+
+  Future<void> fetchData() async {
+    final response = await http.get(Uri.parse('https://example.com/api/data'));
+    if (response.statusCode == 200) {
+      // Handle successful response
+    } else {
+      // Handle error response
+      print('Request failed with status: ${response.statusCode}');
+    }
   }
 
   @override
@@ -825,24 +839,59 @@ class _RegistrationState extends State<Registration> {
                                   EmailValidator(
                                       errorText: "Enter valid email id"),
                                 ]))),
-                        CustomButton(
-                          text: 'Verify',
-                          onPressed: () async {
-                            myauth.setConfig(
-                                appEmail: "mail@gmail.com",
-                                appName: "Email otp",
-                                userEmail: controller.email.text,
-                                otpLength: 4,
-                                otpType: OTPType.digitsOnly);
-                            if (await myauth.sendOTP() == true) {
-                              _showAlert(context);
-                            } else {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(
-                                content: Text("OTP has been sent"),
-                              ));
-                            }
-                          },
+                        SizedBox(
+                          height: 30,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.indigo.shade900,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                    0.1), // Adjust border radius as needed
+                              ),
+                            ),
+                            onPressed: () async {
+                              myauth.setConfig(
+                                  appEmail: "contact@hdevcoder.com",
+                                  appName: "OTP for Registration",
+                                  userEmail: controller.email.text,
+                                  otpLength: 4,
+                                  otpType: OTPType.digitsOnly);
+                              if (await myauth.sendOTP() == true) {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(const SnackBar(
+                                  content: Text("OTP has been sent"),
+                                ));
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => OtpScreen(
+                                              myauth: myauth,
+                                            )));
+                              } else {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(const SnackBar(
+                                  content: Text("Oops, OTP send failed"),
+                                ));
+                              }
+                            },
+                            child: isVerified
+                                ? Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.check, color: Colors.green),
+                                      SizedBox(width: 8),
+                                      Text('Verified'),
+                                    ],
+                                  )
+                                : Text(
+                                    'Verify',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                          ),
                         ),
                       ]),
                       SizedBox(

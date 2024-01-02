@@ -1,4 +1,5 @@
 {
   "@@locale": "en",
-  "helloWorld": "helloworld"
+  "hireMeInIndia": "HiremeinIndia",
+  "findaJob" : "FindaJob"  
 }
