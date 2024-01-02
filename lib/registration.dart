@@ -31,8 +31,7 @@ class _RegistrationState extends State<Registration> {
   String enteredOTP = '';
   String smscode = "";
   String phoneNumber = "", data = "", phone = "";
-  bool isVerified = true;
-  bool Verified = false;
+  bool isVerified = false;
 
   List<String> _values = [];
   List<String> _value = [];
@@ -787,35 +786,53 @@ class _RegistrationState extends State<Registration> {
                         SizedBox(
                           height: 30,
                           child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                primary: Colors.indigo.shade900,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(0.1),
-                                ),
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.indigo.shade900,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(0.1),
                               ),
-                              onPressed: () async {
-                                print("phone1");
-                                String mobileNumber = controller.mobile.text;
-                                print(mobileNumber);
+                            ),
+                            onPressed: () async {
+                              print("phone1");
+                              String mobileNumber = controller.mobile.text;
+                              print(mobileNumber);
 
-                                // Check if the user is already registered or in the blocklist
-                                bool isUserRegistered =
-                                    await _signInWithMobileNumber();
-                                print('Is User Registered: $isUserRegistered');
+                              // Check if the user is already registered or in the blocklist
+                              bool isUserRegistered =
+                                  await _signInWithMobileNumber();
+                              print('Is User Registered: $isUserRegistered');
 
-                                // Update the button text to "Verified" if isUserRegistered is false
-                                setState(() {
-                                  isVerified = isUserRegistered;
-                                });
-                              },
-                              child: Text(
-                                'Verify',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.normal,
-                                  color: Colors.white,
-                                ),
-                              )),
+                              // Update the button text to "Verified" if isUserRegistered is false
+                              setState(() {
+                                isVerified = !isUserRegistered;
+                              });
+
+                              // If the verification is successful, show the "Verified" button
+                              if (!isUserRegistered) {
+                                // Proceed with OTP verification logic here...
+                                // When OTP is successfully verified, set isVerified to true
+                                // Example:
+                                // isVerified = true;
+                              }
+                            },
+                            child: isVerified
+                                ? Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.check, color: Colors.green),
+                                      SizedBox(width: 8),
+                                      Text('Verified'),
+                                    ],
+                                  )
+                                : Text(
+                                    'Verify',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                          ),
                         ),
                         SizedBox(
                           height: 40,
