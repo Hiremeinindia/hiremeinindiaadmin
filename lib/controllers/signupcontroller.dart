@@ -16,7 +16,7 @@ class SignUpController extends GetxController {
   final skills = TextEditingController();
   final workin = TextEditingController();
   final password = TextEditingController();
-
+  final otpm = TextEditingController();
   final code = TextEditingController();
 
   final otp = TextEditingController();

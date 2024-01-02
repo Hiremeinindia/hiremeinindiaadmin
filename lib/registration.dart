@@ -1,3 +1,4 @@
+import 'package:email_auth/email_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -6,18 +7,19 @@ import 'package:form_field_validator/form_field_validator.dart';
 import 'package:get/get_instance/get_instance.dart';
 import 'package:get/route_manager.dart';
 import 'package:email_otp/email_otp.dart';
-
 import 'package:flutter_dialogs/flutter_dialogs.dart';
 import 'package:hiremeinindiaapp/Models/register_model.dart';
+import 'package:hiremeinindiaapp/controllers/email_auth_controller.dart';
+import 'package:hiremeinindiaapp/homepage.dart';
 import 'package:hiremeinindiaapp/userpayment.dart';
-
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:super_tag_editor/widgets/rich_text_widget.dart';
-
 import 'controllers/signupcontroller.dart';
+import 'otpscreen.dart';
 import 'widgets/custombutton.dart';
 import 'widgets/customtextfield.dart';
 import 'widgets/hiremeinindia.dart';
+import 'package:http/http.dart' as http;
 
 class Registration extends StatefulWidget {
   const Registration();
@@ -26,19 +28,121 @@ class Registration extends StatefulWidget {
 }
 
 class _RegistrationState extends State<Registration> {
+  String enteredOTP = '';
+  String smscode = "";
+  String phoneNumber = "", data = "", phone = "";
+
+  List<String> _values = [];
+  List<String> _value = [];
+
+  bool isVerified = false;
+  bool blueChecked = false;
+  bool greyChecked = false;
+  bool focusTagEnabled = false;
+
+  var isLoading = false;
+
+  final FocusNode _focusNode = FocusNode();
   final controller = Get.put(SignUpController());
   final _formKey = GlobalKey<FormState>();
+  EmailOTP myauth = EmailOTP();
   final DatabaseReference _userRef =
       FirebaseDatabase.instance.reference().child('users');
-  void dispose() {
+
+  static const Skill = [
+    'Plumber',
+    'Senior Plumber',
+    'Junior Plumber',
+    'Skill 1',
+    'Electrician',
+    'Senior Electrician',
+    'Junior Electrician',
+    'Skill 2',
+  ];
+  static const Workin = [
+    'Plumber',
+    'Senior Plumber',
+    'Junior Plumber',
+    'Skill 1',
+    'Electrician',
+    'Senior Electrician',
+    'Junior Electrician',
+    'Skill 2',
+  ];
+
+  _onDelete(index) {
+    setState(() {
+      _values.removeAt(index);
+    });
+  }
+
+  _onDeletee(indexx) {
+    _value.removeAt(indexx);
+  }
+
+  _submit() {
+    final isValid = _formKey.currentState!.validate();
+    if (!isValid) {
+      return;
+    }
+    _formKey.currentState!.save();
+  }
+
+  dispose() {
     controller.name.dispose();
     super.dispose();
   }
 
-  Future<bool> checkUserInBlocklist(String mobileNumber) async {
-    // Implement the logic to check if the user is in the blocklist
-    // For example, you can use the DatabaseService class mentioned earlier
-    return await DatabaseService().isUserInBlocklist(mobileNumber);
+  bool isValidName(String name) {
+    final RegExp nameRegExp = RegExp(r"^[A-Za-z']+([- ][A-Za-z']+)*$");
+    return nameRegExp.hasMatch(name);
+  }
+
+  bool isValidWorkexp(String workexp) {
+    final RegExp pattern = RegExp(r"^[A-Za-z0-9]+$");
+    return pattern.hasMatch(workexp);
+  }
+
+  String? workexpValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return '*Required';
+    } else if (!isValidWorkexp(value)) {
+      return 'Invalid format';
+    }
+    return null;
+  }
+
+  String? nameValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return '*Required';
+    } else if (!isValidName(value)) {
+      return 'Invalid format';
+    }
+    return null;
+  }
+
+  _showVerificationSuccessDialog(BuildContext context) {
+    print("verified1");
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        print("verified2");
+        return AlertDialog(
+          title: Text('Verification Successful'),
+          content:
+              Text('Congratulations! Your mobile number has been verified.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                print("verified3");
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   _signInWithMobileNumber() async {
@@ -142,7 +246,21 @@ class _RegistrationState extends State<Registration> {
     }
   }
 
-// Function to check if the mobile number is already registered in Firebase Realtime Database
+  Future<bool> checkUserInBlocklist(String mobileNumber) async {
+    // Implement the logic to check if the user is in the blocklist
+    // For example, you can use the DatabaseService class mentioned earlier
+    return await DatabaseService().isUserInBlocklist(mobileNumber);
+  }
+
+  Future<bool> _verifyOtp(String otp) async {
+    // Implement your OTP verification logic here
+    // Return true if OTP is valid, false otherwise
+    // For example, you might make an API call to your server for verification
+    // Replace the following line with your actual verification logic
+    bool isOtpValid = (otp == '1234'); // Replace '1234' with the correct OTP
+    return isOtpValid;
+  }
+
   Future<bool> checkIfNumberRegistered(String mobileNumber) async {
     DatabaseReference databaseReference = FirebaseDatabase.instance.reference();
     String path = 'users';
@@ -230,92 +348,18 @@ class _RegistrationState extends State<Registration> {
     );
   }
 
-  void _showVerificationSuccessDialog(BuildContext context) {
-    print("verified1");
-    showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        print("verified2");
-        return AlertDialog(
-          title: Text('Verification Successful'),
-          content:
-              Text('Congratulations! Your mobile number has been verified.'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                print("verified3");
-                Navigator.of(context).pop();
-              },
-              child: Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<bool> _verifyOtp(String otp) async {
-    // Implement your OTP verification logic here
-    // Return true if OTP is valid, false otherwise
-    // For example, you might make an API call to your server for verification
-    // Replace the following line with your actual verification logic
-    bool isOtpValid = (otp == '1234'); // Replace '1234' with the correct OTP
-    return isOtpValid;
-  }
-
-  EmailOTP myauth = EmailOTP();
-  static const Skill = [
-    'Plumber',
-    'Senior Plumber',
-    'Junior Plumber',
-    'Skill 1',
-    'Electrician',
-    'Senior Electrician',
-    'Junior Electrician',
-    'Skill 2',
-  ];
-
-  static const Workin = [
-    'Plumber',
-    'Senior Plumber',
-    'Junior Plumber',
-    'Skill 1',
-    'Electrician',
-    'Senior Electrician',
-    'Junior Electrician',
-    'Skill 2',
-  ];
-
-  List<String> _values = [];
-  List<String> _value = [];
-
-  final FocusNode _focusNode = FocusNode();
-  bool focusTagEnabled = false;
-
-  _onDelete(index) {
-    setState(() {
-      _values.removeAt(index);
-    });
-  }
-
-  _onDeletee(indexx) {
-    _value.removeAt(indexx);
-  }
-
-  /// This is just an example for using `TextEditingController` to manipulate
-  /// the the `TextField` just like a normal `TextField`.
-
-  bool blueChecked = false;
-  bool greyChecked = false; // Add this line to manage the checkbox state
-
-  var isLoading = false;
-
-  void _submit() {
-    final isValid = _formKey.currentState!.validate();
-    if (!isValid) {
-      return;
+  Future<void> fetchData() async {
+    try {
+      final response =
+          await http.get(Uri.parse('https://example.com/api/data'));
+      if (response.statusCode == 200) {
+        print('Response: ${response.body}');
+      } else {
+        print('Error: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Error: $error');
     }
-    _formKey.currentState!.save();
   }
 
   @override
@@ -669,9 +713,58 @@ class _RegistrationState extends State<Registration> {
                               return null;
                           },
                         )),
-                        CustomButton(
-                          text: 'Verify',
-                          onPressed: () {},
+                        SizedBox(
+                          height: 30,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.indigo.shade900,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                    0.1), // Adjust border radius as needed
+                              ),
+                            ),
+                            onPressed: () async {
+                              print("phone1");
+                              String mobileNumber = controller.mobile.text;
+                              print(mobileNumber);
+
+                              // Check if the user is already registered or in the blocklist
+                              bool isUserRegistered =
+                                  await _signInWithMobileNumber();
+                              bool isUserBlocked =
+                                  await checkUserInBlocklist(mobileNumber);
+
+                              if (!isUserRegistered && !isUserBlocked) {
+                                // User is not already registered and not in the blocklist
+                                _signInWithMobileNumber();
+                                _showOtpDialog(context, mobileNumber);
+                              } else if (isUserBlocked) {
+                                // User is in the blocklist, show an error message or take appropriate action
+                                print(
+                                    "User is in the blocklist. Access denied.");
+                              } else {
+                                // User is already registered, handle accordingly (e.g., show a message)
+                                print("User is already registered.");
+                              }
+                            },
+                            child: isVerified
+                                ? Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.check, color: Colors.green),
+                                      SizedBox(width: 8),
+                                      Text('Verified'),
+                                    ],
+                                  )
+                                : Text(
+                                    'Verify',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                          ),
                         ),
                         SizedBox(
                           height: 40,
@@ -695,24 +788,59 @@ class _RegistrationState extends State<Registration> {
                                   EmailValidator(
                                       errorText: "Enter valid email id"),
                                 ]))),
-                        CustomButton(
-                          text: 'Verify',
-                          onPressed: () async {
-                            myauth.setConfig(
-                                appEmail: "mail@gmail.com",
-                                appName: "Email otp",
-                                userEmail: controller.email.text,
-                                otpLength: 4,
-                                otpType: OTPType.digitsOnly);
-                            if (await myauth.sendOTP() == true) {
-                              _showAlert(context);
-                            } else {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(
-                                content: Text("OTP has been sent"),
-                              ));
-                            }
-                          },
+                        SizedBox(
+                          height: 30,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.indigo.shade900,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                    0.1), // Adjust border radius as needed
+                              ),
+                            ),
+                            onPressed: () async {
+                              myauth.setConfig(
+                                  appEmail: "hiremeinindia.com",
+                                  appName: "OTP For Registeration",
+                                  userEmail: controller.email.text,
+                                  otpLength: 4,
+                                  otpType: OTPType.digitsOnly);
+                              if (await myauth.sendOTP() == true) {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(const SnackBar(
+                                  content: Text("OTP has been sent"),
+                                ));
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => OtpScreen(
+                                              myauth: myauth,
+                                            )));
+                              } else {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(const SnackBar(
+                                  content: Text("Oops, OTP send failed"),
+                                ));
+                              }
+                            },
+                            child: isVerified
+                                ? Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.check, color: Colors.green),
+                                      SizedBox(width: 8),
+                                      Text('Verified'),
+                                    ],
+                                  )
+                                : Text(
+                                    'Verify',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                          ),
                         ),
                       ]),
                       SizedBox(
@@ -1062,32 +1190,24 @@ class _RegistrationState extends State<Registration> {
   }
 }
 
-String? nameValidator(String? value) {
-  if (value == null || value.isEmpty) {
-    return '*Required';
-  } else if (!isValidName(value)) {
-    return 'Invalid format';
+class DatabaseService {
+  Future<bool> isUserRegistered(String mobileNumber) async {
+    bool userExists = await yourDatabaseQueryToCheckUserExists(mobileNumber);
+    return userExists;
   }
-  return null;
-}
 
-bool isValidName(String name) {
-  final RegExp nameRegExp = RegExp(r"^[A-Za-z']+([- ][A-Za-z']+)*$");
-  return nameRegExp.hasMatch(name);
-}
-
-String? workexpValidator(String? value) {
-  if (value == null || value.isEmpty) {
-    return '*Required';
-  } else if (!isValidWorkexp(value)) {
-    return 'Invalid format';
+  Future<bool> isUserInBlocklist(String mobileNumber) async {
+    bool userInBlocklist = await yourBlocklistQueryToCheckUser(mobileNumber);
+    return userInBlocklist;
   }
-  return null;
-}
 
-bool isValidWorkexp(String workexp) {
-  final RegExp pattern = RegExp(r"^[A-Za-z0-9]+$");
-  return pattern.hasMatch(workexp);
+  Future<bool> yourDatabaseQueryToCheckUserExists(String mobileNumber) async {
+    return false;
+  }
+
+  Future<bool> yourBlocklistQueryToCheckUser(String mobileNumber) async {
+    return false;
+  }
 }
 
 class _Chip extends StatelessWidget {
@@ -1121,43 +1241,5 @@ class _Chip extends StatelessWidget {
         onDeleted(index);
       },
     );
-  }
-}
-
-_showAlert(BuildContext context) {
-  showPlatformDialog(
-    context: context,
-    builder: (_) => BasicDialogAlert(
-      title: Text("Current Location Not Available"),
-      content: Text("Your current location cannot be determined at this time."),
-      actions: <Widget>[
-        BasicDialogAction(
-          title: Text("OK"),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ],
-    ),
-  );
-}
-
-class DatabaseService {
-  Future<bool> isUserRegistered(String mobileNumber) async {
-    bool userExists = await yourDatabaseQueryToCheckUserExists(mobileNumber);
-    return userExists;
-  }
-
-  Future<bool> isUserInBlocklist(String mobileNumber) async {
-    bool userInBlocklist = await yourBlocklistQueryToCheckUser(mobileNumber);
-    return userInBlocklist;
-  }
-
-  Future<bool> yourDatabaseQueryToCheckUserExists(String mobileNumber) async {
-    return false;
-  }
-
-  Future<bool> yourBlocklistQueryToCheckUser(String mobileNumber) async {
-    return false;
   }
 }
