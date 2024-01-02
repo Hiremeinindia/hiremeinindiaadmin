@@ -121,6 +121,43 @@ class _RegistrationState extends State<Registration> {
     return null;
   }
 
+  void showErrorDialog(String errorMessage) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Error"),
+        content: Text(errorMessage),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text("OK"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  _showAlert(BuildContext context) {
+    showPlatformDialog(
+      context: context,
+      builder: (_) => BasicDialogAlert(
+        title: Text("Current Location Not Available"),
+        content:
+            Text("Your current location cannot be determined at this time."),
+        actions: <Widget>[
+          BasicDialogAction(
+            title: Text("OK"),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   _showVerificationSuccessDialog(BuildContext context) {
     print("verified1");
     showDialog<void>(
@@ -145,22 +182,26 @@ class _RegistrationState extends State<Registration> {
     );
   }
 
-  _signInWithMobileNumber() async {
+  Future<bool> _signInWithMobileNumber() async {
+    print("register1");
     String mobileNumber = controller.mobile.text;
     FirebaseAuth _auth = FirebaseAuth.instance;
 
     try {
+      print("register2");
       // Check if the mobile number is already registered in Firebase Realtime Database
       bool isNumberRegistered = await checkIfNumberRegistered(mobileNumber);
+      print('Is Number Registered: $isNumberRegistered');
 
       if (isNumberRegistered) {
+        print("register3");
         print("number registered ");
         // Display a popup message if the number is already registered
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
             title: Text("Mobile Number Already Registered"),
-            content: Text("This mobile number is already registered."),
+            content: Text("Try another number for registration"),
             actions: [
               ElevatedButton(
                 onPressed: () {
@@ -227,6 +268,8 @@ class _RegistrationState extends State<Registration> {
                         }
                       }).catchError((e) {
                         print("Error signing in with credential: $e");
+                        showErrorDialog(
+                            "Invalid verification code. Please enter the correct code.");
                       });
                     },
                     child: Text("Done"),
@@ -243,7 +286,10 @@ class _RegistrationState extends State<Registration> {
       }
     } catch (e) {
       print("Error during phone number verification: $e");
+      showErrorDialog(
+          "Error during phone number verification. Please try again.");
     }
+    return false;
   }
 
   Future<bool> checkUserInBlocklist(String mobileNumber) async {
@@ -262,28 +308,44 @@ class _RegistrationState extends State<Registration> {
   }
 
   Future<bool> checkIfNumberRegistered(String mobileNumber) async {
+    print("check1");
     DatabaseReference databaseReference = FirebaseDatabase.instance.reference();
     String path = 'users';
 
     try {
+      print("check2");
       DatabaseEvent databaseEvent = await databaseReference.child(path).once();
       DataSnapshot dataSnapshot = databaseEvent.snapshot;
+      print("DataSnapshot: $dataSnapshot");
+
+      if (dataSnapshot.value == null) {
+        print("DataSnapshot is null");
+        return false;
+      }
 
       if (dataSnapshot.value != null) {
+        print("check3");
         Map<dynamic, dynamic>? usersData =
             dataSnapshot.value as Map<dynamic, dynamic>?;
 
         if (usersData != null) {
+          print("check4: usersData: $usersData");
+          // Check if the mobile number is already registered
           bool isNumberRegistered = usersData.values.any((userData) {
-            return userData['mobileNumber'] == mobileNumber;
+            // Ensure 'mobileNumber' is not null and not an empty string
+            return userData['mobileNumber'].toString() == mobileNumber;
           });
 
+// Return true if the number is registered
           return isNumberRegistered;
         }
       }
 
+      // Explicitly return false if dataSnapshot.value is null or usersData is null
+      print("DataSnapshot or usersData is null");
       return false;
     } catch (error) {
+      print("check5");
       print('Error checking if number is registered: $error');
       return false;
     }
@@ -731,21 +793,7 @@ class _RegistrationState extends State<Registration> {
                               // Check if the user is already registered or in the blocklist
                               bool isUserRegistered =
                                   await _signInWithMobileNumber();
-                              bool isUserBlocked =
-                                  await checkUserInBlocklist(mobileNumber);
-
-                              if (!isUserRegistered && !isUserBlocked) {
-                                // User is not already registered and not in the blocklist
-                                _signInWithMobileNumber();
-                                _showOtpDialog(context, mobileNumber);
-                              } else if (isUserBlocked) {
-                                // User is in the blocklist, show an error message or take appropriate action
-                                print(
-                                    "User is in the blocklist. Access denied.");
-                              } else {
-                                // User is already registered, handle accordingly (e.g., show a message)
-                                print("User is already registered.");
-                              }
+                              print('Is User Registered: $isUserRegistered');
                             },
                             child: isVerified
                                 ? Row(
@@ -870,7 +918,7 @@ class _RegistrationState extends State<Registration> {
                                     focusNode: _focusNode,
                                     delimiters: [',', ' '],
                                     resetTextOnSubmitted: true,
-                                    // This is set to grey just to illustrate the `textStyle` prop
+                                    // This is set to grey just to illustrate the textStyle prop
                                     textStyle:
                                         const TextStyle(color: Colors.black),
                                     onSubmitted: (outstandingValue) {
@@ -1017,7 +1065,7 @@ class _RegistrationState extends State<Registration> {
                                     focusNode: _focusNode,
                                     delimiters: [',', ' '],
                                     resetTextOnSubmitted: true,
-                                    // This is set to grey just to illustrate the `textStyle` prop
+                                    // This is set to grey just to illustrate the textStyle prop
                                     textStyle:
                                         const TextStyle(color: Colors.black),
                                     onSubmitted: (outstandingValue) {
