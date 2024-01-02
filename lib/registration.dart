@@ -423,16 +423,12 @@ class _RegistrationState extends State<Registration> {
   }
 
   Future<void> fetchData() async {
-    try {
-      final response =
-          await http.get(Uri.parse('https://example.com/api/data'));
-      if (response.statusCode == 200) {
-        print('Response: ${response.body}');
-      } else {
-        print('Error: ${response.statusCode}');
-      }
-    } catch (error) {
-      print('Error: $error');
+    final response = await http.get(Uri.parse('https://example.com/api/data'));
+    if (response.statusCode == 200) {
+      // Handle successful response
+    } else {
+      // Handle error response
+      print('Request failed with status: ${response.statusCode}');
     }
   }
 
@@ -855,8 +851,8 @@ class _RegistrationState extends State<Registration> {
                             ),
                             onPressed: () async {
                               myauth.setConfig(
-                                  appEmail: "hiremeinindia.com",
-                                  appName: "OTP For Registeration",
+                                  appEmail: "contact@hdevcoder.com",
+                                  appName: "OTP for Registration",
                                   userEmail: controller.email.text,
                                   otpLength: 4,
                                   otpType: OTPType.digitsOnly);

@@ -43,7 +43,7 @@ class HireApp extends StatelessWidget {
       ],
       locale: Locale('en', ''),
       debugShowCheckedModeBanner: false,
-      home: LoginPage(),
+      home: Registration(),
     );
   }
 }
