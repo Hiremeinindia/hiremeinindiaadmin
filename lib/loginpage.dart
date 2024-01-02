@@ -34,7 +34,7 @@ class _LoginPageState extends State<LoginPage> {
 
   final controller = Get.put(SignUpController());
 
-  final List<String> items = ['Tamil', 'English', 'French', 'Malayalam'];
+  final List<String> items = ['Tamil', 'English', 'Hindi', 'Malayalam'];
   String? selectedValue;
   String email = '';
   String password = '';
