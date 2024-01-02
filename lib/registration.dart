@@ -117,6 +117,24 @@ class _RegistrationState extends State<Registration> {
     return null;
   }
 
+  void showErrorDialog(String errorMessage) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Error"),
+        content: Text(errorMessage),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text("OK"),
+          ),
+        ],
+      ),
+    );
+  }
+
   _showAlert(BuildContext context) {
     showPlatformDialog(
       context: context,
@@ -160,7 +178,7 @@ class _RegistrationState extends State<Registration> {
     );
   }
 
-  _signInWithMobileNumber() async {
+  Future<bool> _signInWithMobileNumber() async {
     print("register1");
     String mobileNumber = controller.mobile.text;
     FirebaseAuth _auth = FirebaseAuth.instance;
@@ -246,6 +264,8 @@ class _RegistrationState extends State<Registration> {
                         }
                       }).catchError((e) {
                         print("Error signing in with credential: $e");
+                        showErrorDialog(
+                            "Invalid verification code. Please enter the correct code.");
                       });
                     },
                     child: Text("Done"),
@@ -262,7 +282,10 @@ class _RegistrationState extends State<Registration> {
       }
     } catch (e) {
       print("Error during phone number verification: $e");
+      showErrorDialog(
+          "Error during phone number verification. Please try again.");
     }
+    return false;
   }
 
   Future<bool> checkUserInBlocklist(String mobileNumber) async {
@@ -289,6 +312,12 @@ class _RegistrationState extends State<Registration> {
       print("check2");
       DatabaseEvent databaseEvent = await databaseReference.child(path).once();
       DataSnapshot dataSnapshot = databaseEvent.snapshot;
+      print("DataSnapshot: $dataSnapshot");
+
+      if (dataSnapshot.value == null) {
+        print("DataSnapshot is null");
+        return false;
+      }
 
       if (dataSnapshot.value != null) {
         print("check3");
@@ -296,19 +325,20 @@ class _RegistrationState extends State<Registration> {
             dataSnapshot.value as Map<dynamic, dynamic>?;
 
         if (usersData != null) {
-          print("check4");
+          print("check4: usersData: $usersData");
+          // Check if the mobile number is already registered
           bool isNumberRegistered = usersData.values.any((userData) {
             // Ensure 'mobileNumber' is not null and not an empty string
-            return userData['mobileNumber'] != null &&
-                userData['mobileNumber'].toString().isNotEmpty &&
-                userData['mobileNumber'].toString() == mobileNumber;
+            return userData['mobileNumber'].toString() == mobileNumber;
           });
-          print('Is Number Registered: $isNumberRegistered');
 
+// Return true if the number is registered
           return isNumberRegistered;
         }
       }
 
+      // Explicitly return false if dataSnapshot.value is null or usersData is null
+      print("DataSnapshot or usersData is null");
       return false;
     } catch (error) {
       print("check5");
@@ -745,6 +775,7 @@ class _RegistrationState extends State<Registration> {
                               // Check if the user is already registered or in the blocklist
                               bool isUserRegistered =
                                   await _signInWithMobileNumber();
+                              print('Is User Registered: $isUserRegistered');
                             },
                             child: isVerified
                                 ? Row(
