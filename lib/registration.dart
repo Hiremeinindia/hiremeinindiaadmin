@@ -31,11 +31,12 @@ class _RegistrationState extends State<Registration> {
   String enteredOTP = '';
   String smscode = "";
   String phoneNumber = "", data = "", phone = "";
+  bool isVerified = true;
+  bool Verified = false;
 
   List<String> _values = [];
   List<String> _value = [];
 
-  bool isVerified = false;
   bool blueChecked = false;
   bool greyChecked = false;
   bool focusTagEnabled = false;
@@ -222,6 +223,9 @@ class _RegistrationState extends State<Registration> {
                 context,
                 MaterialPageRoute(builder: (context) => Registration()),
               );
+              setState(() {
+                isVerified = true;
+              });
             });
           },
           verificationFailed: (FirebaseAuthException error) {
@@ -264,6 +268,14 @@ class _RegistrationState extends State<Registration> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => Registration()),
+                          );
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.check, color: Colors.green),
+                              SizedBox(width: 8),
+                              Text('Verified'),
+                            ],
                           );
                         }
                       }).catchError((e) {
@@ -333,7 +345,7 @@ class _RegistrationState extends State<Registration> {
           // Check if the mobile number is already registered
           bool isNumberRegistered = usersData.values.any((userData) {
             // Ensure 'mobileNumber' is not null and not an empty string
-            return userData['mobileNumber'].toString() == mobileNumber;
+            return userData['mobile'].toString() == mobileNumber;
           });
 
 // Return true if the number is registered
@@ -427,6 +439,7 @@ class _RegistrationState extends State<Registration> {
   @override
   Widget build(BuildContext context) {
     bool _validate = false;
+
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 100,
@@ -778,41 +791,35 @@ class _RegistrationState extends State<Registration> {
                         SizedBox(
                           height: 30,
                           child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              primary: Colors.indigo.shade900,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                    0.1), // Adjust border radius as needed
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.indigo.shade900,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(0.1),
+                                ),
                               ),
-                            ),
-                            onPressed: () async {
-                              print("phone1");
-                              String mobileNumber = controller.mobile.text;
-                              print(mobileNumber);
+                              onPressed: () async {
+                                print("phone1");
+                                String mobileNumber = controller.mobile.text;
+                                print(mobileNumber);
 
-                              // Check if the user is already registered or in the blocklist
-                              bool isUserRegistered =
-                                  await _signInWithMobileNumber();
-                              print('Is User Registered: $isUserRegistered');
-                            },
-                            child: isVerified
-                                ? Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(Icons.check, color: Colors.green),
-                                      SizedBox(width: 8),
-                                      Text('Verified'),
-                                    ],
-                                  )
-                                : Text(
-                                    'Verify',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.normal,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                          ),
+                                // Check if the user is already registered or in the blocklist
+                                bool isUserRegistered =
+                                    await _signInWithMobileNumber();
+                                print('Is User Registered: $isUserRegistered');
+
+                                // Update the button text to "Verified" if isUserRegistered is false
+                                setState(() {
+                                  isVerified = isUserRegistered;
+                                });
+                              },
+                              child: Text(
+                                'Verify',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.normal,
+                                  color: Colors.white,
+                                ),
+                              )),
                         ),
                         SizedBox(
                           height: 40,
