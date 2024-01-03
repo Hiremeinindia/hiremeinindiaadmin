@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hiremeinindiaapp/homepage.dart';
 import 'package:hiremeinindiaapp/loginpage.dart';
+import 'package:hiremeinindiaapp/newuserupload.dart';
 import 'package:hiremeinindiaapp/registration.dart';
 
 void main() async {
@@ -43,7 +44,7 @@ class HireApp extends StatelessWidget {
       ],
       locale: Locale('en', ''),
       debugShowCheckedModeBanner: false,
-      home: Registration(),
+      home: NewUserUpload(),
     );
   }
 }
