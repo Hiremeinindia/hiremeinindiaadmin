@@ -3,6 +3,11 @@ import 'package:hiremeinindiaapp/userdashboard.dart';
 import 'classes/language_constants.dart';
 import 'widgets/custombutton.dart';
 import 'widgets/hiremeinindia.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:hiremeinindiaapp/widgets/textstylebutton.dart';
+import 'classes/language.dart';
+import 'gen_l10n/app_localizations.dart';
+import 'main.dart';
 
 class NewUserPayment extends StatefulWidget {
   const NewUserPayment();
@@ -17,11 +22,11 @@ class _NewUserPayment extends State<NewUserPayment> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          title: HireMeInIndia(),
           centerTitle: false,
           toolbarHeight: 80,
           backgroundColor: Colors.transparent,
           elevation: 0.0,
-          title: HireMeInIndia(text1: 'Hire', text2: 'mein', text3: 'India'),
           actions: [
             Padding(
               padding: EdgeInsets.only(right: 50.0, top: 10),
@@ -36,34 +41,97 @@ class _NewUserPayment extends State<NewUserPayment> {
                         decoration: BoxDecoration(
                           color: Colors.indigo.shade900,
                         ),
-                        child: DropdownButton<String>(
-                          items: [
-                            DropdownMenuItem<String>(
-                              value: 'English',
-                              child: Text('English'),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton2<Language>(
+                            isExpanded: true,
+                            hint: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    translation(context).english,
+                                    style: CustomTextStyle.dropdowntext,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
                             ),
-                            DropdownMenuItem<String>(
-                              value: 'Hindi',
-                              child: Text('Hindi'),
+                            onChanged: (Language? language) async {
+                              if (language != null) {
+                                Locale _locale =
+                                    await setLocale(language.languageCode);
+                                HireApp.setLocale(context, _locale);
+                              } else {
+                                language;
+                              }
+                            },
+                            items: Language.languageList()
+                                .map<DropdownMenuItem<Language>>(
+                                  (e) => DropdownMenuItem<Language>(
+                                    value: e,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: <Widget>[
+                                        Text(
+                                          e.flag,
+                                          style: CustomTextStyle.dropdowntext,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        Text(
+                                          e.langname,
+                                          style: CustomTextStyle.dropdowntext,
+                                          overflow: TextOverflow.ellipsis,
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                            buttonStyleData: ButtonStyleData(
+                              height: 30,
+                              width: 200,
+                              elevation: 1,
+                              padding:
+                                  const EdgeInsets.only(left: 14, right: 14),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(4),
+                                border: Border.all(
+                                  color: Colors.black26,
+                                ),
+                                color: Colors.indigo.shade900,
+                              ),
                             ),
-                            DropdownMenuItem<String>(
-                              value: 'Spanish',
-                              child: Text('Spanish'),
+                            iconStyleData: const IconStyleData(
+                              icon: Icon(
+                                Icons.arrow_drop_down_sharp,
+                              ),
+                              iconSize: 25,
+                              iconEnabledColor: Colors.white,
+                              iconDisabledColor: null,
                             ),
-                            // Add more languages as needed
-                          ],
-                          onChanged: (value) {
-                            // Handle language selection
-                          },
-                          hint: Text(
-                            '  English        ',
-                            style: TextStyle(color: Colors.white),
+                            dropdownStyleData: DropdownStyleData(
+                              maxHeight: 210,
+                              width: 156,
+                              elevation: 0,
+                              padding: EdgeInsets.only(
+                                  left: 10, right: 10, top: 5, bottom: 15),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5),
+                                border: Border.all(color: Colors.black),
+                                color: Colors.indigo.shade900,
+                              ),
+                              scrollPadding: EdgeInsets.all(5),
+                              scrollbarTheme: ScrollbarThemeData(
+                                thickness: MaterialStateProperty.all<double>(6),
+                                thumbVisibility:
+                                    MaterialStateProperty.all<bool>(true),
+                              ),
+                            ),
+                            menuItemStyleData: const MenuItemStyleData(
+                              height: 25,
+                              padding: EdgeInsets.only(left: 14, right: 14),
+                            ),
                           ),
-                          icon: Icon(
-                            Icons.arrow_drop_down,
-                            color: Colors.white,
-                          ),
-                          underline: Container(),
                         ),
                       ),
                     ),
@@ -78,7 +146,8 @@ class _NewUserPayment extends State<NewUserPayment> {
                         decoration: BoxDecoration(
                           color: Colors.indigo.shade900,
                         ),
-                        child: DropdownButton<String>(
+                        child: DropdownButton2<String>(
+                          isExpanded: true,
                           items: [
                             DropdownMenuItem<String>(
                               value: 'Option 1',
@@ -94,14 +163,52 @@ class _NewUserPayment extends State<NewUserPayment> {
                             // Handle option selection
                           },
                           hint: Text(
-                            '  Find a job     ',
+                            AppLocalizations.of(context)!.findaJob,
                             style: TextStyle(color: Colors.white),
                           ),
-                          icon: Icon(
-                            Icons.arrow_drop_down,
-                            color: Colors.white,
+                          buttonStyleData: ButtonStyleData(
+                            height: 30,
+                            width: 200,
+                            elevation: 1,
+                            padding: const EdgeInsets.only(left: 14, right: 14),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(4),
+                              border: Border.all(
+                                color: Colors.black26,
+                              ),
+                              color: Colors.indigo.shade900,
+                            ),
                           ),
-                          underline: Container(),
+                          iconStyleData: const IconStyleData(
+                            icon: Icon(
+                              Icons.arrow_drop_down_sharp,
+                            ),
+                            iconSize: 25,
+                            iconEnabledColor: Colors.white,
+                            iconDisabledColor: null,
+                          ),
+                          dropdownStyleData: DropdownStyleData(
+                            maxHeight: 210,
+                            width: 156,
+                            elevation: 0,
+                            padding: EdgeInsets.only(
+                                left: 10, right: 10, top: 5, bottom: 15),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              border: Border.all(color: Colors.black),
+                              color: Colors.indigo.shade900,
+                            ),
+                            scrollPadding: EdgeInsets.all(5),
+                            scrollbarTheme: ScrollbarThemeData(
+                              thickness: MaterialStateProperty.all<double>(6),
+                              thumbVisibility:
+                                  MaterialStateProperty.all<bool>(true),
+                            ),
+                          ),
+                          menuItemStyleData: const MenuItemStyleData(
+                            height: 25,
+                            padding: EdgeInsets.only(left: 14, right: 14),
+                          ),
                         ),
                       ),
                     ),
@@ -125,7 +232,7 @@ class _NewUserPayment extends State<NewUserPayment> {
                   SizedBox(
                     width: 50,
                     child: Text(
-                      'New User',
+                      'Guest User',
                       maxLines: 2,
                       style: TextStyle(color: Colors.black),
                     ),

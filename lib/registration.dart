@@ -1,6 +1,4 @@
-import 'dart:math';
-
-import 'package:email_auth/email_auth.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -11,18 +9,19 @@ import 'package:get/route_manager.dart';
 import 'package:email_otp/email_otp.dart';
 import 'package:flutter_dialogs/flutter_dialogs.dart';
 import 'package:hiremeinindiaapp/Models/register_model.dart';
-import 'package:hiremeinindiaapp/controllers/email_auth_controller.dart';
-import 'package:hiremeinindiaapp/homepage.dart';
+import 'package:hiremeinindiaapp/newuserupload.dart';
 import 'package:hiremeinindiaapp/userpayment.dart';
+import 'package:hiremeinindiaapp/widgets/textstylebutton.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:super_tag_editor/widgets/rich_text_widget.dart';
+import 'classes/language.dart';
 import 'classes/language_constants.dart';
 import 'controllers/signupcontroller.dart';
-import 'otpscreen.dart';
+import 'gen_l10n/app_localizations.dart';
+import 'main.dart';
 import 'widgets/custombutton.dart';
 import 'widgets/customtextfield.dart';
 import 'widgets/hiremeinindia.dart';
-import 'package:http/http.dart' as http;
 
 class Registration extends StatefulWidget {
   const Registration();
@@ -524,67 +523,131 @@ class _RegistrationState extends State<Registration> {
 
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 100,
+        title: HireMeInIndia(),
+        centerTitle: false,
+        toolbarHeight: 80,
         backgroundColor: Colors.transparent,
         elevation: 0.0,
-        title: HireMeInIndia(text1: 'Hire', text2: 'mein', text3: 'India'),
         actions: [
           Padding(
-            padding: EdgeInsets.only(right: 30.0, top: 10),
+            padding: EdgeInsets.only(right: 50.0, top: 10),
             child: Row(
               children: [
                 SizedBox(
                   height: 30,
-                  width: 150,
+                  width: 170,
                   child: Padding(
                     padding: const EdgeInsets.only(left: 15),
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.indigo.shade900,
                       ),
-                      child: DropdownButton<String>(
-                        items: [
-                          DropdownMenuItem<String>(
-                            value: 'English',
-                            child: Text('English'),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton2<Language>(
+                          isExpanded: true,
+                          hint: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  translation(context).english,
+                                  style: CustomTextStyle.dropdowntext,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
                           ),
-                          DropdownMenuItem<String>(
-                            value: 'Hindi',
-                            child: Text('Hindi'),
+                          onChanged: (Language? language) async {
+                            if (language != null) {
+                              Locale _locale =
+                                  await setLocale(language.languageCode);
+                              HireApp.setLocale(context, _locale);
+                            } else {
+                              language;
+                            }
+                          },
+                          items: Language.languageList()
+                              .map<DropdownMenuItem<Language>>(
+                                (e) => DropdownMenuItem<Language>(
+                                  value: e,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: <Widget>[
+                                      Text(
+                                        e.flag,
+                                        style: CustomTextStyle.dropdowntext,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Text(
+                                        e.langname,
+                                        style: CustomTextStyle.dropdowntext,
+                                        overflow: TextOverflow.ellipsis,
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                          buttonStyleData: ButtonStyleData(
+                            height: 30,
+                            width: 200,
+                            elevation: 1,
+                            padding: const EdgeInsets.only(left: 14, right: 14),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(4),
+                              border: Border.all(
+                                color: Colors.black26,
+                              ),
+                              color: Colors.indigo.shade900,
+                            ),
                           ),
-                          DropdownMenuItem<String>(
-                            value: 'Spanish',
-                            child: Text('Spanish'),
+                          iconStyleData: const IconStyleData(
+                            icon: Icon(
+                              Icons.arrow_drop_down_sharp,
+                            ),
+                            iconSize: 25,
+                            iconEnabledColor: Colors.white,
+                            iconDisabledColor: null,
                           ),
-                          // Add more languages as needed
-                        ],
-                        onChanged: (value) {
-                          // Handle language selection
-                        },
-                        hint: Text(
-                          '  English        ',
-                          style: TextStyle(color: Colors.white),
+                          dropdownStyleData: DropdownStyleData(
+                            maxHeight: 210,
+                            width: 156,
+                            elevation: 0,
+                            padding: EdgeInsets.only(
+                                left: 10, right: 10, top: 5, bottom: 15),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              border: Border.all(color: Colors.black),
+                              color: Colors.indigo.shade900,
+                            ),
+                            scrollPadding: EdgeInsets.all(5),
+                            scrollbarTheme: ScrollbarThemeData(
+                              thickness: MaterialStateProperty.all<double>(6),
+                              thumbVisibility:
+                                  MaterialStateProperty.all<bool>(true),
+                            ),
+                          ),
+                          menuItemStyleData: const MenuItemStyleData(
+                            height: 25,
+                            padding: EdgeInsets.only(left: 14, right: 14),
+                          ),
                         ),
-                        icon: Icon(
-                          Icons.arrow_drop_down,
-                          color: Colors.white,
-                        ),
-                        underline: Container(),
                       ),
                     ),
                   ),
                 ),
-                SizedBox(width: 30),
+                SizedBox(width: 20),
                 SizedBox(
                   height: 30,
-                  width: 150,
+                  width: 170,
                   child: Padding(
                     padding: const EdgeInsets.only(left: 13),
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.indigo.shade900,
                       ),
-                      child: DropdownButton<String>(
+                      child: DropdownButton2<String>(
+                        isExpanded: true,
                         items: [
                           DropdownMenuItem<String>(
                             value: 'Option 1',
@@ -600,44 +663,78 @@ class _RegistrationState extends State<Registration> {
                           // Handle option selection
                         },
                         hint: Text(
-                          translation(context).findaJob,
+                          AppLocalizations.of(context)!.findaJob,
                           style: TextStyle(color: Colors.white),
                         ),
-                        icon: Icon(
-                          Icons.arrow_drop_down,
-                          color: Colors.white,
+                        buttonStyleData: ButtonStyleData(
+                          height: 30,
+                          width: 200,
+                          elevation: 1,
+                          padding: const EdgeInsets.only(left: 14, right: 14),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(4),
+                            border: Border.all(
+                              color: Colors.black26,
+                            ),
+                            color: Colors.indigo.shade900,
+                          ),
                         ),
-                        underline: Container(),
+                        iconStyleData: const IconStyleData(
+                          icon: Icon(
+                            Icons.arrow_drop_down_sharp,
+                          ),
+                          iconSize: 25,
+                          iconEnabledColor: Colors.white,
+                          iconDisabledColor: null,
+                        ),
+                        dropdownStyleData: DropdownStyleData(
+                          maxHeight: 210,
+                          width: 156,
+                          elevation: 0,
+                          padding: EdgeInsets.only(
+                              left: 10, right: 10, top: 5, bottom: 15),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(color: Colors.black),
+                            color: Colors.indigo.shade900,
+                          ),
+                          scrollPadding: EdgeInsets.all(5),
+                          scrollbarTheme: ScrollbarThemeData(
+                            thickness: MaterialStateProperty.all<double>(6),
+                            thumbVisibility:
+                                MaterialStateProperty.all<bool>(true),
+                          ),
+                        ),
+                        menuItemStyleData: const MenuItemStyleData(
+                          height: 25,
+                          padding: EdgeInsets.only(left: 14, right: 14),
+                        ),
                       ),
                     ),
                   ),
                 ),
-                SizedBox(width: 16.0),
-                CircleAvatar(
-                  backgroundColor: Colors.black,
+                SizedBox(width: 40),
+                SizedBox(
+                  height: 30,
+                  width: 30,
                   child: CircleAvatar(
-                    backgroundColor: Colors.white,
-                    child: Icon(
-                      Icons.person,
-                      color: Colors.indigo.shade900,
+                    backgroundColor: Colors.black,
+                    child: CircleAvatar(
+                      backgroundColor: Colors.white,
+                      child: Icon(
+                        Icons.person,
+                        color: Colors.indigo.shade900,
+                      ),
                     ),
                   ),
                 ),
                 SizedBox(width: 8.0),
-                Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Guest',
-                        style: TextStyle(color: Colors.black),
-                      ),
-                      Text(
-                        'User',
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ],
+                SizedBox(
+                  width: 50,
+                  child: Text(
+                    'Guest User',
+                    maxLines: 2,
+                    style: TextStyle(color: Colors.black),
                   ),
                 ),
               ],
@@ -918,7 +1015,7 @@ class _RegistrationState extends State<Registration> {
                                     ],
                                   )
                                 : Text(
-                                    translation(context).verfiy,
+                                    translation(context).verify,
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.normal,
@@ -1010,7 +1107,7 @@ class _RegistrationState extends State<Registration> {
                                     ],
                                   )
                                 : Text(
-                                    translation(context).verfiy,
+                                    translation(context).verify,
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.normal,
@@ -1344,7 +1441,7 @@ class _RegistrationState extends State<Registration> {
                                 _userRef.push().set(user.tojson());
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (_) => NewUserPayment(),
+                                    builder: (_) => NewUserUpload(),
                                   ),
                                 );
                               }

@@ -5,9 +5,6 @@ class AppLocalizationsHi extends AppLocalizations {
   AppLocalizationsHi([String locale = 'hi']) : super(locale);
 
   @override
-  String get hireMeInIndia => 'मुझे भारत में नौकरी पर रख लो';
-
-  @override
   String get findaJob => 'एक नौकरी की तलाश';
 
   @override
@@ -110,7 +107,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get email => 'ईमेल';
 
   @override
-  String get verfiy => 'सत्यापित करें';
+  String get verify => 'सत्यापित करें';
 
   @override
   String get add => 'जोड़ना';
@@ -228,4 +225,19 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get selectedCandidates => 'चयनित उम्मीदवार';
+
+  @override
+  String get blueCollerJobs => 'नीली कॉलर नौकरियाँ';
+
+  @override
+  String get greyCollerJobs => 'ग्रे कॉलर नौकरियाँ';
+
+  @override
+  String get hire => 'Hire';
+
+  @override
+  String get meIn => 'mein';
+
+  @override
+  String get india => 'India';
 }

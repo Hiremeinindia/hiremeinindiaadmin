@@ -1,11 +1,10 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
-import 'package:hiremeinindiaapp/userdashboard.dart';
-import 'package:hiremeinindiaapp/widgets/customtextfield.dart';
+import 'package:hiremeinindiaapp/corporateconsole.dart';
 import 'package:hiremeinindiaapp/widgets/hiremeinindia.dart';
 import 'package:hiremeinindiaapp/widgets/textstylebutton.dart';
 
-import 'widgets/custombutton.dart';
+import 'classes/language_constants.dart';
 import 'widgets/customcard.dart';
 
 class AdminConsole extends StatefulWidget {
@@ -40,7 +39,7 @@ class _AdminDashboard extends State<AdminConsole> {
           toolbarHeight: 80,
           backgroundColor: Colors.transparent,
           elevation: 0.0,
-          title: HireMeInIndia(text1: 'Hire', text2: 'mein', text3: 'India'),
+          title: HireMeInIndia(),
           actions: [
             Padding(
               padding: EdgeInsets.only(right: 50.0, top: 10),
@@ -180,7 +179,7 @@ class _AdminDashboard extends State<AdminConsole> {
                       children: [
                         CustomCard(
                           color: Color.fromARGB(255, 153, 51, 49),
-                          title1: 'No of Candidates',
+                          title1: translation(context).noOfCandidates,
                           title2: '1',
                         ),
                         SizedBox(
@@ -188,7 +187,7 @@ class _AdminDashboard extends State<AdminConsole> {
                         ),
                         CustomCard(
                           color: Color.fromARGB(255, 105, 182, 46),
-                          title1: 'No of Companies',
+                          title1: translation(context).noOfCompanies,
                           title2: '100',
                         ),
                         SizedBox(
@@ -196,8 +195,16 @@ class _AdminDashboard extends State<AdminConsole> {
                         ),
                         CustomCard(
                           color: Color.fromARGB(255, 138, 40, 156),
-                          title1: 'Candidates',
+                          title1: translation(context).candidates,
                           title2: '100',
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const CorporateConsole()),
+                            );
+                          },
                         ),
                         SizedBox(
                           width: 60,
@@ -215,7 +222,7 @@ class _AdminDashboard extends State<AdminConsole> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Payments',
+                          translation(context).payments,
                           style: TextStyle(
                               fontSize: 28,
                               color: Colors.indigo.shade900,
@@ -227,10 +234,10 @@ class _AdminDashboard extends State<AdminConsole> {
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton2<String>(
                               isExpanded: true,
-                              hint: const Row(
+                              hint: Row(
                                 children: [
                                   Text(
-                                    'Today',
+                                    translation(context).today,
                                     style: CustomTextStyle.nameOfHeading,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -311,7 +318,7 @@ class _AdminDashboard extends State<AdminConsole> {
                       children: [
                         CustomCard(
                           color: const Color.fromARGB(255, 125, 83, 196),
-                          title1: 'Cash',
+                          title1: translation(context).cash,
                           title2: '1',
                         ),
                         SizedBox(
@@ -319,12 +326,12 @@ class _AdminDashboard extends State<AdminConsole> {
                         ),
                         CustomCard(
                           color: const Color.fromARGB(255, 125, 83, 196),
-                          title1: 'Online',
+                          title1: translation(context).online,
                           title2: '100',
                         ),
                         Spacer(),
                         Text(
-                          'Total: 500',
+                          translation(context).total,
                           style: TextStyle(
                               fontSize: 30,
                               color: Colors.indigo.shade900,

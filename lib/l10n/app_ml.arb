@@ -46,7 +46,7 @@
 "സംസ്ഥാനം",
   "email": 
 "ഇമെയിൽ",
-  "verfiy": 
+  "verify": 
 "സ്ഥിരീകരിക്കുക",
   "add": 
 "ചേർക്കുക",
@@ -127,5 +127,10 @@
   "curatedCandidates": 
 "ക്യൂറേറ്റ് ചെയ്ത സ്ഥാനാർത്ഥികൾ",
   "selectedCandidates": 
-"തിരഞ്ഞെടുത്ത സ്ഥാനാർത്ഥികൾ"
+"തിരഞ്ഞെടുത്ത സ്ഥാനാർത്ഥികൾ",
+  "blueCollerJobs": "ഗ്രേ കോളർ ജോലികൾ",
+  "greyCollerJobs": "ബ്ലൂ കോളർ ജോലികൾ",
+  "hire": "Hire",
+  "meIn": "mein",
+  "india": "India"
 }
