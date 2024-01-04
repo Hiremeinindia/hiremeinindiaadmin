@@ -35,7 +35,7 @@
   "workExperience": "कार्य अनुभव",
   "state": "राज्य",
   "email": "ईमेल",
-  "verfiy": "सत्यापित करें",
+  "verify": "सत्यापित करें",
   "add": "जोड़ना",
   "verified": "सत्यापित",
   "jobClassification": "नौकरी वर्गीकरण",
@@ -76,5 +76,9 @@
   "total": "कुल",
   "curatedCandidates": "क्यूरेटेड उम्मीदवार",
   "selectedCandidates": "चयनित उम्मीदवार",
-  "blu"
+  "blueCollerJobs": "नीली कॉलर नौकरियाँ",
+  "greyCollerJobs": "ग्रे कॉलर नौकरियाँ",
+  "hire": "Hire",
+  "meIn": "mein",
+  "india": "India"
 }

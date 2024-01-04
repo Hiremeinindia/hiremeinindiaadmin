@@ -44,7 +44,7 @@ class _SignUpPageState extends State<SignUpPage> {
         toolbarHeight: 100,
         backgroundColor: Colors.transparent,
         elevation: 0.0,
-        title: HireMeInIndia(text1: 'Hire', text2: 'mein', text3: 'India'),
+        title: HireMeInIndia(),
         actions: [
           Padding(
             padding: EdgeInsets.only(right: 30.0, top: 10),

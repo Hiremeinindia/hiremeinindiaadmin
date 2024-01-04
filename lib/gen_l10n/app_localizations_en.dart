@@ -5,9 +5,6 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get hireMeInIndia => 'HiremeinIndia';
-
-  @override
   String get findaJob => 'FindaJob';
 
   @override
@@ -77,79 +74,79 @@ class AppLocalizationsEn extends AppLocalizations {
   String get next => 'Next';
 
   @override
-  String get registerAsANewUser => 'register As A New User';
+  String get registerAsANewUser => 'Register as a New User';
 
   @override
-  String get workTitle => 'work Title';
+  String get workTitle => 'Work Title';
 
   @override
-  String get aadharNo => 'aadhar Number';
+  String get aadharNo => 'Aadhar Number';
 
   @override
   String get address => 'Address';
 
   @override
-  String get mobile => 'mobile';
+  String get mobile => 'Mobile';
 
   @override
-  String get skills => 'skills';
+  String get skills => 'Skills';
 
   @override
-  String get lookingWork => 'looking for Work in';
+  String get lookingWork => 'Looking for Work in';
 
   @override
-  String get gender => 'gender';
+  String get gender => 'Gender';
 
   @override
   String get workExperience => 'work Experience';
 
   @override
-  String get state => 'state';
+  String get state => 'State';
 
   @override
-  String get email => 'email';
+  String get email => 'Email';
 
   @override
-  String get verfiy => 'verify';
+  String get verify => 'Verify';
 
   @override
-  String get add => 'add';
+  String get add => 'Add';
 
   @override
-  String get verified => 'verified';
+  String get verified => 'Verified';
 
   @override
-  String get jobClassification => 'job Classification';
+  String get jobClassification => 'Job Classification';
 
   @override
-  String get jobClassifications => 'job Classifications';
+  String get jobClassifications => 'Job Classifications';
 
   @override
-  String get qualificationSet => 'qualification Set';
+  String get qualificationSet => 'Qualification Set';
 
   @override
-  String get qualificationSets => 'qualification Sets';
+  String get qualificationSets => 'Qualification Sets';
 
   @override
-  String get query => 'query';
+  String get query => 'Query';
 
   @override
-  String get save => 'save';
+  String get save => 'Save';
 
   @override
-  String get run => 'run';
+  String get run => 'Run';
 
   @override
-  String get create => 'create';
+  String get create => 'Create';
 
   @override
-  String get candidates => 'candidates';
+  String get candidates => 'Candidates';
 
   @override
-  String get qualification => 'qualification';
+  String get qualification => 'Qualification';
 
   @override
-  String get label => 'label';
+  String get label => 'Label';
 
   @override
   String get noOfDaysOpen => 'Number Of Days Open';
@@ -158,40 +155,40 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cvDoc => 'CV Doc';
 
   @override
-  String get hello => 'hello';
+  String get hello => 'Hello';
 
   @override
-  String get gpay => 'g pay';
+  String get gpay => 'G pay';
 
   @override
   String get neft => 'NEFT';
 
   @override
-  String get cash => 'cash';
+  String get cash => 'Cash';
 
   @override
-  String get paymentGateway => 'payment Gateway';
+  String get paymentGateway => 'Payment Gateway';
 
   @override
-  String get pay => 'pay';
+  String get pay => 'Pay';
 
   @override
-  String get jobs => 'jobs';
+  String get jobs => 'Jobs';
 
   @override
-  String get getHiredFromTheBest => 'get Hired from The Best';
+  String get getHiredFromTheBest => 'Get Hired from the best';
 
   @override
-  String get indiasBestPortalforBlue => 'india\'s Best Portal for Blue';
+  String get indiasBestPortalforBlue => 'India\'s best Portal for Blue';
 
   @override
   String get andGreyCollarJob => 'and Grey Collar Job';
 
   @override
-  String get hireNow => 'hire Now';
+  String get hireNow => 'Hire Now';
 
   @override
-  String get getJob => 'get Job';
+  String get getJob => 'Get Job';
 
   @override
   String get noOfOffers => 'Number of Offers';
@@ -209,23 +206,38 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noOfCompanies => 'Number of Companies';
 
   @override
-  String get candidatesToday => 'candidates Today';
+  String get candidatesToday => 'Candidates Today';
 
   @override
-  String get today => 'today';
+  String get today => 'Today';
 
   @override
-  String get payments => 'payments';
+  String get payments => 'Payments';
 
   @override
-  String get online => 'online';
+  String get online => 'Online';
 
   @override
-  String get total => 'total';
+  String get total => 'Total';
 
   @override
-  String get curatedCandidates => 'curated Candidates';
+  String get curatedCandidates => 'Curated Candidates';
 
   @override
-  String get selectedCandidates => 'selected Candidates';
+  String get selectedCandidates => 'Selected Candidates';
+
+  @override
+  String get blueCollerJobs => 'Blue Coller Jobs';
+
+  @override
+  String get greyCollerJobs => 'Grey Coller Jobs';
+
+  @override
+  String get hire => 'Hire';
+
+  @override
+  String get meIn => 'mein';
+
+  @override
+  String get india => 'India';
 }

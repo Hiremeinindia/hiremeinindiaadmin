@@ -39,6 +39,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: HireMeInIndia(),
         centerTitle: false,
         toolbarHeight: 80,
         backgroundColor: Colors.transparent,
@@ -161,7 +162,8 @@ class _HomePageState extends State<HomePage> {
                       decoration: BoxDecoration(
                         color: Colors.indigo.shade900,
                       ),
-                      child: DropdownButton<String>(
+                      child: DropdownButton2<String>(
+                        isExpanded: true,
                         items: [
                           DropdownMenuItem<String>(
                             value: 'Option 1',
@@ -180,11 +182,49 @@ class _HomePageState extends State<HomePage> {
                           AppLocalizations.of(context)!.findaJob,
                           style: TextStyle(color: Colors.white),
                         ),
-                        icon: Icon(
-                          Icons.arrow_drop_down,
-                          color: Colors.white,
+                        buttonStyleData: ButtonStyleData(
+                          height: 30,
+                          width: 200,
+                          elevation: 1,
+                          padding: const EdgeInsets.only(left: 14, right: 14),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(4),
+                            border: Border.all(
+                              color: Colors.black26,
+                            ),
+                            color: Colors.indigo.shade900,
+                          ),
                         ),
-                        underline: Container(),
+                        iconStyleData: const IconStyleData(
+                          icon: Icon(
+                            Icons.arrow_drop_down_sharp,
+                          ),
+                          iconSize: 25,
+                          iconEnabledColor: Colors.white,
+                          iconDisabledColor: null,
+                        ),
+                        dropdownStyleData: DropdownStyleData(
+                          maxHeight: 210,
+                          width: 156,
+                          elevation: 0,
+                          padding: EdgeInsets.only(
+                              left: 10, right: 10, top: 5, bottom: 15),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(color: Colors.black),
+                            color: Colors.indigo.shade900,
+                          ),
+                          scrollPadding: EdgeInsets.all(5),
+                          scrollbarTheme: ScrollbarThemeData(
+                            thickness: MaterialStateProperty.all<double>(6),
+                            thumbVisibility:
+                                MaterialStateProperty.all<bool>(true),
+                          ),
+                        ),
+                        menuItemStyleData: const MenuItemStyleData(
+                          height: 25,
+                          padding: EdgeInsets.only(left: 14, right: 14),
+                        ),
                       ),
                     ),
                   ),

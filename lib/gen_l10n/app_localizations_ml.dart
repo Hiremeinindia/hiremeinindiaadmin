@@ -5,9 +5,6 @@ class AppLocalizationsMl extends AppLocalizations {
   AppLocalizationsMl([String locale = 'ml']) : super(locale);
 
   @override
-  String get hireMeInIndia => 'എന്നെ ഇന്ത്യയിൽ നിയമിക്കൂ';
-
-  @override
   String get findaJob => 'ഒരു ജോലി കണ്ടെത്തു';
 
   @override
@@ -110,7 +107,7 @@ class AppLocalizationsMl extends AppLocalizations {
   String get email => 'ഇമെയിൽ';
 
   @override
-  String get verfiy => 'സ്ഥിരീകരിക്കുക';
+  String get verify => 'സ്ഥിരീകരിക്കുക';
 
   @override
   String get add => 'ചേർക്കുക';
@@ -228,4 +225,19 @@ class AppLocalizationsMl extends AppLocalizations {
 
   @override
   String get selectedCandidates => 'തിരഞ്ഞെടുത്ത സ്ഥാനാർത്ഥികൾ';
+
+  @override
+  String get blueCollerJobs => 'ഗ്രേ കോളർ ജോലികൾ';
+
+  @override
+  String get greyCollerJobs => 'ബ്ലൂ കോളർ ജോലികൾ';
+
+  @override
+  String get hire => 'Hire';
+
+  @override
+  String get meIn => 'mein';
+
+  @override
+  String get india => 'India';
 }

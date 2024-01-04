@@ -5,9 +5,6 @@ class AppLocalizationsTa extends AppLocalizations {
   AppLocalizationsTa([String locale = 'ta']) : super(locale);
 
   @override
-  String get hireMeInIndia => 'ஹிரேம் இந்தியா';
-
-  @override
   String get findaJob => 'வேலை தேடு';
 
   @override
@@ -110,7 +107,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get email => 'மின்னஞ்சல்';
 
   @override
-  String get verfiy => '';
+  String get verify => 'சரிபார்க்க';
 
   @override
   String get add => 'கூட்டு';
@@ -155,16 +152,16 @@ class AppLocalizationsTa extends AppLocalizations {
   String get noOfDaysOpen => 'திறந்த நாட்களின் எண்ணிக்கை';
 
   @override
-  String get cvDoc => '';
+  String get cvDoc => 'பாடத்திட்ட விவர ஆவணம்';
 
   @override
   String get hello => 'வணக்கம்';
 
   @override
-  String get gpay => '';
+  String get gpay => 'கிராம் ஊதியம்';
 
   @override
-  String get neft => '';
+  String get neft => 'நெஃப்ட்';
 
   @override
   String get cash => 'பணம்';
@@ -228,4 +225,19 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get selectedCandidates => 'தேர்ந்தெடுக்கப்பட்ட வேட்பாளர்கள்';
+
+  @override
+  String get blueCollerJobs => 'நீல காலர் வேலைகள்';
+
+  @override
+  String get greyCollerJobs => 'சாம்பல் காலர் வேலைகள்';
+
+  @override
+  String get hire => 'Hire';
+
+  @override
+  String get meIn => 'mein';
+
+  @override
+  String get india => 'India';
 }

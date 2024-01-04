@@ -97,12 +97,6 @@ abstract class AppLocalizations {
     Locale('ta')
   ];
 
-  /// No description provided for @hireMeInIndia.
-  ///
-  /// In en, this message translates to:
-  /// **'HiremeinIndia'**
-  String get hireMeInIndia;
-
   /// No description provided for @findaJob.
   ///
   /// In en, this message translates to:
@@ -244,19 +238,19 @@ abstract class AppLocalizations {
   /// No description provided for @registerAsANewUser.
   ///
   /// In en, this message translates to:
-  /// **'register As A New User'**
+  /// **'Register as a New User'**
   String get registerAsANewUser;
 
   /// No description provided for @workTitle.
   ///
   /// In en, this message translates to:
-  /// **'work Title'**
+  /// **'Work Title'**
   String get workTitle;
 
   /// No description provided for @aadharNo.
   ///
   /// In en, this message translates to:
-  /// **'aadhar Number'**
+  /// **'Aadhar Number'**
   String get aadharNo;
 
   /// No description provided for @address.
@@ -268,25 +262,25 @@ abstract class AppLocalizations {
   /// No description provided for @mobile.
   ///
   /// In en, this message translates to:
-  /// **'mobile'**
+  /// **'Mobile'**
   String get mobile;
 
   /// No description provided for @skills.
   ///
   /// In en, this message translates to:
-  /// **'skills'**
+  /// **'Skills'**
   String get skills;
 
   /// No description provided for @lookingWork.
   ///
   /// In en, this message translates to:
-  /// **'looking for Work in'**
+  /// **'Looking for Work in'**
   String get lookingWork;
 
   /// No description provided for @gender.
   ///
   /// In en, this message translates to:
-  /// **'gender'**
+  /// **'Gender'**
   String get gender;
 
   /// No description provided for @workExperience.
@@ -298,97 +292,97 @@ abstract class AppLocalizations {
   /// No description provided for @state.
   ///
   /// In en, this message translates to:
-  /// **'state'**
+  /// **'State'**
   String get state;
 
   /// No description provided for @email.
   ///
   /// In en, this message translates to:
-  /// **'email'**
+  /// **'Email'**
   String get email;
 
-  /// No description provided for @verfiy.
+  /// No description provided for @verify.
   ///
   /// In en, this message translates to:
-  /// **'verify'**
-  String get verfiy;
+  /// **'Verify'**
+  String get verify;
 
   /// No description provided for @add.
   ///
   /// In en, this message translates to:
-  /// **'add'**
+  /// **'Add'**
   String get add;
 
   /// No description provided for @verified.
   ///
   /// In en, this message translates to:
-  /// **'verified'**
+  /// **'Verified'**
   String get verified;
 
   /// No description provided for @jobClassification.
   ///
   /// In en, this message translates to:
-  /// **'job Classification'**
+  /// **'Job Classification'**
   String get jobClassification;
 
   /// No description provided for @jobClassifications.
   ///
   /// In en, this message translates to:
-  /// **'job Classifications'**
+  /// **'Job Classifications'**
   String get jobClassifications;
 
   /// No description provided for @qualificationSet.
   ///
   /// In en, this message translates to:
-  /// **'qualification Set'**
+  /// **'Qualification Set'**
   String get qualificationSet;
 
   /// No description provided for @qualificationSets.
   ///
   /// In en, this message translates to:
-  /// **'qualification Sets'**
+  /// **'Qualification Sets'**
   String get qualificationSets;
 
   /// No description provided for @query.
   ///
   /// In en, this message translates to:
-  /// **'query'**
+  /// **'Query'**
   String get query;
 
   /// No description provided for @save.
   ///
   /// In en, this message translates to:
-  /// **'save'**
+  /// **'Save'**
   String get save;
 
   /// No description provided for @run.
   ///
   /// In en, this message translates to:
-  /// **'run'**
+  /// **'Run'**
   String get run;
 
   /// No description provided for @create.
   ///
   /// In en, this message translates to:
-  /// **'create'**
+  /// **'Create'**
   String get create;
 
   /// No description provided for @candidates.
   ///
   /// In en, this message translates to:
-  /// **'candidates'**
+  /// **'Candidates'**
   String get candidates;
 
   /// No description provided for @qualification.
   ///
   /// In en, this message translates to:
-  /// **'qualification'**
+  /// **'Qualification'**
   String get qualification;
 
   /// No description provided for @label.
   ///
   /// In en, this message translates to:
-  /// **'label'**
+  /// **'Label'**
   String get label;
 
   /// No description provided for @noOfDaysOpen.
@@ -406,13 +400,13 @@ abstract class AppLocalizations {
   /// No description provided for @hello.
   ///
   /// In en, this message translates to:
-  /// **'hello'**
+  /// **'Hello'**
   String get hello;
 
   /// No description provided for @gpay.
   ///
   /// In en, this message translates to:
-  /// **'g pay'**
+  /// **'G pay'**
   String get gpay;
 
   /// No description provided for @neft.
@@ -424,37 +418,37 @@ abstract class AppLocalizations {
   /// No description provided for @cash.
   ///
   /// In en, this message translates to:
-  /// **'cash'**
+  /// **'Cash'**
   String get cash;
 
   /// No description provided for @paymentGateway.
   ///
   /// In en, this message translates to:
-  /// **'payment Gateway'**
+  /// **'Payment Gateway'**
   String get paymentGateway;
 
   /// No description provided for @pay.
   ///
   /// In en, this message translates to:
-  /// **'pay'**
+  /// **'Pay'**
   String get pay;
 
   /// No description provided for @jobs.
   ///
   /// In en, this message translates to:
-  /// **'jobs'**
+  /// **'Jobs'**
   String get jobs;
 
   /// No description provided for @getHiredFromTheBest.
   ///
   /// In en, this message translates to:
-  /// **'get Hired from The Best'**
+  /// **'Get Hired from the best'**
   String get getHiredFromTheBest;
 
   /// No description provided for @indiasBestPortalforBlue.
   ///
   /// In en, this message translates to:
-  /// **'india\'s Best Portal for Blue'**
+  /// **'India\'s best Portal for Blue'**
   String get indiasBestPortalforBlue;
 
   /// No description provided for @andGreyCollarJob.
@@ -466,13 +460,13 @@ abstract class AppLocalizations {
   /// No description provided for @hireNow.
   ///
   /// In en, this message translates to:
-  /// **'hire Now'**
+  /// **'Hire Now'**
   String get hireNow;
 
   /// No description provided for @getJob.
   ///
   /// In en, this message translates to:
-  /// **'get Job'**
+  /// **'Get Job'**
   String get getJob;
 
   /// No description provided for @noOfOffers.
@@ -508,44 +502,74 @@ abstract class AppLocalizations {
   /// No description provided for @candidatesToday.
   ///
   /// In en, this message translates to:
-  /// **'candidates Today'**
+  /// **'Candidates Today'**
   String get candidatesToday;
 
   /// No description provided for @today.
   ///
   /// In en, this message translates to:
-  /// **'today'**
+  /// **'Today'**
   String get today;
 
   /// No description provided for @payments.
   ///
   /// In en, this message translates to:
-  /// **'payments'**
+  /// **'Payments'**
   String get payments;
 
   /// No description provided for @online.
   ///
   /// In en, this message translates to:
-  /// **'online'**
+  /// **'Online'**
   String get online;
 
   /// No description provided for @total.
   ///
   /// In en, this message translates to:
-  /// **'total'**
+  /// **'Total'**
   String get total;
 
   /// No description provided for @curatedCandidates.
   ///
   /// In en, this message translates to:
-  /// **'curated Candidates'**
+  /// **'Curated Candidates'**
   String get curatedCandidates;
 
   /// No description provided for @selectedCandidates.
   ///
   /// In en, this message translates to:
-  /// **'selected Candidates'**
+  /// **'Selected Candidates'**
   String get selectedCandidates;
+
+  /// No description provided for @blueCollerJobs.
+  ///
+  /// In en, this message translates to:
+  /// **'Blue Coller Jobs'**
+  String get blueCollerJobs;
+
+  /// No description provided for @greyCollerJobs.
+  ///
+  /// In en, this message translates to:
+  /// **'Grey Coller Jobs'**
+  String get greyCollerJobs;
+
+  /// No description provided for @hire.
+  ///
+  /// In en, this message translates to:
+  /// **'Hire'**
+  String get hire;
+
+  /// No description provided for @meIn.
+  ///
+  /// In en, this message translates to:
+  /// **'mein'**
+  String get meIn;
+
+  /// No description provided for @india.
+  ///
+  /// In en, this message translates to:
+  /// **'India'**
+  String get india;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -1,6 +1,7 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:hiremeinindiaapp/registration.dart';
+import 'package:hiremeinindiaapp/widgets/hiremeinindia.dart';
 
 import 'widgets/custombutton.dart';
 import 'package:hiremeinindiaapp/main.dart';
@@ -20,6 +21,7 @@ class _HiredState extends State<Hired> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: HireMeInIndia(),
         centerTitle: false,
         toolbarHeight: 80,
         backgroundColor: Colors.transparent,
@@ -228,7 +230,7 @@ class _HiredState extends State<Hired> {
                         width: 200,
                         height: 40,
                         child: CustomButton(
-                          text: translation(context).blueColler,
+                          text: translation(context).blueCollerJobs,
                           onPressed: () {
                             Navigator.push(
                               context,
@@ -253,7 +255,7 @@ class _HiredState extends State<Hired> {
                         width: 200,
                         height: 40,
                         child: CustomButton(
-                          text: 'Grey Collar Jobs',
+                          text: translation(context).blueCollerJobs,
                           onPressed: () {
                             Registration();
                           },
