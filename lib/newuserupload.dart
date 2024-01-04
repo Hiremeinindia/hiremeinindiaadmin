@@ -1,9 +1,15 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
+import 'package:hiremeinindiaapp/gen_l10n/app_localizations.dart';
 import 'package:hiremeinindiaapp/userpayment.dart';
 import 'package:hiremeinindiaapp/widgets/customtextfield.dart';
 
+import 'classes/language.dart';
+import 'classes/language_constants.dart';
+import 'main.dart';
 import 'widgets/custombutton.dart';
 import 'widgets/hiremeinindia.dart';
+import 'widgets/textstylebutton.dart';
 
 class NewUserUpload extends StatefulWidget {
   const NewUserUpload();
@@ -22,7 +28,6 @@ class _NewUserUpload extends State<NewUserUpload> {
         toolbarHeight: 80,
         backgroundColor: Colors.transparent,
         elevation: 0.0,
-        title: HireMeInIndia(text1: 'Hire', text2: 'mein', text3: 'India'),
         actions: [
           Padding(
             padding: EdgeInsets.only(right: 50.0, top: 10),
@@ -37,34 +42,96 @@ class _NewUserUpload extends State<NewUserUpload> {
                       decoration: BoxDecoration(
                         color: Colors.indigo.shade900,
                       ),
-                      child: DropdownButton<String>(
-                        items: [
-                          DropdownMenuItem<String>(
-                            value: 'English',
-                            child: Text('English'),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton2<Language>(
+                          isExpanded: true,
+                          hint: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  translation(context).english,
+                                  style: CustomTextStyle.dropdowntext,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
                           ),
-                          DropdownMenuItem<String>(
-                            value: 'Hindi',
-                            child: Text('Hindi'),
+                          onChanged: (Language? language) async {
+                            if (language != null) {
+                              Locale _locale =
+                                  await setLocale(language.languageCode);
+                              HireApp.setLocale(context, _locale);
+                            } else {
+                              language;
+                            }
+                          },
+                          items: Language.languageList()
+                              .map<DropdownMenuItem<Language>>(
+                                (e) => DropdownMenuItem<Language>(
+                                  value: e,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: <Widget>[
+                                      Text(
+                                        e.flag,
+                                        style: CustomTextStyle.dropdowntext,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Text(
+                                        e.langname,
+                                        style: CustomTextStyle.dropdowntext,
+                                        overflow: TextOverflow.ellipsis,
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                          buttonStyleData: ButtonStyleData(
+                            height: 30,
+                            width: 200,
+                            elevation: 1,
+                            padding: const EdgeInsets.only(left: 14, right: 14),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(4),
+                              border: Border.all(
+                                color: Colors.black26,
+                              ),
+                              color: Colors.indigo.shade900,
+                            ),
                           ),
-                          DropdownMenuItem<String>(
-                            value: 'Spanish',
-                            child: Text('Spanish'),
+                          iconStyleData: const IconStyleData(
+                            icon: Icon(
+                              Icons.arrow_drop_down_sharp,
+                            ),
+                            iconSize: 25,
+                            iconEnabledColor: Colors.white,
+                            iconDisabledColor: null,
                           ),
-                          // Add more languages as needed
-                        ],
-                        onChanged: (value) {
-                          // Handle language selection
-                        },
-                        hint: Text(
-                          '  English        ',
-                          style: TextStyle(color: Colors.white),
+                          dropdownStyleData: DropdownStyleData(
+                            maxHeight: 210,
+                            width: 156,
+                            elevation: 0,
+                            padding: EdgeInsets.only(
+                                left: 10, right: 10, top: 5, bottom: 15),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              border: Border.all(color: Colors.black),
+                              color: Colors.indigo.shade900,
+                            ),
+                            scrollPadding: EdgeInsets.all(5),
+                            scrollbarTheme: ScrollbarThemeData(
+                              thickness: MaterialStateProperty.all<double>(6),
+                              thumbVisibility:
+                                  MaterialStateProperty.all<bool>(true),
+                            ),
+                          ),
+                          menuItemStyleData: const MenuItemStyleData(
+                            height: 25,
+                            padding: EdgeInsets.only(left: 14, right: 14),
+                          ),
                         ),
-                        icon: Icon(
-                          Icons.arrow_drop_down,
-                          color: Colors.white,
-                        ),
-                        underline: Container(),
                       ),
                     ),
                   ),
@@ -95,7 +162,7 @@ class _NewUserUpload extends State<NewUserUpload> {
                           // Handle option selection
                         },
                         hint: Text(
-                          '  Find a job     ',
+                          AppLocalizations.of(context)!.findaJob,
                           style: TextStyle(color: Colors.white),
                         ),
                         icon: Icon(
@@ -126,7 +193,7 @@ class _NewUserUpload extends State<NewUserUpload> {
                 SizedBox(
                   width: 50,
                   child: Text(
-                    'New User',
+                    'Guest User',
                     maxLines: 2,
                     style: TextStyle(color: Colors.black),
                   ),
@@ -164,7 +231,7 @@ class _NewUserUpload extends State<NewUserUpload> {
                     width: 2.0,
                   ),
                 ),
-                Text("Blue Collar"),
+                Text(translation(context).blueColler),
                 Checkbox(
                   value: isChecked,
                   onChanged: (bool? value) {
@@ -186,7 +253,7 @@ class _NewUserUpload extends State<NewUserUpload> {
                     width: 2.0,
                   ),
                 ),
-                Text("Grey Collar"),
+                Text(translation(context).greyColler),
               ],
             ),
             SizedBox(
@@ -195,7 +262,7 @@ class _NewUserUpload extends State<NewUserUpload> {
             Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                "Upload Essential Documents",
+                translation(context).uploadEssentialDocument,
                 style: TextStyle(
                     color: Colors.indigo.shade900,
                     fontWeight: FontWeight.bold,
@@ -210,32 +277,32 @@ class _NewUserUpload extends State<NewUserUpload> {
               children: [
                 Expanded(
                     child: CustomButton(
-                  text: 'Picture',
+                  text: translation(context).picture,
                   onPressed: () {},
                 )),
                 SizedBox(width: 40),
                 SizedBox(width: 40),
                 Expanded(
                     child: CustomButton(
-                  text: 'Aadhar',
+                  text: translation(context).aadhar,
                   onPressed: () {},
                 )),
                 SizedBox(width: 40),
                 Expanded(
                     child: CustomButton(
-                  text: 'Voter ID',
+                  text: translation(context).voterId,
                   onPressed: () {},
                 )),
                 SizedBox(width: 40),
                 Expanded(
                     child: CustomButton(
-                  text: 'Experience Proof',
+                  text: translation(context).experienceProof,
                   onPressed: () {},
                 )),
                 SizedBox(width: 40),
                 Expanded(
                   child: CustomButton(
-                    text: 'CV',
+                    text: translation(context).cv,
                     onPressed: () {},
                   ),
                 ),
@@ -250,13 +317,13 @@ class _NewUserUpload extends State<NewUserUpload> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Current Wage",
+                      translation(context).blueColler,
                       style: TextStyle(
                           fontFamily: 'Poppins', fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 60),
                     Text(
-                      "Current City",
+                      translation(context).currentCity,
                       style: TextStyle(
                           fontFamily: 'Poppins', fontWeight: FontWeight.bold),
                     ),
@@ -297,13 +364,13 @@ class _NewUserUpload extends State<NewUserUpload> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Experienced Wage",
+                      translation(context).expectedWage,
                       style: TextStyle(
                           fontFamily: 'Poppins', fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 60),
                     Text(
-                      "Current State",
+                      translation(context).currentState,
                       style: TextStyle(
                           fontFamily: 'Poppins', fontWeight: FontWeight.bold),
                     ),
@@ -346,12 +413,12 @@ class _NewUserUpload extends State<NewUserUpload> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 CustomButton(
-                  text: 'Back',
+                  text: translation(context).back,
                   onPressed: () {},
                 ),
                 SizedBox(width: 50),
                 CustomButton(
-                  text: 'Next',
+                  text: translation(context).next,
                   onPressed: () {
                     Navigator.push(
                       context,

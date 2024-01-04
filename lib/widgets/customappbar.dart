@@ -1,51 +1,22 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:form_field_validator/form_field_validator.dart';
-import 'package:hiremeinindiaapp/gen_l10n/app_localizations_en.dart';
-import 'package:hiremeinindiaapp/gethired.dart';
-import 'package:get/get.dart';
-import 'package:hiremeinindiaapp/main.dart';
-import 'package:hiremeinindiaapp/services/functions/authFunctions.dart';
-import 'package:hiremeinindiaapp/widgets/customtextfield.dart';
-import 'classes/language.dart';
-import 'classes/language_constants.dart';
-import 'controllers/signupcontroller.dart';
-import 'gen_l10n/app_localizations.dart';
-import 'homepage.dart';
-import 'widgets/custombutton.dart';
-import 'widgets/textstylebutton.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage();
-  @override
-  State<LoginPage> createState() => _LoginPageState();
-}
+import '../classes/language.dart';
+import '../classes/language_constants.dart';
+import '../gen_l10n/app_localizations.dart';
+import '../main.dart';
+import 'textstylebutton.dart';
 
-class _LoginPageState extends State<LoginPage> {
-  String? validatePassword(String? value) {
-    RegExp regex =
-        RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
-    if (value!.isEmpty) {
-      return 'Please enter password';
-    } else {
-      if (!regex.hasMatch(value)) {
-        return 'Enter valid password';
-      } else {
-        return null;
-      }
-    }
-  }
+class CustomAppBar extends StatelessWidget {
+  final Text? text1;
+  final Text? text2;
 
-  final controller = Get.put(SignUpController());
+  const CustomAppBar({this.text1, this.text2});
 
-  String? selectedValue;
-  String email = '';
-  String password = '';
-  bool login = false;
-  final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
+    MediaQueryData mediaQuery = MediaQuery.of(context);
+    double height = (mediaQuery.size.height - mediaQuery.padding.top) * 20;
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
@@ -226,62 +197,6 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
         ],
-      ),
-      body: Form(
-        key: _formKey,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                translation(context).name,
-                style: TextStyle(
-                    fontFamily: 'Poppins', fontWeight: FontWeight.bold),
-              ),
-              CustomTextfield(
-                text: translation(context).name,
-                controller: controller.email,
-                onsaved: (value) {
-                  setState(() {
-                    email = value;
-                  });
-                },
-              ),
-              Text(
-                translation(context).password,
-                style: TextStyle(
-                    fontFamily: 'Poppins', fontWeight: FontWeight.bold),
-              ),
-              CustomTextfield(
-                text: translation(context).password,
-                validator: validatePassword,
-                controller: controller.password,
-                onsaved: (value) {
-                  setState(() {
-                    password = value;
-                  });
-                },
-              ),
-              CustomButtonLogin(
-                child: Text(
-                  login ? 'Login' : translation(context).signIn,
-                ),
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    FirebaseAuth.instance
-                        .signInWithEmailAndPassword(
-                            email: controller.email.text,
-                            password: controller.password.text)
-                        .then((value) {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => HomePage()));
-                    });
-                  }
-                },
-              )
-            ],
-          ),
-        ),
       ),
     );
   }
