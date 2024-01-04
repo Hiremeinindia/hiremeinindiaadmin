@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:email_auth/email_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -33,6 +35,8 @@ class _RegistrationState extends State<Registration> {
   String smscode = "";
   String phoneNumber = "", data = "", phone = "";
   bool isVerified = false;
+  TextEditingController otpController = TextEditingController();
+  bool isOtpValid = true; // Replace this line with actual verification logic
 
   List<String> _values = [];
   List<String> _value = [];
@@ -120,6 +124,87 @@ class _RegistrationState extends State<Registration> {
       return 'Invalid format';
     }
     return null;
+  }
+
+  void _showOtpDialog() {
+    print("otp2");
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Enter OTP"),
+          content: TextField(
+            controller: otpController,
+            keyboardType: TextInputType.number,
+            maxLength: 4,
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Verify"),
+              onPressed: () async {
+                Navigator.of(context).pop();
+
+                // Verify entered OTP
+                print("Entered OTP: ${otpController.text}");
+
+                if (await myauth.verifyOTP(otp: otpController.text.trim())) {
+                  print("OTP verification success");
+                  // Navigate to registration page
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Registration(),
+                    ),
+                  );
+                } else {
+                  print("OTP verification failed");
+                  // Display error pop-up for invalid OTP
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text("Invalid OTP"),
+                        content: Text("Please enter a valid OTP."),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text("OK"),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _verifyOtp() async {
+    // Perform OTP verification here using myauth.verifyOTP(otpController.text)
+    bool isOtpValid = await myauth.verifyOTP(otp: otpController.text);
+
+    if (isOtpValid) {
+      // Navigate to registration page
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Registration(),
+        ),
+      );
+    } else {
+      // Display error pop-up for invalid OTP
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Invalid OTP. Please try again."),
+        ),
+      );
+    }
   }
 
   void showErrorDialog(String errorMessage) {
@@ -310,7 +395,7 @@ class _RegistrationState extends State<Registration> {
     return await DatabaseService().isUserInBlocklist(mobileNumber);
   }
 
-  Future<bool> _verifyOtp(String otp) async {
+  Future<bool> _verifyOtp1(String otp) async {
     // Implement your OTP verification logic here
     // Return true if OTP is valid, false otherwise
     // For example, you might make an API call to your server for verification
@@ -363,7 +448,8 @@ class _RegistrationState extends State<Registration> {
     }
   }
 
-  Future<void> _showOtpDialog(BuildContext context, String mobileNumber) async {
+  Future<void> _showOtpDialog1(
+      BuildContext context, String mobileNumber) async {
     print("dialog1");
     String otp = ''; // Use a variable to store the entered OTP
 
@@ -399,7 +485,7 @@ class _RegistrationState extends State<Registration> {
                 // Perform verification logic with entered OTP
                 // For example, you can call a function like _verifyOtp(otp)
                 // and handle the verification process there.
-                bool isOtpValid = await _verifyOtp(otp);
+                bool isOtpValid = await _verifyOtp1(otp);
 
                 if (isOtpValid) {
                   print("otp1");
@@ -422,15 +508,15 @@ class _RegistrationState extends State<Registration> {
     );
   }
 
-  Future<void> fetchData() async {
-    final response = await http.get(Uri.parse('https://example.com/api/data'));
-    if (response.statusCode == 200) {
-      // Handle successful response
-    } else {
-      // Handle error response
-      print('Request failed with status: ${response.statusCode}');
-    }
-  }
+  // Future<void> fetchData() async {
+  //   final response = await http.get(Uri.parse('https://example.com/api/data'));
+  //   if (response.statusCode == 200) {
+  //     // Handle successful response
+  //   } else {
+  //     // Handle error response
+  //     print('Request failed with status: ${response.statusCode}');
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -869,33 +955,47 @@ class _RegistrationState extends State<Registration> {
                             style: ElevatedButton.styleFrom(
                               primary: Colors.indigo.shade900,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                    0.1), // Adjust border radius as needed
+                                borderRadius: BorderRadius.circular(0.1),
                               ),
                             ),
                             onPressed: () async {
+                              print("otp1");
+                              // Set OTP configuration
                               myauth.setConfig(
-                                  appEmail: "contact@hdevcoder.com",
-                                  appName: "OTP for Registration",
-                                  userEmail: controller.email.text,
-                                  otpLength: 4,
-                                  otpType: OTPType.digitsOnly);
-                              if (await myauth.sendOTP() == true) {
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(const SnackBar(
-                                  content: Text("OTP has been sent"),
-                                ));
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => OtpScreen(
-                                              myauth: myauth,
-                                            )));
-                              } else {
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(const SnackBar(
-                                  content: Text("Oops, OTP send failed"),
-                                ));
+                                appEmail: "contact@hdevcoder.com",
+                                appName: "OTP for Registration",
+                                userEmail: controller.email.text,
+                                otpLength: 4,
+                                otpType: OTPType.digitsOnly,
+                              );
+                              _showOtpDialog();
+
+                              // Send OTP to email
+                              bool otpSent = await myauth.sendOTP();
+
+                              // Show OTP entry dialog
+
+                              // Check if OTP sending is successful
+                              if (!otpSent) {
+                                // Display error pop-up for failed OTP sending
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text("Error"),
+                                      content:
+                                          Text("Oops, OTP sending failed."),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text("OK"),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
                               }
                             },
                             child: isVerified

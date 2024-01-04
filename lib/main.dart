@@ -6,6 +6,7 @@ import 'package:hiremeinindiaapp/gen_l10n/app_localizations.dart';
 import 'package:hiremeinindiaapp/homepage.dart';
 import 'package:hiremeinindiaapp/loginpage.dart';
 import 'package:hiremeinindiaapp/newuserupload.dart';
+import 'package:hiremeinindiaapp/newuserupload.dart';
 import 'package:hiremeinindiaapp/registration.dart';
 
 import 'classes/language_constants.dart';
