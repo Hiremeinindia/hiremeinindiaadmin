@@ -27,6 +27,7 @@ class _NewUserUpload extends State<NewUserUpload> {
   bool isChecked = false;
   String? uploadedMessage;
   String? uploadedImageUrl;
+  String? downloadURL;
 
   Future<void> uploadFile(String filePath) async {
     print("file4");
@@ -50,10 +51,11 @@ class _NewUserUpload extends State<NewUserUpload> {
 
 // Function to upload file from bytes (for web platform)
   Future<void> uploadFileFromBytes(
-      Uint8List fileBytes, String originalFileName) async {
+      {required Uint8List fileBytes, required String originalFileName}) async {
     print("file3");
-    Reference storageReference = FirebaseStorage.instance.ref().child(
-        'uploads/${DateTime.now().millisecondsSinceEpoch}_$originalFileName');
+
+    Reference storageReference =
+        FirebaseStorage.instance.ref().child('uploads/$originalFileName');
     UploadTask uploadTask = storageReference.putData(fileBytes);
 
     try {
@@ -379,7 +381,8 @@ class _NewUserUpload extends State<NewUserUpload> {
                                 // Upload the file using file.bytes
                                 // Inside onPressed callback
                                 await uploadFileFromBytes(
-                                    file.bytes!, file.name);
+                                    fileBytes: file.bytes!,
+                                    originalFileName: file.name);
                               } else {
                                 // Use path for non-web platforms
                                 print('File Path: ${file.path}');
@@ -389,7 +392,8 @@ class _NewUserUpload extends State<NewUserUpload> {
 
                               // Display success message with file name and format
                               setState(() {
-                                // uploadedImageUrl = downloadURL; // Remove this line
+                                // uploadedImageUrl =
+                                //     downloadURL; // Remove this line
                                 // Set the download URL to null after displaying the image
                                 uploadedImageUrl = null;
                               });
@@ -434,7 +438,9 @@ class _NewUserUpload extends State<NewUserUpload> {
                               String.fromCharCodes(file.bytes!);
                           print('Original String: $originalString');
                           // Upload the file using file.bytes
-                          await uploadFileFromBytes(file.bytes!, file.name);
+                          await uploadFileFromBytes(
+                              fileBytes: file.bytes!,
+                              originalFileName: file.name);
                         } else {
                           // Use path for non-web platforms
                           print('File Path: ${file.path}');
@@ -479,7 +485,9 @@ class _NewUserUpload extends State<NewUserUpload> {
                               String.fromCharCodes(file.bytes!);
                           print('Original String: $originalString');
                           // Upload the file using file.bytes
-                          await uploadFileFromBytes(file.bytes!, file.name);
+                          await uploadFileFromBytes(
+                              fileBytes: file.bytes!,
+                              originalFileName: file.name);
                         } else {
                           // Use path for non-web platforms
                           print('File Path: ${file.path}');
@@ -524,7 +532,9 @@ class _NewUserUpload extends State<NewUserUpload> {
                               String.fromCharCodes(file.bytes!);
                           print('Original String: $originalString');
                           // Upload the file using file.bytes
-                          await uploadFileFromBytes(file.bytes!, file.name);
+                          await uploadFileFromBytes(
+                              fileBytes: file.bytes!,
+                              originalFileName: file.name);
                         } else {
                           // Use path for non-web platforms
                           print('File Path: ${file.path}');
@@ -569,7 +579,9 @@ class _NewUserUpload extends State<NewUserUpload> {
                                 String.fromCharCodes(file.bytes!);
                             print('Original String: $originalString');
                             // Upload the file using file.bytes
-                            await uploadFileFromBytes(file.bytes!, file.name);
+                            await uploadFileFromBytes(
+                                fileBytes: file.bytes!,
+                                originalFileName: file.name);
                           } else {
                             // Use path for non-web platforms
                             print('File Path: ${file.path}');
