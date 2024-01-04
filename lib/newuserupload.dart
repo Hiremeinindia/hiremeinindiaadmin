@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hiremeinindiaapp/gen_l10n/app_localizations.dart';
 import 'package:hiremeinindiaapp/userpayment.dart';
@@ -10,6 +13,8 @@ import 'main.dart';
 import 'widgets/custombutton.dart';
 import 'widgets/hiremeinindia.dart';
 import 'widgets/textstylebutton.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class NewUserUpload extends StatefulWidget {
   const NewUserUpload();
@@ -20,6 +25,57 @@ class NewUserUpload extends StatefulWidget {
 class _NewUserUpload extends State<NewUserUpload> {
   @override
   bool isChecked = false;
+  String? uploadedMessage;
+  String? uploadedImageUrl;
+
+  Future<void> uploadFile(String filePath) async {
+    print("file4");
+    Reference storageReference = FirebaseStorage.instance
+        .ref()
+        .child('uploads/${DateTime.now().millisecondsSinceEpoch}');
+    UploadTask uploadTask = storageReference.putFile(File(filePath));
+
+    try {
+      await uploadTask;
+      print('File uploaded successfully');
+
+      // Get the download URL after successful upload
+      String downloadURL = await storageReference.getDownloadURL();
+      print('Download URL: $downloadURL');
+    } catch (e) {
+      print('Error uploading file: $e');
+      // Handle the error, e.g., show a message to the user
+    }
+  }
+
+// Function to upload file from bytes (for web platform)
+  Future<void> uploadFileFromBytes(
+      Uint8List fileBytes, String originalFileName) async {
+    print("file3");
+    Reference storageReference = FirebaseStorage.instance.ref().child(
+        'uploads/${DateTime.now().millisecondsSinceEpoch}_$originalFileName');
+    UploadTask uploadTask = storageReference.putData(fileBytes);
+
+    try {
+      await uploadTask;
+      print('File uploaded successfully');
+
+      // Get the download URL after a successful upload
+      String downloadURL = await storageReference.getDownloadURL();
+      print('Download URL: $downloadURL');
+    } catch (e) {
+      print('Error uploading file: $e');
+      // Handle the error, e.g., show a message to the user
+    }
+  }
+
+// Function to display the uploaded file
+  void displayUploadedFile(String downloadURL, String originalFileName) {
+    setState(() {
+      uploadedImageUrl = downloadURL;
+      uploadedMessage = 'File uploaded successfully: $originalFileName';
+    });
+  }
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -276,34 +332,255 @@ class _NewUserUpload extends State<NewUserUpload> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Expanded(
-                    child: CustomButton(
-                  text: translation(context).picture,
-                  onPressed: () {},
-                )),
-                SizedBox(width: 40),
+                  child: Column(
+                    children: [
+                      if (uploadedImageUrl != null)
+                        Container(
+                          width: 100, // Set the desired width
+                          height: 150, // Set the desired height
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black, width: 2),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Image.network(
+                            uploadedImageUrl!,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      CustomButton(
+                        text: translation(context).picture,
+                        onPressed: () async {
+                          FilePickerResult? result =
+                              await FilePicker.platform.pickFiles(
+                            allowMultiple: true,
+                            type: FileType.custom,
+                            allowedExtensions: [
+                              'jpg',
+                              'jpeg',
+                              'png',
+                              'pdf',
+                              'doc',
+                              'docx'
+                            ],
+                          );
+
+                          if (result != null) {
+                            print("file2");
+                            for (PlatformFile file in result.files) {
+                              print('File Name: ${file.name}');
+
+                              // Use bytes for the web platform
+                              if (kIsWeb) {
+                                print('File Bytes: ${file.bytes}');
+                                // Convert bytes to string
+                                String originalString =
+                                    String.fromCharCodes(file.bytes!);
+                                print('Original String: $originalString');
+                                // Upload the file using file.bytes
+                                // Inside onPressed callback
+                                await uploadFileFromBytes(
+                                    file.bytes!, file.name);
+                              } else {
+                                // Use path for non-web platforms
+                                print('File Path: ${file.path}');
+                                // Upload the file using file.path
+                                await uploadFile(file.path!);
+                              }
+
+                              // Display success message with file name and format
+                              setState(() {
+                                // uploadedImageUrl = downloadURL; // Remove this line
+                                // Set the download URL to null after displaying the image
+                                uploadedImageUrl = null;
+                              });
+                            }
+                          } else {
+                            // User canceled the file picker
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ),
                 SizedBox(width: 40),
                 Expanded(
                     child: CustomButton(
                   text: translation(context).aadhar,
-                  onPressed: () {},
+                  onPressed: () async {
+                    FilePickerResult? result =
+                        await FilePicker.platform.pickFiles(
+                      allowMultiple: true,
+                      type: FileType.custom,
+                      allowedExtensions: [
+                        'jpg',
+                        'jpeg',
+                        'png',
+                        'pdf',
+                        'doc',
+                        'docx'
+                      ],
+                    );
+
+                    if (result != null) {
+                      print("file2");
+                      for (PlatformFile file in result.files) {
+                        print('File Name: ${file.name}');
+
+                        // Use bytes for web platform
+                        if (kIsWeb) {
+                          print('File Bytes: ${file.bytes}');
+                          // Convert bytes to string
+                          String originalString =
+                              String.fromCharCodes(file.bytes!);
+                          print('Original String: $originalString');
+                          // Upload the file using file.bytes
+                          await uploadFileFromBytes(file.bytes!, file.name);
+                        } else {
+                          // Use path for non-web platforms
+                          print('File Path: ${file.path}');
+                          // Upload the file using file.path
+                          await uploadFile(file.path!);
+                        }
+                      }
+                    } else {
+                      // User canceled the file picker
+                    }
+                  },
                 )),
                 SizedBox(width: 40),
                 Expanded(
                     child: CustomButton(
                   text: translation(context).voterId,
-                  onPressed: () {},
+                  onPressed: () async {
+                    FilePickerResult? result =
+                        await FilePicker.platform.pickFiles(
+                      allowMultiple: true,
+                      type: FileType.custom,
+                      allowedExtensions: [
+                        'jpg',
+                        'jpeg',
+                        'png',
+                        'pdf',
+                        'doc',
+                        'docx'
+                      ],
+                    );
+
+                    if (result != null) {
+                      print("file2");
+                      for (PlatformFile file in result.files) {
+                        print('File Name: ${file.name}');
+
+                        // Use bytes for web platform
+                        if (kIsWeb) {
+                          print('File Bytes: ${file.bytes}');
+                          // Convert bytes to string
+                          String originalString =
+                              String.fromCharCodes(file.bytes!);
+                          print('Original String: $originalString');
+                          // Upload the file using file.bytes
+                          await uploadFileFromBytes(file.bytes!, file.name);
+                        } else {
+                          // Use path for non-web platforms
+                          print('File Path: ${file.path}');
+                          // Upload the file using file.path
+                          await uploadFile(file.path!);
+                        }
+                      }
+                    } else {
+                      // User canceled the file picker
+                    }
+                  },
                 )),
                 SizedBox(width: 40),
                 Expanded(
                     child: CustomButton(
                   text: translation(context).experienceProof,
-                  onPressed: () {},
+                  onPressed: () async {
+                    FilePickerResult? result =
+                        await FilePicker.platform.pickFiles(
+                      allowMultiple: true,
+                      type: FileType.custom,
+                      allowedExtensions: [
+                        'jpg',
+                        'jpeg',
+                        'png',
+                        'pdf',
+                        'doc',
+                        'docx'
+                      ],
+                    );
+
+                    if (result != null) {
+                      print("file2");
+                      for (PlatformFile file in result.files) {
+                        print('File Name: ${file.name}');
+
+                        // Use bytes for web platform
+                        if (kIsWeb) {
+                          print('File Bytes: ${file.bytes}');
+                          // Convert bytes to string
+                          String originalString =
+                              String.fromCharCodes(file.bytes!);
+                          print('Original String: $originalString');
+                          // Upload the file using file.bytes
+                          await uploadFileFromBytes(file.bytes!, file.name);
+                        } else {
+                          // Use path for non-web platforms
+                          print('File Path: ${file.path}');
+                          // Upload the file using file.path
+                          await uploadFile(file.path!);
+                        }
+                      }
+                    } else {
+                      // User canceled the file picker
+                    }
+                  },
                 )),
                 SizedBox(width: 40),
                 Expanded(
                   child: CustomButton(
                     text: translation(context).cv,
-                    onPressed: () {},
+                    onPressed: () async {
+                      FilePickerResult? result =
+                          await FilePicker.platform.pickFiles(
+                        allowMultiple: true,
+                        type: FileType.custom,
+                        allowedExtensions: [
+                          'jpg',
+                          'jpeg',
+                          'png',
+                          'pdf',
+                          'doc',
+                          'docx'
+                        ],
+                      );
+
+                      if (result != null) {
+                        print("file2");
+                        for (PlatformFile file in result.files) {
+                          print('File Name: ${file.name}');
+
+                          // Use bytes for web platform
+                          if (kIsWeb) {
+                            print('File Bytes: ${file.bytes}');
+                            // Convert bytes to string
+                            String originalString =
+                                String.fromCharCodes(file.bytes!);
+                            print('Original String: $originalString');
+                            // Upload the file using file.bytes
+                            await uploadFileFromBytes(file.bytes!, file.name);
+                          } else {
+                            // Use path for non-web platforms
+                            print('File Path: ${file.path}');
+                            // Upload the file using file.path
+                            await uploadFile(file.path!);
+                          }
+                        }
+                      } else {
+                        // User canceled the file picker
+                      }
+                    },
                   ),
                 ),
               ],
