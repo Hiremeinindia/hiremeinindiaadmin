@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hiremeinindiaapp/userdashboard.dart';
+import 'classes/language_constants.dart';
 import 'widgets/custombutton.dart';
 import 'widgets/hiremeinindia.dart';
 
@@ -162,7 +163,7 @@ class _NewUserPayment extends State<NewUserPayment> {
                       width: 2.0,
                     ),
                   ),
-                  Text("Blue Collar"),
+                  Text(translation(context).greyColler),
                   Checkbox(
                     value: isChecked,
                     onChanged: (bool? value) {
@@ -184,7 +185,9 @@ class _NewUserPayment extends State<NewUserPayment> {
                       width: 2.0,
                     ),
                   ),
-                  Text("Grey Collar"),
+                  Text(
+                    translation(context).greyColler,
+                  ),
                 ],
               ),
               SizedBox(
@@ -198,7 +201,7 @@ class _NewUserPayment extends State<NewUserPayment> {
                   ),
                   Expanded(
                       child: CustomButton(
-                    text: 'Gpay',
+                    text: translation(context).gpay,
                     onPressed: () {},
                   )),
                   SizedBox(
@@ -206,7 +209,7 @@ class _NewUserPayment extends State<NewUserPayment> {
                   ),
                   Expanded(
                       child: CustomButton(
-                    text: 'Neft',
+                    text: translation(context).neft,
                     onPressed: () {},
                   )),
                   SizedBox(
@@ -214,7 +217,7 @@ class _NewUserPayment extends State<NewUserPayment> {
                   ),
                   Expanded(
                       child: CustomButton(
-                    text: 'Cash',
+                    text: translation(context).cash,
                     onPressed: () {},
                   )),
                   SizedBox(
@@ -222,7 +225,7 @@ class _NewUserPayment extends State<NewUserPayment> {
                   ),
                   Expanded(
                       child: CustomButton(
-                    text: 'Payment Gateway',
+                    text: translation(context).back,
                     onPressed: () {},
                   )),
                 ],
@@ -234,7 +237,7 @@ class _NewUserPayment extends State<NewUserPayment> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   CustomButton(
-                    text: 'Next',
+                    text: translation(context).next,
                     onPressed: () {
                       Navigator.push(
                         context,

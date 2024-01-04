@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../gen_l10n/app_localizations.dart';
+
 const String LAGUAGE_CODE = 'languageCode';
 
 //languages code
 const String ENGLISH = 'en';
-const String FARSI = 'fa';
-const String ARABIC = 'ar';
+const String TAMIL = 'ta';
+const String MALAYALAM = 'ml';
 const String HINDI = 'hi';
 
 Future<Locale> setLocale(String languageCode) async {
@@ -25,13 +27,17 @@ Locale _locale(String languageCode) {
   switch (languageCode) {
     case ENGLISH:
       return const Locale(ENGLISH, '');
-    case FARSI:
-      return const Locale(FARSI, "");
-    case ARABIC:
-      return const Locale(ARABIC, "");
+    case TAMIL:
+      return const Locale(TAMIL, "");
+    case MALAYALAM:
+      return const Locale(MALAYALAM, "");
     case HINDI:
       return const Locale(HINDI, "");
     default:
       return const Locale(ENGLISH, '');
   }
+}
+
+AppLocalizations translation(BuildContext context) {
+  return AppLocalizations.of(context)!;
 }

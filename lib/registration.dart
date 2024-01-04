@@ -16,6 +16,7 @@ import 'package:hiremeinindiaapp/homepage.dart';
 import 'package:hiremeinindiaapp/userpayment.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:super_tag_editor/widgets/rich_text_widget.dart';
+import 'classes/language_constants.dart';
 import 'controllers/signupcontroller.dart';
 import 'otpscreen.dart';
 import 'widgets/custombutton.dart';
@@ -599,7 +600,7 @@ class _RegistrationState extends State<Registration> {
                           // Handle option selection
                         },
                         hint: Text(
-                          '  Find a job     ',
+                          translation(context).findaJob,
                           style: TextStyle(color: Colors.white),
                         ),
                         icon: Icon(
@@ -674,7 +675,9 @@ class _RegistrationState extends State<Registration> {
                         width: 3.5,
                       ),
                     ),
-                    Text("Blue Collar"),
+                    Text(
+                      translation(context).blueColler,
+                    ),
                     Checkbox(
                       value: greyChecked,
                       onChanged: (bool? value) {
@@ -696,14 +699,16 @@ class _RegistrationState extends State<Registration> {
                         width: 3.5,
                       ),
                     ),
-                    Text("Grey Collar"),
+                    Text(
+                      translation(context).greyColler,
+                    ),
                   ],
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.only(right: 1400),
                 child: Text(
-                  "Register as a New User",
+                  translation(context).registerAsANewUser,
                   style: TextStyle(fontSize: 30, color: Colors.grey),
                 ),
               ),
@@ -719,21 +724,21 @@ class _RegistrationState extends State<Registration> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "Name",
+                                translation(context).name,
                                 style: TextStyle(
                                     fontFamily: 'Poppins',
                                     fontWeight: FontWeight.bold),
                               ),
                               SizedBox(height: 60),
                               Text(
-                                "Work Title",
+                                translation(context).workTitle,
                                 style: TextStyle(
                                     fontFamily: 'Poppins',
                                     fontWeight: FontWeight.bold),
                               ),
                               SizedBox(height: 60),
                               Text(
-                                "Aadhar No",
+                                translation(context).aadhar,
                                 style: TextStyle(
                                     fontFamily: 'Poppins',
                                     fontWeight: FontWeight.bold),
@@ -781,21 +786,21 @@ class _RegistrationState extends State<Registration> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "Gender",
+                                translation(context).gender,
                                 style: TextStyle(
                                     fontFamily: 'Poppins',
                                     fontWeight: FontWeight.bold),
                               ),
                               SizedBox(height: 60),
                               Text(
-                                "Work Experience",
+                                translation(context).workExperience,
                                 style: TextStyle(
                                     fontFamily: 'Poppins',
                                     fontWeight: FontWeight.bold),
                               ),
                               SizedBox(height: 60),
                               Text(
-                                "State",
+                                translation(context).state,
                                 style: TextStyle(
                                     fontFamily: 'Poppins',
                                     fontWeight: FontWeight.bold),
@@ -836,7 +841,7 @@ class _RegistrationState extends State<Registration> {
                       ),
                       Row(children: [
                         Text(
-                          "Address",
+                          translation(context).address,
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               fontWeight: FontWeight.bold),
@@ -853,7 +858,7 @@ class _RegistrationState extends State<Registration> {
                       ),
                       Row(children: [
                         Text(
-                          "Mobile",
+                          translation(context).mobile,
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               fontWeight: FontWeight.bold),
@@ -907,11 +912,13 @@ class _RegistrationState extends State<Registration> {
                                     children: [
                                       Icon(Icons.check, color: Colors.green),
                                       SizedBox(width: 8),
-                                      Text('Verified'),
+                                      Text(
+                                        translation(context).verified,
+                                      ),
                                     ],
                                   )
                                 : Text(
-                                    'Verify',
+                                    translation(context).verfiy,
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.normal,
@@ -928,7 +935,7 @@ class _RegistrationState extends State<Registration> {
                           width: 70,
                         ),
                         Text(
-                          "Email",
+                          translation(context).email,
                           style: TextStyle(
                               fontFamily: 'Poppins',
                               fontWeight: FontWeight.bold),
@@ -997,11 +1004,13 @@ class _RegistrationState extends State<Registration> {
                                     children: [
                                       Icon(Icons.check, color: Colors.green),
                                       SizedBox(width: 8),
-                                      Text('Verified'),
+                                      Text(
+                                        translation(context).verified,
+                                      ),
                                     ],
                                   )
                                 : Text(
-                                    'Verify',
+                                    translation(context).verfiy,
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.normal,
@@ -1017,7 +1026,7 @@ class _RegistrationState extends State<Registration> {
                       Row(
                         children: [
                           Text(
-                            "Skills",
+                            translation(context).skills,
                             style: TextStyle(
                                 fontFamily: 'Poppins',
                                 fontWeight: FontWeight.bold),
@@ -1164,7 +1173,7 @@ class _RegistrationState extends State<Registration> {
                       Row(
                         children: [
                           Text(
-                            "Looking for Work in",
+                            translation(context).lookingWork,
                             style: TextStyle(
                                 fontFamily: 'Poppins',
                                 fontWeight: FontWeight.bold),
@@ -1312,12 +1321,12 @@ class _RegistrationState extends State<Registration> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           CustomButton(
-                            text: 'Back',
+                            text: translation(context).back,
                             onPressed: () {},
                           ),
                           SizedBox(width: 50),
                           CustomButton(
-                            text: 'Next',
+                            text: translation(context).next,
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
                                 final user = RegisterModal(
