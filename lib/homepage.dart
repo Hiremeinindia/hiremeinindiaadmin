@@ -1,8 +1,12 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:hiremeinindiaapp/gethired.dart';
+import 'package:hiremeinindiaapp/main.dart';
 import 'package:hiremeinindiaapp/widgets/customtextfield.dart';
 import 'package:get/get.dart';
+import 'classes/language.dart';
+import 'classes/language_constants.dart';
+import 'gen_l10n/app_localizations.dart';
 import 'widgets/custombutton.dart';
 import 'widgets/hiremeinindia.dart';
 import 'widgets/textstylebutton.dart';
@@ -54,35 +58,51 @@ class _HomePageState extends State<HomePage> {
                         color: Colors.indigo.shade900,
                       ),
                       child: DropdownButtonHideUnderline(
-                        child: DropdownButton2<String>(
+                        child: DropdownButton2<Language>(
                           isExpanded: true,
-                          hint: const Row(
+                          hint: Row(
                             children: [
                               Expanded(
                                 child: Text(
-                                  'English',
+                                  translation(context).english,
                                   style: CustomTextStyle.dropdowntext,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                             ],
                           ),
-                          items: items
-                              .map((String item) => DropdownMenuItem<String>(
-                                    value: item,
-                                    child: Text(
-                                      item,
-                                      style: CustomTextStyle.dropdowntext,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ))
-                              .toList(),
-                          value: selectedValue,
-                          onChanged: (String? value) {
-                            setState(() {
-                              selectedValue = value;
-                            });
+                          onChanged: (Language? language) async {
+                            if (language != null) {
+                              Locale _locale =
+                                  await setLocale(language.languageCode);
+                              HireApp.setLocale(context, _locale);
+                            } else {
+                              language;
+                            }
                           },
+                          items: Language.languageList()
+                              .map<DropdownMenuItem<Language>>(
+                                (e) => DropdownMenuItem<Language>(
+                                  value: e,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: <Widget>[
+                                      Text(
+                                        e.flag,
+                                        style: CustomTextStyle.dropdowntext,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Text(
+                                        e.langname,
+                                        style: CustomTextStyle.dropdowntext,
+                                        overflow: TextOverflow.ellipsis,
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              )
+                              .toList(),
                           buttonStyleData: ButtonStyleData(
                             height: 30,
                             width: 200,
@@ -157,7 +177,7 @@ class _HomePageState extends State<HomePage> {
                           // Handle option selection
                         },
                         hint: Text(
-                          '  Find a job     ',
+                          AppLocalizations.of(context)!.findaJob,
                           style: TextStyle(color: Colors.white),
                         ),
                         icon: Icon(
@@ -203,14 +223,14 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "India's Best Portal for Blue",
+              translation(context).indiasBestPortalforBlue,
               style: TextStyle(
                   color: Colors.indigo.shade900,
                   fontFamily: 'Poppins',
                   fontSize: 60),
             ),
             Text(
-              'and Grey Collar Job',
+              translation(context).andGreyCollarJob,
               style: TextStyle(
                   color: Colors.grey, fontFamily: 'Poppins', fontSize: 60),
             ),
@@ -228,7 +248,7 @@ class _HomePageState extends State<HomePage> {
                       width: 200,
                       height: 40,
                       child: CustomButton(
-                        text: 'Hire Now',
+                        text: translation(context).hireNow,
                         onPressed: () {},
                       ),
                     )
@@ -245,7 +265,7 @@ class _HomePageState extends State<HomePage> {
                         width: 200,
                         height: 40,
                         child: CustomButton(
-                          text: 'Get Job',
+                          text: translation(context).getJob,
                           onPressed: () {
                             Navigator.push(
                               context,

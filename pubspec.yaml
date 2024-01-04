@@ -42,7 +42,7 @@ dependencies:
   firebase_core: ^2.24.2
   flutter_localization: ^0.1.14
   validators: ^3.0.0
-  flutter_gen: ^5.3.2
+  
   flutter_translate: ^4.0.4
   intl: any
   get: ^4.6.6
@@ -62,11 +62,13 @@ dependencies:
   http: ^0.13.6
   flutter_localizations:
     sdk: flutter
+  
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
+  build_runner: ^2.4.7
+  flutter_gen: ^5.3.2
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
