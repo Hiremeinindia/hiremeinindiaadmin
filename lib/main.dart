@@ -8,7 +8,6 @@ import 'package:hiremeinindiaapp/homepage.dart';
 import 'package:hiremeinindiaapp/loginpage.dart';
 import 'package:hiremeinindiaapp/newuserupload.dart';
 import 'package:hiremeinindiaapp/newuserupload.dart';
-import 'package:hiremeinindiaapp/registration.dart';
 import 'package:hiremeinindiaapp/userpayment.dart';
 
 import 'classes/language_constants.dart';
@@ -65,7 +64,7 @@ class _HireAppState extends State<HireApp> {
       supportedLocales: AppLocalizations.supportedLocales,
       locale: _locale,
       debugShowCheckedModeBanner: false,
-      home: const NewUserUpload(),
+      home: const CorporateConsole(),
     );
   }
 }
