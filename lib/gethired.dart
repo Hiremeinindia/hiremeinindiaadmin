@@ -1,8 +1,10 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hiremeinindiaapp/widgets/hiremeinindia.dart';
 
 import 'Candidate/registration.dart';
+import 'Providers/session.dart';
 import 'widgets/custombutton.dart';
 import 'package:hiremeinindiaapp/main.dart';
 import 'classes/language.dart';
@@ -17,6 +19,21 @@ class Hired extends StatefulWidget {
 }
 
 class _HiredState extends State<Hired> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  late User user;
+  String? name;
+
+  @override
+  void initState() {
+    super.initState();
+    initUser();
+  }
+
+  initUser() async {
+    user = await _auth.currentUser!;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,6 +41,7 @@ class _HiredState extends State<Hired> {
         title: HireMeInIndia(),
         centerTitle: false,
         toolbarHeight: 80,
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
         elevation: 0.0,
         actions: [
@@ -179,11 +197,7 @@ class _HiredState extends State<Hired> {
                   child: CircleAvatar(
                     backgroundColor: Colors.black,
                     child: CircleAvatar(
-                      backgroundColor: Colors.white,
-                      child: Icon(
-                        Icons.person,
-                        color: Colors.indigo.shade900,
-                      ),
+                      backgroundImage: NetworkImage("${user.photoURL}"),
                     ),
                   ),
                 ),
@@ -191,11 +205,11 @@ class _HiredState extends State<Hired> {
                 SizedBox(
                   width: 50,
                   child: Text(
-                    'Guest User',
+                    AppSession().candidate?.name ?? "No Username",
                     maxLines: 2,
                     style: TextStyle(color: Colors.black),
                   ),
-                ),
+                )
               ],
             ),
           ),
@@ -255,7 +269,7 @@ class _HiredState extends State<Hired> {
                         width: 200,
                         height: 40,
                         child: CustomButton(
-                          text: translation(context).blueCollerJobs,
+                          text: translation(context).greyCollerJobs,
                           onPressed: () {
                             Registration();
                           },

@@ -4,6 +4,7 @@ import 'package:hiremeinindiaapp/gethired.dart';
 import 'package:hiremeinindiaapp/main.dart';
 import 'package:hiremeinindiaapp/widgets/customtextfield.dart';
 import 'package:get/get.dart';
+import 'Providers/session.dart';
 import 'classes/language.dart';
 import 'classes/language_constants.dart';
 import 'gen_l10n/app_localizations.dart';
@@ -248,7 +249,7 @@ class _HomePageState extends State<HomePage> {
                 SizedBox(
                   width: 50,
                   child: Text(
-                    'Guest User',
+                    AppSession().candidate?.name ?? "No Username",
                     maxLines: 2,
                     style: TextStyle(color: Colors.black),
                   ),

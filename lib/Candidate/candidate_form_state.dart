@@ -8,7 +8,6 @@ class CandidateFormController {
   TextEditingController name = TextEditingController();
   TextEditingController mobile = TextEditingController();
   TextEditingController email = TextEditingController();
-
   final worktitle = TextEditingController();
   final aadharno = TextEditingController();
   final gender = TextEditingController();
@@ -43,6 +42,18 @@ class CandidateFormController {
         name: name.text,
         email: email.text,
         mobile: mobile.text,
+        worktitle: worktitle.text,
+        aadharno: aadharno.text,
+        gender: gender.text,
+        workexp: workexp.text,
+        state: state.text,
+        address: address.text,
+        skills: skills.text,
+        workin: workin.text,
+        password: password.text,
+        otpm: otpm.text,
+        code: code.text,
+        confirmPassword: confirmPassword.text,
       );
 
   factory CandidateFormController.fromCandidate(Candidate candidate) {
@@ -50,7 +61,19 @@ class CandidateFormController {
     controller.name.text = candidate.name!;
     controller.mobile.text = candidate.mobile!;
     controller.email.text = candidate.email!;
+    controller.worktitle.text = candidate.worktitle!;
     controller._reference = candidate.reference;
+    controller.aadharno.text = candidate.aadharno!;
+    controller.gender.text = candidate.gender!;
+    controller.workexp.text = candidate.workexp!;
+    controller.state.text = candidate.state!;
+    controller.address.text = candidate.address!;
+    controller.skills.text = candidate.skills!;
+    controller.workin.text = candidate.workin!;
+    controller.password.text = candidate.password!;
+    controller.otpm.text = candidate.otpm!;
+    controller.code.text = candidate.code!;
+    controller.confirmPassword.text = candidate.confirmPassword!;
     return controller;
   }
 }
