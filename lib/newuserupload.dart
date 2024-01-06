@@ -45,6 +45,7 @@ class _NewUserUpload extends State<NewUserUpload> {
   TextEditingController currentCityController = TextEditingController();
   TextEditingController expectedWageController = TextEditingController();
   TextEditingController currentStateController = TextEditingController();
+  TextEditingController currentCountryController = TextEditingController();
 
   @override
   void dispose() {
@@ -420,8 +421,8 @@ class _NewUserUpload extends State<NewUserUpload> {
                     children: [
                       if (uploadedImageUrlForPicture != null)
                         Container(
-                          width: 100,
-                          height: 150,
+                          width: 70,
+                          height: 70,
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.black, width: 2),
                             borderRadius: BorderRadius.circular(10),
@@ -493,8 +494,8 @@ class _NewUserUpload extends State<NewUserUpload> {
                     children: [
                       if (uploadedImageUrlAadhar != null)
                         Container(
-                          width: 100,
-                          height: 150,
+                          width: 70,
+                          height: 70,
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.black, width: 2),
                             borderRadius: BorderRadius.circular(10),
@@ -564,8 +565,8 @@ class _NewUserUpload extends State<NewUserUpload> {
                     children: [
                       if (uploadedImageUrlForVoterId != null)
                         Container(
-                          width: 100,
-                          height: 150,
+                          width: 70,
+                          height: 70,
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.black, width: 2),
                             borderRadius: BorderRadius.circular(10),
@@ -636,8 +637,8 @@ class _NewUserUpload extends State<NewUserUpload> {
                     children: [
                       if (uploadedImageUrlForExperienceProof != null)
                         Container(
-                          width: 100,
-                          height: 150,
+                          width: 70,
+                          height: 70,
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.black, width: 2),
                             borderRadius: BorderRadius.circular(10),
@@ -708,8 +709,8 @@ class _NewUserUpload extends State<NewUserUpload> {
                     children: [
                       if (uploadedImageUrlForCV != null)
                         Container(
-                          width: 100,
-                          height: 150,
+                          width: 70,
+                          height: 70,
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.black, width: 2),
                             borderRadius: BorderRadius.circular(10),
@@ -776,7 +777,7 @@ class _NewUserUpload extends State<NewUserUpload> {
               ],
             ),
             SizedBox(
-              height: 50,
+              height: 70,
             ),
             Row(
               children: [
@@ -785,6 +786,12 @@ class _NewUserUpload extends State<NewUserUpload> {
                   children: [
                     Text(
                       translation(context).blueColler,
+                      style: TextStyle(
+                          fontFamily: 'Poppins', fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 60),
+                    Text(
+                      translation(context).currentCountry,
                       style: TextStyle(
                           fontFamily: 'Poppins', fontWeight: FontWeight.bold),
                     ),
@@ -816,6 +823,17 @@ class _NewUserUpload extends State<NewUserUpload> {
                       width: 400,
                       height: 40,
                       child: TextField(
+                        controller: currentCountryController, // Set controller
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 40),
+                    SizedBox(
+                      width: 400,
+                      height: 40,
+                      child: TextField(
                         controller: currentCityController, // Set controller
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
@@ -827,49 +845,55 @@ class _NewUserUpload extends State<NewUserUpload> {
                 SizedBox(
                   width: 20,
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      translation(context).expectedWage,
-                      style: TextStyle(
-                          fontFamily: 'Poppins', fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 60),
-                    Text(
-                      translation(context).currentState,
-                      style: TextStyle(
-                          fontFamily: 'Poppins', fontWeight: FontWeight.bold),
-                    ),
-                  ],
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 80),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        translation(context).expectedWage,
+                        style: TextStyle(
+                            fontFamily: 'Poppins', fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 60),
+                      Text(
+                        translation(context).currentState,
+                        style: TextStyle(
+                            fontFamily: 'Poppins', fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
                 ),
                 SizedBox(
                   width: 40,
                 ),
-                Column(
-                  children: [
-                    SizedBox(
-                      width: 400,
-                      height: 40,
-                      child: TextField(
-                        controller: expectedWageController, // Set controller
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 80),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        width: 400,
+                        height: 40,
+                        child: TextField(
+                          controller: expectedWageController, // Set controller
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(height: 40),
-                    SizedBox(
-                      width: 400,
-                      height: 40,
-                      child: TextField(
-                        controller: currentStateController, // Set controller
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
+                      SizedBox(height: 40),
+                      SizedBox(
+                        width: 400,
+                        height: 40,
+                        child: TextField(
+                          controller: currentStateController, // Set controller
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
