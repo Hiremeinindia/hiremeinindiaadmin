@@ -21,6 +21,7 @@ import '../classes/language.dart';
 import '../classes/language_constants.dart';
 import '../controllers/signupcontroller.dart';
 import '../gen_l10n/app_localizations.dart';
+import '../homepage.dart';
 import '../main.dart';
 import '../widgets/custombutton.dart';
 import '../widgets/customtextfield.dart';
@@ -50,6 +51,7 @@ class _RegistrationState extends State<Registration> {
   bool blueChecked = false;
   bool greyChecked = false;
   bool focusTagEnabled = false;
+  String password = '';
 
   late final Candidate? candidate;
   var isLoading = false;
@@ -957,6 +959,30 @@ class _RegistrationState extends State<Registration> {
                           validator: workexpValidator,
                           controller: controller.address,
                         )),
+                        SizedBox(
+                          height: 40,
+                        ),
+                        SizedBox(
+                          height: 40,
+                          width: 70,
+                        ),
+                        Text(
+                          translation(context).password,
+                          style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(width: 60),
+                        Expanded(
+                            child: CustomTextfield(
+                          validator: validatePassword,
+                          onsaved: (value) {
+                            setState(() {
+                              password = value;
+                            });
+                          },
+                          controller: controller.password,
+                        )),
                       ]),
                       SizedBox(
                         height: 45,
@@ -1455,11 +1481,19 @@ class _RegistrationState extends State<Registration> {
                                   future =
                                       candidateController.updateCandidate();
                                 }
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => NewUserUpload(),
-                                  ),
-                                );
+
+                                FirebaseAuth.instance
+                                    .createUserWithEmailAndPassword(
+                                        email: controller.email.text,
+                                        password: controller.password.text)
+                                    .then((value) {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => HomePage()));
+                                }).onError((error, stackTrace) {
+                                  print("Error ${error.toString()}");
+                                });
                               }
                             },
                           ),
@@ -1477,6 +1511,20 @@ class _RegistrationState extends State<Registration> {
         ),
       ),
     );
+  }
+
+  String? validatePassword(String? value) {
+    RegExp regex =
+        RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
+    if (value!.isEmpty) {
+      return 'Please enter password';
+    } else {
+      if (!regex.hasMatch(value)) {
+        return 'Enter valid password';
+      } else {
+        return null;
+      }
+    }
   }
 }
 

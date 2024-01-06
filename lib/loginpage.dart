@@ -42,6 +42,8 @@ class _LoginPageState extends State<LoginPage> {
   String? selectedValue;
   String email = '';
   String password = '';
+  String name = '';
+
   bool login = false;
   final _formKey = GlobalKey<FormState>();
   @override
@@ -50,6 +52,7 @@ class _LoginPageState extends State<LoginPage> {
       appBar: AppBar(
         centerTitle: false,
         toolbarHeight: 80,
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
         elevation: 0.0,
         actions: [
@@ -267,15 +270,21 @@ class _LoginPageState extends State<LoginPage> {
                   login ? 'Login' : translation(context).signIn,
                 ),
                 onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    FirebaseAuth.instance
-                        .signInWithEmailAndPassword(
-                            email: controller.email.text,
-                            password: controller.password.text)
-                        .then((value) {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => HomePage()));
-                    });
+                  UserCredential user = await FirebaseAuth.instance
+                      .signInWithEmailAndPassword(
+                          email: controller.email.text,
+                          password: controller.password.text);
+                  if (user != null) {
+                    email = controller.email.text;
+                    name = controller.name.text;
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) {
+                        return Hired();
+                      }),
+                    );
+                  } else {
+                    print('user does not exist');
                   }
                 },
               )
