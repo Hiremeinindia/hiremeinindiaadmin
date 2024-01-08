@@ -249,7 +249,9 @@ class _HiredState extends State<Hired> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const Registration()),
+                                  builder: (context) => const Registration(
+                                        email: '',
+                                      )),
                             );
                           },
                         ))
@@ -271,7 +273,9 @@ class _HiredState extends State<Hired> {
                         child: CustomButton(
                           text: translation(context).greyCollerJobs,
                           onPressed: () {
-                            Registration();
+                            Registration(
+                              email: '',
+                            );
                           },
                         ))
                   ],

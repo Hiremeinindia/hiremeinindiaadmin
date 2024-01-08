@@ -29,8 +29,10 @@ import '../widgets/hiremeinindia.dart';
 import 'candidate_controller.dart';
 
 class Registration extends StatefulWidget {
-  const Registration({Key? key, this.candidate}) : super(key: key);
+  const Registration({Key? key, this.candidate, required this.email})
+      : super(key: key);
 
+  final String email;
   final Candidate? candidate;
 
   @override
@@ -38,11 +40,21 @@ class Registration extends StatefulWidget {
 }
 
 class _RegistrationState extends State<Registration> {
+  @override
+  void initState() {
+    super.initState();
+    // Use the email passed from the previous page to initialize the controller
+    controller.email.text = widget.email;
+  }
+
+  String userEmailBeforeVerification = '';
+  String userEmail = '';
   String enteredOTP = '';
   String smscode = "";
   String phoneNumber = "", data = "", phone = "";
   bool isVerified = false;
-  bool isOtpValid = true; // Replace this line with actual verification logic
+  bool isOtpValid = true;
+  // Replace this line with actual verification logic
 
   List<String> _values = [];
   List<String> _value = [];
@@ -136,6 +148,7 @@ class _RegistrationState extends State<Registration> {
 
   void _showOtpDialog() {
     print("otp2");
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -161,7 +174,8 @@ class _RegistrationState extends State<Registration> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Registration(),
+                      builder: (context) =>
+                          Registration(email: userEmailBeforeVerification),
                     ),
                   );
                 } else {
@@ -202,7 +216,9 @@ class _RegistrationState extends State<Registration> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => Registration(),
+          builder: (context) => Registration(
+            email: '',
+          ),
         ),
       );
     } else {
@@ -314,7 +330,10 @@ class _RegistrationState extends State<Registration> {
             await _auth.signInWithCredential(authCredential).then((value) {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => Registration()),
+                MaterialPageRoute(
+                    builder: (context) => Registration(
+                          email: '',
+                        )),
               );
               setState(() {
                 isVerified = true;
@@ -360,7 +379,9 @@ class _RegistrationState extends State<Registration> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => Registration()),
+                                builder: (context) => Registration(
+                                      email: '',
+                                    )),
                           );
                           Row(
                             mainAxisSize: MainAxisSize.min,
@@ -1074,22 +1095,13 @@ class _RegistrationState extends State<Registration> {
                         Expanded(
                             child: CustomTextfield(
                                 controller: controller.email,
-                                validator: (val) {
-                                  if (AppSession()
-                                      .candidates
-                                      .where((element) =>
-                                          element.email!.toLowerCase() ==
-                                          val?.toLowerCase())
-                                      .isNotEmpty) {
-                                    return "Already User Exist";
-                                  }
-                                  ;
-                                  MultiValidator([
-                                    RequiredValidator(errorText: "* Required"),
-                                    EmailValidator(
-                                        errorText: "Enter valid email id"),
-                                  ]);
-                                })),
+                                validator: MultiValidator([
+                                  RequiredValidator(errorText: "* Required"),
+                                  EmailValidator(
+                                      errorText: "Enter valid email id"),
+                                ]))),
+                        // Add this variable to store the email
+
                         SizedBox(
                           height: 30,
                           child: ElevatedButton(
@@ -1101,6 +1113,7 @@ class _RegistrationState extends State<Registration> {
                             ),
                             onPressed: () async {
                               print("otp1");
+
                               // Set OTP configuration
                               myauth.setConfig(
                                 appEmail: "contact@hdevcoder.com",
@@ -1109,12 +1122,15 @@ class _RegistrationState extends State<Registration> {
                                 otpLength: 4,
                                 otpType: OTPType.digitsOnly,
                               );
+
+                              // Store the email before showing the OTP dialog
+                              String userEmailBeforeVerification =
+                                  controller.email.text;
+
                               _showOtpDialog();
 
                               // Send OTP to email
                               bool otpSent = await myauth.sendOTP();
-
-                              // Show OTP entry dialog
 
                               // Check if OTP sending is successful
                               if (!otpSent) {
@@ -1137,6 +1153,15 @@ class _RegistrationState extends State<Registration> {
                                     );
                                   },
                                 );
+                              } else {
+                                // Set the email back to the text field if OTP sending is successful
+                                // and after a slight delay to ensure the dialog has been dismissed
+                                await Future.delayed(Duration(
+                                    milliseconds:
+                                        500)); // Adjust delay as needed
+                                setState(() {
+                                  userEmail = userEmailBeforeVerification;
+                                });
                               }
                             },
                             child: isVerified
@@ -1473,7 +1498,7 @@ class _RegistrationState extends State<Registration> {
                                 var future;
                                 var candidateController = CandidateController(
                                     formController: controller);
-                                if (widget.candidate == null) {}
+
                                 if (widget.candidate == null) {
                                   future = candidateController.addCandidate();
                                 } else {
