@@ -11,15 +11,14 @@ import 'package:flutter_dialogs/flutter_dialogs.dart';
 import 'package:hiremeinindiaapp/Candidate/candidate_form_state.dart';
 import 'package:hiremeinindiaapp/Models/candidated.dart';
 import 'package:hiremeinindiaapp/Models/register_model.dart';
-import 'package:hiremeinindiaapp/newuserupload.dart';
 import 'package:hiremeinindiaapp/userpayment.dart';
 import 'package:hiremeinindiaapp/widgets/textstylebutton.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:super_tag_editor/widgets/rich_text_widget.dart';
 import '../Providers/session.dart';
+import '../blueuserupload.dart';
 import '../classes/language.dart';
 import '../classes/language_constants.dart';
-import '../controllers/signupcontroller.dart';
 import '../gen_l10n/app_localizations.dart';
 import '../homepage.dart';
 import '../main.dart';
@@ -28,71 +27,104 @@ import '../widgets/customtextfield.dart';
 import '../widgets/hiremeinindia.dart';
 import 'candidate_controller.dart';
 
-class Registration extends StatefulWidget {
-  const Registration({Key? key, this.candidate, required this.email})
-      : super(key: key);
+class BlueRegistration extends StatefulWidget {
+  const BlueRegistration({Key? key, this.bluecandidate}) : super(key: key);
 
-  final String email;
-  final Candidate? candidate;
+  final BlueCandidate? bluecandidate;
 
   @override
-  State<Registration> createState() => _RegistrationState();
+  State<BlueRegistration> createState() => _BlueRegistrationState();
 }
 
-class _RegistrationState extends State<Registration> {
-  @override
-  void initState() {
-    super.initState();
-    // Use the email passed from the previous page to initialize the controller
-    controller.email.text = widget.email;
-  }
-
-  String userEmailBeforeVerification = '';
-  String userEmail = '';
+class _BlueRegistrationState extends State<BlueRegistration> {
   String enteredOTP = '';
   String smscode = "";
   String phoneNumber = "", data = "", phone = "";
   bool isVerified = false;
-  bool isOtpValid = true;
-  // Replace this line with actual verification logic
+  bool isOtpValid = true; // Replace this line with actual verification logic
 
   List<String> _values = [];
   List<String> _value = [];
 
-  bool blueChecked = false;
+  bool blueChecked = true;
   bool greyChecked = false;
   bool focusTagEnabled = false;
   String password = '';
 
-  late final Candidate? candidate;
   var isLoading = false;
 
   final FocusNode _focusNode = FocusNode();
   final _formKey = GlobalKey<FormState>();
   EmailOTP myauth = EmailOTP();
-  CandidateFormController controller = CandidateFormController();
-  final DatabaseReference _userRef =
-      FirebaseDatabase.instance.reference().child('users');
+  BlueCandidateFormController bluecontroller = BlueCandidateFormController();
+  final DatabaseReference _blueuserRef =
+      FirebaseDatabase.instance.reference().child('bluecollarusers');
 
   static const Skill = [
-    'Plumber',
-    'Senior Plumber',
-    'Junior Plumber',
-    'Skill 1',
     'Electrician',
-    'Senior Electrician',
-    'Junior Electrician',
-    'Skill 2',
+    'Mechanic',
+    'Construction Helper ',
+    'Meson ',
+    'Ac Technician',
+    'Telecom Technician',
+    'Plumber',
+    'Construction Worker',
+    'Welder',
+    'Fitter',
+    'Carpenter',
+    'Machine Operators',
+    'Operator',
+    'Drivers',
+    'Painter ',
+    'Aircraft mechanic',
+    'Security',
+    'Logistics Labours',
+    'Airport Ground workers',
+    'Delivery Workers',
+    'Cleaners',
+    'Cook',
+    'Office Boy',
+    'Maid',
+    'Collection Staff',
+    'Shop Keepers',
+    'Electronic repair Technicians ',
+    'Barber',
+    'Beautician',
+    'Catering Workers',
+    'Pest Control'
   ];
   static const Workin = [
-    'Plumber',
-    'Senior Plumber',
-    'Junior Plumber',
-    'Skill 1',
     'Electrician',
-    'Senior Electrician',
-    'Junior Electrician',
-    'Skill 2',
+    'Mechanic',
+    'Construction Helper ',
+    'Meson ',
+    'Ac Technician',
+    'Telecom Technician',
+    'Plumber',
+    'Construction Worker',
+    'Welder',
+    'Fitter',
+    'Carpenter',
+    'Machine Operators',
+    'Operator',
+    'Drivers',
+    'Painter ',
+    'Aircraft mechanic',
+    'Security',
+    'Logistics Labours',
+    'Airport Ground workers',
+    'Delivery Workers',
+    'Cleaners',
+    'Cook',
+    'Office Boy',
+    'Maid',
+    'Collection Staff',
+    'Shop Keepers',
+    'Electronic repair Technicians ',
+    'Barber',
+    'Beautician',
+    'Catering Workers',
+    'Pest Control'
   ];
 
   _onDelete(index) {
@@ -114,7 +146,7 @@ class _RegistrationState extends State<Registration> {
   }
 
   dispose() {
-    controller.name.dispose();
+    bluecontroller.name.dispose();
     super.dispose();
   }
 
@@ -148,14 +180,13 @@ class _RegistrationState extends State<Registration> {
 
   void _showOtpDialog() {
     print("otp2");
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text("Enter OTP"),
           content: TextField(
-            controller: controller.otp,
+            controller: bluecontroller.otp,
             keyboardType: TextInputType.number,
             maxLength: 4,
           ),
@@ -166,16 +197,16 @@ class _RegistrationState extends State<Registration> {
                 Navigator.of(context).pop();
 
                 // Verify entered OTP
-                print("Entered OTP: ${controller.otp.text}");
+                print("Entered OTP: ${bluecontroller.otp.text}");
 
-                if (await myauth.verifyOTP(otp: controller.otp.text.trim())) {
+                if (await myauth.verifyOTP(
+                    otp: bluecontroller.otp.text.trim())) {
                   print("OTP verification success");
-                  // Navigate to registration page
+                  // Navigate to BlueRegistration page
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          Registration(email: userEmailBeforeVerification),
+                      builder: (context) => BlueRegistration(),
                     ),
                   );
                 } else {
@@ -208,17 +239,15 @@ class _RegistrationState extends State<Registration> {
   }
 
   Future<void> _verifyOtp() async {
-    // Perform OTP verification here using myauth.verifyOTP(otpController.text)
-    bool isOtpValid = await myauth.verifyOTP(otp: controller.otp.text);
+    // Perform OTP verification here using myauth.verifyOTP(otpbluecontroller.text)
+    bool isOtpValid = await myauth.verifyOTP(otp: bluecontroller.otp.text);
 
     if (isOtpValid) {
-      // Navigate to registration page
+      // Navigate to BlueRegistration page
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => Registration(
-            email: '',
-          ),
+          builder: (context) => BlueRegistration(),
         ),
       );
     } else {
@@ -294,7 +323,7 @@ class _RegistrationState extends State<Registration> {
 
   Future<bool> _signInWithMobileNumber() async {
     print("register1");
-    String mobileNumber = controller.mobile.text;
+    String mobileNumber = bluecontroller.mobile.text;
     FirebaseAuth _auth = FirebaseAuth.instance;
 
     try {
@@ -311,7 +340,7 @@ class _RegistrationState extends State<Registration> {
           context: context,
           builder: (context) => AlertDialog(
             title: Text("Mobile Number Already Registered"),
-            content: Text("Try another number for registration"),
+            content: Text("Try another number for BlueRegistration"),
             actions: [
               ElevatedButton(
                 onPressed: () {
@@ -325,15 +354,12 @@ class _RegistrationState extends State<Registration> {
       } else {
         // If the number is not registered, proceed with phone number verification
         await _auth.verifyPhoneNumber(
-          phoneNumber: "+91${controller.mobile.text}",
+          phoneNumber: "+91${bluecontroller.mobile.text}",
           verificationCompleted: (PhoneAuthCredential authCredential) async {
             await _auth.signInWithCredential(authCredential).then((value) {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                    builder: (context) => Registration(
-                          email: '',
-                        )),
+                MaterialPageRoute(builder: (context) => BlueRegistration()),
               );
               setState(() {
                 isVerified = true;
@@ -358,7 +384,7 @@ class _RegistrationState extends State<Registration> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     TextField(
-                      controller: controller.code,
+                      controller: bluecontroller.code,
                     ),
                   ],
                 ),
@@ -366,7 +392,7 @@ class _RegistrationState extends State<Registration> {
                   ElevatedButton(
                     onPressed: () {
                       FirebaseAuth auth = FirebaseAuth.instance;
-                      String smsCode = controller.code.text;
+                      String smsCode = bluecontroller.code.text;
                       PhoneAuthCredential _credential =
                           PhoneAuthProvider.credential(
                         verificationId: storedVerificationId,
@@ -379,9 +405,7 @@ class _RegistrationState extends State<Registration> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => Registration(
-                                      email: '',
-                                    )),
+                                builder: (context) => BlueRegistration()),
                           );
                           Row(
                             mainAxisSize: MainAxisSize.min,
@@ -555,6 +579,7 @@ class _RegistrationState extends State<Registration> {
       appBar: AppBar(
         title: HireMeInIndia(),
         centerTitle: false,
+        automaticallyImplyLeading: false,
         toolbarHeight: 80,
         backgroundColor: Colors.transparent,
         elevation: 0.0,
@@ -806,16 +831,12 @@ class _RegistrationState extends State<Registration> {
                       translation(context).blueColler,
                     ),
                     Checkbox(
-                      value: greyChecked,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          greyChecked = value ?? false;
-                        });
-                      },
+                      value: false,
+                      onChanged: null,
                       fillColor: MaterialStateProperty.resolveWith<Color>(
                         (Set<MaterialState> states) {
                           if (states.contains(MaterialState.selected)) {
-                            return Colors.indigo.shade900;
+                            return const Color.fromARGB(255, 90, 97, 168);
                           }
                           return Colors.transparent;
                         },
@@ -880,14 +901,14 @@ class _RegistrationState extends State<Registration> {
                               children: [
                                 CustomTextfield(
                                   validator: nameValidator,
-                                  controller: controller.name,
+                                  controller: bluecontroller.name,
                                 ),
                                 SizedBox(
                                   height: 40,
                                 ),
                                 CustomTextfield(
                                   validator: nameValidator,
-                                  controller: controller.worktitle,
+                                  controller: bluecontroller.worktitle,
                                 ),
                                 SizedBox(
                                   height: 40,
@@ -901,7 +922,7 @@ class _RegistrationState extends State<Registration> {
                                     }
                                     return null;
                                   },
-                                  controller: controller.aadharno,
+                                  controller: bluecontroller.aadharno,
                                 ),
                               ],
                             ),
@@ -942,21 +963,21 @@ class _RegistrationState extends State<Registration> {
                               children: [
                                 CustomTextfield(
                                   validator: nameValidator,
-                                  controller: controller.gender,
+                                  controller: bluecontroller.gender,
                                 ),
                                 SizedBox(
                                   height: 40,
                                 ),
                                 CustomTextfield(
                                   validator: workexpValidator,
-                                  controller: controller.workexp,
+                                  controller: bluecontroller.workexp,
                                 ),
                                 SizedBox(
                                   height: 40,
                                 ),
                                 CustomTextfield(
                                   validator: nameValidator,
-                                  controller: controller.qualification,
+                                  controller: bluecontroller.qualification,
                                 ),
                               ],
                             ),
@@ -977,7 +998,7 @@ class _RegistrationState extends State<Registration> {
                         Expanded(
                             child: CustomTextfield(
                           validator: workexpValidator,
-                          controller: controller.address,
+                          controller: bluecontroller.address,
                         )),
                         SizedBox(
                           height: 40,
@@ -1001,7 +1022,7 @@ class _RegistrationState extends State<Registration> {
                               password = value;
                             });
                           },
-                          controller: controller.password,
+                          controller: bluecontroller.password,
                         )),
                       ]),
                       SizedBox(
@@ -1017,12 +1038,15 @@ class _RegistrationState extends State<Registration> {
                         SizedBox(width: 65),
                         Expanded(
                             child: CustomTextfield(
-                          controller: controller.mobile,
+                          controller: bluecontroller.mobile,
                           validator: (value) {
-                            if (value!.length != 10)
+                            if (value!.isEmpty) {
+                              return '*Required';
+                            } else if (value!.length != 10) {
                               return 'Mobile Number must be of 10 digit';
-                            else
-                              return null;
+                            }
+
+                            return null;
                           },
                         )),
                         SizedBox(
@@ -1036,7 +1060,7 @@ class _RegistrationState extends State<Registration> {
                             ),
                             onPressed: () async {
                               print("phone1");
-                              String mobileNumber = controller.mobile.text;
+                              String mobileNumber = bluecontroller.mobile.text;
                               print(mobileNumber);
 
                               // Check if the user is already registered or in the blocklist
@@ -1093,15 +1117,14 @@ class _RegistrationState extends State<Registration> {
                         ),
                         SizedBox(width: 55),
                         Expanded(
-                            child: CustomTextfield(
-                                controller: controller.email,
-                                validator: MultiValidator([
-                                  RequiredValidator(errorText: "* Required"),
-                                  EmailValidator(
-                                      errorText: "Enter valid email id"),
-                                ]))),
-                        // Add this variable to store the email
-
+                          child: CustomTextfield(
+                              controller: bluecontroller.email,
+                              validator: MultiValidator([
+                                RequiredValidator(errorText: "* Required"),
+                                EmailValidator(
+                                    errorText: "Enter valid email id"),
+                              ])),
+                        ),
                         SizedBox(
                           height: 30,
                           child: ElevatedButton(
@@ -1113,24 +1136,20 @@ class _RegistrationState extends State<Registration> {
                             ),
                             onPressed: () async {
                               print("otp1");
-
                               // Set OTP configuration
                               myauth.setConfig(
                                 appEmail: "contact@hdevcoder.com",
-                                appName: "OTP for Registration",
-                                userEmail: controller.email.text,
+                                appName: "OTP for BlueRegistration",
+                                userEmail: bluecontroller.email.text,
                                 otpLength: 4,
                                 otpType: OTPType.digitsOnly,
                               );
-
-                              // Store the email before showing the OTP dialog
-                              String userEmailBeforeVerification =
-                                  controller.email.text;
-
                               _showOtpDialog();
 
                               // Send OTP to email
                               bool otpSent = await myauth.sendOTP();
+
+                              // Show OTP entry dialog
 
                               // Check if OTP sending is successful
                               if (!otpSent) {
@@ -1153,15 +1172,6 @@ class _RegistrationState extends State<Registration> {
                                     );
                                   },
                                 );
-                              } else {
-                                // Set the email back to the text field if OTP sending is successful
-                                // and after a slight delay to ensure the dialog has been dismissed
-                                await Future.delayed(Duration(
-                                    milliseconds:
-                                        500)); // Adjust delay as needed
-                                setState(() {
-                                  userEmail = userEmailBeforeVerification;
-                                });
                               }
                             },
                             child: isVerified
@@ -1209,11 +1219,10 @@ class _RegistrationState extends State<Registration> {
                                 children: <Widget>[
                                   TagEditor<String>(
                                     length: _value.length,
-                                    controller: controller.skills,
+                                    controller: bluecontroller.skills,
                                     focusNode: _focusNode,
                                     delimiters: [',', ' '],
                                     resetTextOnSubmitted: true,
-                                    // This is set to grey just to illustrate the textStyle prop
                                     textStyle:
                                         const TextStyle(color: Colors.black),
                                     onSubmitted: (outstandingValue) {
@@ -1306,6 +1315,7 @@ class _RegistrationState extends State<Registration> {
                                         _value.add(item);
                                       });
                                     },
+
                                     suggestionsBoxElevation: 5,
                                     findSuggestions: (String query) {
                                       if (query.isNotEmpty) {
@@ -1356,7 +1366,7 @@ class _RegistrationState extends State<Registration> {
                                 children: <Widget>[
                                   TagEditor<String>(
                                     length: _values.length,
-                                    controller: controller.workin,
+                                    controller: bluecontroller.workin,
                                     focusNode: _focusNode,
                                     delimiters: [',', ' '],
                                     resetTextOnSubmitted: true,
@@ -1496,25 +1506,28 @@ class _RegistrationState extends State<Registration> {
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
                                 var future;
-                                var candidateController = CandidateController(
-                                    formController: controller);
-
-                                if (widget.candidate == null) {
-                                  future = candidateController.addCandidate();
+                                var bluecandidateController =
+                                    BlueCandidateController(
+                                        blueformController: bluecontroller);
+                                if (widget.bluecandidate == null) {}
+                                if (widget.bluecandidate == null) {
+                                  future =
+                                      bluecandidateController.addCandidate();
                                 } else {
                                   future =
-                                      candidateController.updateCandidate();
+                                      bluecandidateController.updateCandidate();
                                 }
 
                                 FirebaseAuth.instance
                                     .createUserWithEmailAndPassword(
-                                        email: controller.email.text,
-                                        password: controller.password.text)
+                                        email: bluecontroller.email.text,
+                                        password: bluecontroller.password.text)
                                     .then((value) {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => HomePage()));
+                                          builder: (context) =>
+                                              BlueUserUpload()));
                                 }).onError((error, stackTrace) {
                                   print("Error ${error.toString()}");
                                 });
@@ -1541,10 +1554,10 @@ class _RegistrationState extends State<Registration> {
     RegExp regex =
         RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
     if (value!.isEmpty) {
-      return 'Please enter password';
+      return '*Required';
     } else {
       if (!regex.hasMatch(value)) {
-        return 'Enter valid password';
+        return 'It must be lower & upper case, number and Symbol';
       } else {
         return null;
       }

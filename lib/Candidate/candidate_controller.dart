@@ -6,10 +6,13 @@ import '../Models/candidated.dart';
 import '../Models/results.dart';
 
 class CandidateController {
-  CandidateController({required this.formController});
+  CandidateController({
+    required this.formController,
+  });
   final CandidateFormController formController;
 
   static final candidateRef = FirebaseFirestore.instance.collection('users');
+
   Candidate get candidate => formController.candidate;
 
   Future<Result> addCandidate() {
@@ -43,6 +46,54 @@ class CandidateController {
 
   static Future<List<Candidate>> loadStaffs(String search) {
     return candidateRef
+        .where('search', arrayContains: search)
+        .get()
+        .then((snapshot) {
+      return snapshot.docs.map((e) => Candidate.fromSnapshot(e)).toList();
+    });
+  }
+}
+
+class BlueCandidateController {
+  BlueCandidateController({required this.blueformController});
+
+  final BlueCandidateFormController blueformController;
+
+  static final bluecandidateRef =
+      FirebaseFirestore.instance.collection('bluecollaruser');
+  BlueCandidate get bluecandidate => blueformController.bluecandidate;
+
+  Future<Result> addCandidate() {
+    return bluecandidate.reference
+        .set(bluecandidate.toJson())
+        .then((value) =>
+            Result(tilte: Result.success, message: "Staff added Successfully"))
+        .onError((error, stackTrace) =>
+            Result(tilte: "Staff addition Failed", message: error.toString()));
+  }
+
+  Future<Result> updateCandidate() {
+    return bluecandidate.reference
+        .set(bluecandidate.toJson())
+        .then((value) => Result(
+            tilte: Result.success,
+            message: "Staff record updated successfully"))
+        .onError((error, stackTrace) => Result(
+            tilte: Result.failure, message: "Staff record update failed"));
+  }
+
+  Future<Result> deleteStaff() {
+    return bluecandidate.reference
+        .delete()
+        .then((value) => Result(
+            tilte: Result.success,
+            message: "Staff record updated successfully"))
+        .onError((error, stackTrace) => Result(
+            tilte: Result.failure, message: "Staff record update failed"));
+  }
+
+  static Future<List<Candidate>> loadStaffs(String search) {
+    return bluecandidateRef
         .where('search', arrayContains: search)
         .get()
         .then((snapshot) {

@@ -1,9 +1,12 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:hiremeinindiaapp/Candidate/greyRegistration.dart';
+import 'package:hiremeinindiaapp/homepage.dart';
+import 'package:hiremeinindiaapp/loginpage.dart';
 import 'package:hiremeinindiaapp/widgets/hiremeinindia.dart';
 
-import 'Candidate/registration.dart';
+import 'Candidate/blueregistration.dart';
 import 'Providers/session.dart';
 import 'widgets/custombutton.dart';
 import 'package:hiremeinindiaapp/main.dart';
@@ -19,21 +22,6 @@ class Hired extends StatefulWidget {
 }
 
 class _HiredState extends State<Hired> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  late User user;
-  String? name;
-
-  @override
-  void initState() {
-    super.initState();
-    initUser();
-  }
-
-  initUser() async {
-    user = await _auth.currentUser!;
-    setState(() {});
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -197,7 +185,11 @@ class _HiredState extends State<Hired> {
                   child: CircleAvatar(
                     backgroundColor: Colors.black,
                     child: CircleAvatar(
-                      backgroundImage: NetworkImage("${user.photoURL}"),
+                      backgroundColor: Colors.white,
+                      child: Icon(
+                        Icons.person,
+                        color: Colors.indigo.shade900,
+                      ),
                     ),
                   ),
                 ),
@@ -205,11 +197,11 @@ class _HiredState extends State<Hired> {
                 SizedBox(
                   width: 50,
                   child: Text(
-                    AppSession().candidate?.name ?? "No Username",
+                    'Guest User',
                     maxLines: 2,
                     style: TextStyle(color: Colors.black),
                   ),
-                )
+                ),
               ],
             ),
           ),
@@ -246,13 +238,7 @@ class _HiredState extends State<Hired> {
                         child: CustomButton(
                           text: translation(context).blueCollerJobs,
                           onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const Registration(
-                                        email: '',
-                                      )),
-                            );
+                            _showblueDialog();
                           },
                         ))
                   ],
@@ -273,9 +259,7 @@ class _HiredState extends State<Hired> {
                         child: CustomButton(
                           text: translation(context).greyCollerJobs,
                           onPressed: () {
-                            Registration(
-                              email: '',
-                            );
+                            _showgreyDialog(context);
                           },
                         ))
                   ],
@@ -287,4 +271,72 @@ class _HiredState extends State<Hired> {
       ),
     );
   }
+
+  void _showblueDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            translation(context).blueCollerJobs,
+          ),
+          content: Text('Login or Please Register'),
+          actions: <Widget>[
+            CustomButton(
+              text: 'LogIn',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                );
+              },
+            ),
+            CustomButton(
+              text: 'SignUp',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => BlueRegistration()),
+                );
+              },
+            )
+          ],
+        );
+      },
+    );
+  }
+}
+
+void _showgreyDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(
+          translation(context).greyCollerJobs,
+        ),
+        content: Text('Login or Please Register'),
+        actions: <Widget>[
+          CustomButton(
+            text: 'LogIn',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => LoginPage()),
+              );
+            },
+          ),
+          CustomButton(
+            text: 'SignUp',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Registration()),
+              );
+            },
+          )
+        ],
+      );
+    },
+  );
 }

@@ -1,15 +1,18 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:country_state_city_picker/country_state_city_picker.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:hiremeinindiaapp/gen_l10n/app_localizations.dart';
 import 'package:hiremeinindiaapp/userpayment.dart';
 import 'package:hiremeinindiaapp/widgets/customtextfield.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:hiremeinindiaapp/image_helper.dart';
+
+import 'Candidate/candidate_form_state.dart';
 import 'classes/language.dart';
 import 'classes/language_constants.dart';
 import 'main.dart';
@@ -20,13 +23,15 @@ import 'package:file_picker/file_picker.dart';
 
 import 'package:firebase_storage/firebase_storage.dart';
 
-class NewUserUpload extends StatefulWidget {
-  const NewUserUpload();
+import 'package:flutter/services.dart' show rootBundle;
+
+class GreyUserUpload extends StatefulWidget {
+  const GreyUserUpload();
   @override
-  State<NewUserUpload> createState() => _NewUserUpload();
+  State<GreyUserUpload> createState() => _GreyUserUpload();
 }
 
-class _NewUserUpload extends State<NewUserUpload> {
+class _GreyUserUpload extends State<GreyUserUpload> {
   @override
   bool isChecked = false;
   String? uploadedMessage;
@@ -42,19 +47,79 @@ class _NewUserUpload extends State<NewUserUpload> {
   String? downloadURL5;
   PlatformFile? pickedFile;
   UploadTask? uploadTask;
-  TextEditingController blueCollerController = TextEditingController();
-  TextEditingController currentCityController = TextEditingController();
-  TextEditingController expectedWageController = TextEditingController();
-  TextEditingController currentStateController = TextEditingController();
-  TextEditingController currentCountryController = TextEditingController();
+
+  String? countryValue;
+  String? stateValue;
+  String? cityValue;
+  List<CountryModel> _countryList = [];
+  final List<StateModel> _stateList = [];
+  final List<CityModel> _cityList = [];
+
+  List<CountryModel> _countrySubList = [];
+  List<StateModel> _stateSubList = [];
+  List<CityModel> _citySubList = [];
+  String _title = '';
+  BlueCandidateFormController bluecontroller = BlueCandidateFormController();
+  void initState() {
+    _getCountry();
+    super.initState();
+  }
+
+  Future<void> _getCountry() async {
+    _countryList.clear();
+    var jsonString = await rootBundle
+        .loadString('packages/country_state_city_pro/assets/country.json');
+    List<dynamic> body = json.decode(jsonString);
+    setState(() {
+      _countryList =
+          body.map((dynamic item) => CountryModel.fromJson(item)).toList();
+      _countrySubList = _countryList;
+    });
+  }
+
+  Future<void> _getState(String countryId) async {
+    _stateList.clear();
+    _cityList.clear();
+    List<StateModel> subStateList = [];
+    var jsonString = await rootBundle
+        .loadString('packages/country_state_city_pro/assets/state.json');
+    List<dynamic> body = json.decode(jsonString);
+
+    subStateList =
+        body.map((dynamic item) => StateModel.fromJson(item)).toList();
+    for (var element in subStateList) {
+      if (element.countryId == countryId) {
+        setState(() {
+          _stateList.add(element);
+        });
+      }
+    }
+    _stateSubList = _stateList;
+  }
+
+  Future<void> _getCity(String stateId) async {
+    _cityList.clear();
+    List<CityModel> subCityList = [];
+    var jsonString = await rootBundle
+        .loadString('packages/country_state_city_pro/assets/city.json');
+    List<dynamic> body = json.decode(jsonString);
+
+    subCityList = body.map((dynamic item) => CityModel.fromJson(item)).toList();
+    for (var element in subCityList) {
+      if (element.stateId == stateId) {
+        setState(() {
+          _cityList.add(element);
+        });
+      }
+    }
+    _citySubList = _cityList;
+  }
 
   @override
   void dispose() {
     // Dispose controllers when the widget is disposed
-    blueCollerController.dispose();
-    currentCityController.dispose();
-    expectedWageController.dispose();
-    currentStateController.dispose();
+    bluecontroller.bluecoller.dispose();
+    bluecontroller.state.dispose();
     super.dispose();
   }
 
@@ -169,6 +234,7 @@ class _NewUserUpload extends State<NewUserUpload> {
         centerTitle: false,
         toolbarHeight: 80,
         backgroundColor: Colors.transparent,
+        automaticallyImplyLeading: false,
         elevation: 0.0,
         actions: [
           Padding(
@@ -422,8 +488,8 @@ class _NewUserUpload extends State<NewUserUpload> {
                     children: [
                       if (uploadedImageUrlForPicture != null)
                         Container(
-                          width: 70,
-                          height: 70,
+                          width: 100,
+                          height: 150,
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.black, width: 2),
                             borderRadius: BorderRadius.circular(10),
@@ -444,9 +510,6 @@ class _NewUserUpload extends State<NewUserUpload> {
                             },
                           ),
                         ),
-                      SizedBox(
-                        height: 20,
-                      ),
                       CustomButton(
                         text: translation(context).picture,
                         onPressed: () async {
@@ -498,8 +561,8 @@ class _NewUserUpload extends State<NewUserUpload> {
                     children: [
                       if (uploadedImageUrlAadhar != null)
                         Container(
-                          width: 70,
-                          height: 70,
+                          width: 100,
+                          height: 150,
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.black, width: 2),
                             borderRadius: BorderRadius.circular(10),
@@ -569,39 +632,26 @@ class _NewUserUpload extends State<NewUserUpload> {
                     children: [
                       if (uploadedImageUrlForVoterId != null)
                         Container(
-                          width: 70,
-                          height: 70,
+                          width: 100,
+                          height: 150,
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.black, width: 2),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: Image.network(
-                            uploadedImageUrlForVoterId!,
-                            loadingBuilder: (BuildContext context, Widget child,
-                                ImageChunkEvent? loadingProgress) {
-                              if (loadingProgress == null) {
-                                return child;
-                              } else {
-                                return Center(
-                                  child: CircularProgressIndicator(
-                                    value: loadingProgress.expectedTotalBytes !=
-                                            null
-                                        ? loadingProgress
-                                                .cumulativeBytesLoaded /
-                                            (loadingProgress
-                                                    .expectedTotalBytes ??
-                                                1)
-                                        : null,
-                                  ),
-                                );
-                              }
+                          child: CachedNetworkImage(
+                            imageUrl: uploadedImageUrlForVoterId!,
+                            fit: BoxFit.cover,
+                            progressIndicatorBuilder:
+                                (context, url, downloadProgress) {
+                              return Center(
+                                child: CircularProgressIndicator(
+                                    value: downloadProgress.progress),
+                              );
                             },
-                            errorBuilder: (BuildContext context, Object error,
-                                StackTrace? stackTrace) {
+                            errorWidget: (context, url, error) {
                               print('Error loading image: $error');
                               return Placeholder(); // You can replace this with any placeholder widget
                             },
-                            fit: BoxFit.cover,
                           ),
                         ),
                       CustomButton(
@@ -654,8 +704,8 @@ class _NewUserUpload extends State<NewUserUpload> {
                     children: [
                       if (uploadedImageUrlForExperienceProof != null)
                         Container(
-                          width: 70,
-                          height: 70,
+                          width: 100,
+                          height: 150,
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.black, width: 2),
                             borderRadius: BorderRadius.circular(10),
@@ -726,8 +776,8 @@ class _NewUserUpload extends State<NewUserUpload> {
                     children: [
                       if (uploadedImageUrlForCV != null)
                         Container(
-                          width: 70,
-                          height: 70,
+                          width: 100,
+                          height: 150,
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.black, width: 2),
                             borderRadius: BorderRadius.circular(10),
@@ -794,7 +844,7 @@ class _NewUserUpload extends State<NewUserUpload> {
               ],
             ),
             SizedBox(
-              height: 70,
+              height: 50,
             ),
             Row(
               children: [
@@ -802,17 +852,19 @@ class _NewUserUpload extends State<NewUserUpload> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      translation(context).blueColler,
-                      style: TextStyle(
-                          fontFamily: 'Poppins', fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 60),
-                    Text(
                       translation(context).currentCountry,
                       style: TextStyle(
                           fontFamily: 'Poppins', fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 60),
+                    Text(
+                      translation(context).currentState,
+                      style: TextStyle(
+                          fontFamily: 'Poppins', fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: 60,
+                    ),
                     Text(
                       translation(context).currentCity,
                       style: TextStyle(
@@ -829,7 +881,11 @@ class _NewUserUpload extends State<NewUserUpload> {
                       width: 400,
                       height: 40,
                       child: TextField(
-                        controller: blueCollerController, // Set controller
+                        controller: bluecontroller.country,
+                        onTap: () {
+                          setState(() => _title = 'Country');
+                          _showDialog(context);
+                        }, // Set controller
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                         ),
@@ -840,7 +896,15 @@ class _NewUserUpload extends State<NewUserUpload> {
                       width: 400,
                       height: 40,
                       child: TextField(
-                        controller: currentCountryController, // Set controller
+                        controller: bluecontroller.state,
+                        onTap: () {
+                          setState(() => _title = 'State');
+                          if (bluecontroller.country.text.isNotEmpty) {
+                            _showDialog(context);
+                          } else {
+                            _showSnackBar('Select Country');
+                          }
+                        }, // Set controller
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                         ),
@@ -851,66 +915,73 @@ class _NewUserUpload extends State<NewUserUpload> {
                       width: 400,
                       height: 40,
                       child: TextField(
-                        controller: currentCityController, // Set controller
+                        controller: bluecontroller.city,
+                        onTap: () {
+                          setState(() => _title = 'City');
+                          if (bluecontroller.state.text.isNotEmpty) {
+                            _showDialog(context);
+                          } else {
+                            _showSnackBar('Select State');
+                          }
+                        }, // Set controller
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                         ),
                       ),
+                    ),
+                    SizedBox(
+                      height: 40,
                     ),
                   ],
                 ),
                 SizedBox(
                   width: 20,
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 80),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        translation(context).expectedWage,
-                        style: TextStyle(
-                            fontFamily: 'Poppins', fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(height: 60),
-                      Text(
-                        translation(context).currentState,
-                        style: TextStyle(
-                            fontFamily: 'Poppins', fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      translation(context).expectedWage,
+                      style: TextStyle(
+                          fontFamily: 'Poppins', fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 60),
+                    Text(
+                      translation(context).currentWage,
+                      style: TextStyle(
+                          fontFamily: 'Poppins', fontWeight: FontWeight.bold),
+                    ),
+                  ],
                 ),
                 SizedBox(
                   width: 40,
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 80),
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        width: 400,
-                        height: 40,
-                        child: TextField(
-                          controller: expectedWageController, // Set controller
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                          ),
+                Column(
+                  children: [
+                    SizedBox(
+                      width: 400,
+                      height: 40,
+                      child: TextField(
+                        controller:
+                            bluecontroller.expectedWage, // Set controller
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
                         ),
                       ),
-                      SizedBox(height: 40),
-                      SizedBox(
-                        width: 400,
-                        height: 40,
-                        child: TextField(
-                          controller: currentStateController, // Set controller
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                          ),
+                    ),
+                    SizedBox(height: 40),
+                    SizedBox(
+                      width: 400,
+                      height: 40,
+                      child: TextField(
+                        controller:
+                            bluecontroller.currentWage, // Set controller
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -975,4 +1046,238 @@ class _NewUserUpload extends State<NewUserUpload> {
           );
         }
       });
+
+  void _showDialog(BuildContext context) {
+    final TextEditingController controller1 = TextEditingController();
+    final TextEditingController controller2 = TextEditingController();
+    final TextEditingController controller3 = TextEditingController();
+
+    BlueCandidateFormController bluecontroller = BlueCandidateFormController();
+
+    showGeneralDialog(
+      barrierLabel: _title,
+      barrierDismissible: false,
+      barrierColor: Colors.black.withOpacity(0.5),
+      transitionDuration: const Duration(milliseconds: 350),
+      context: context,
+      pageBuilder: (context, __, ___) {
+        return Material(
+          color: Colors.transparent,
+          child: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return Align(
+                alignment: Alignment.topCenter,
+                child: Container(
+                  height: MediaQuery.of(context).size.height * .7,
+                  margin: const EdgeInsets.only(top: 60, left: 12, right: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 10),
+                      Text(_title,
+                          style: TextStyle(
+                              color: Colors.grey.shade800,
+                              fontSize: 17,
+                              fontWeight: FontWeight.w500)),
+                      const SizedBox(height: 10),
+
+                      ///Text Field
+                      TextField(
+                        controller: _title == 'Country'
+                            ? controller1
+                            : _title == 'State'
+                                ? controller2
+                                : controller3,
+                        onChanged: (val) {
+                          setState(() {
+                            if (_title == 'Country') {
+                              _countrySubList = _countryList
+                                  .where((element) => element.name
+                                      .toLowerCase()
+                                      .contains(controller1.text.toLowerCase()))
+                                  .toList();
+                            } else if (_title == 'State') {
+                              _stateSubList = _stateList
+                                  .where((element) => element.name
+                                      .toLowerCase()
+                                      .contains(controller2.text.toLowerCase()))
+                                  .toList();
+                            } else if (_title == 'City') {
+                              _citySubList = _cityList
+                                  .where((element) => element.name
+                                      .toLowerCase()
+                                      .contains(controller3.text.toLowerCase()))
+                                  .toList();
+                            }
+                          });
+                        },
+                        style: TextStyle(
+                            color: Colors.grey.shade800, fontSize: 16.0),
+                        decoration: const InputDecoration(
+                            border: UnderlineInputBorder(),
+                            hintText: "Search here...",
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 15, horizontal: 5),
+                            isDense: true,
+                            prefixIcon: Icon(Icons.search)),
+                      ),
+
+                      ///Dropdown Items
+                      Expanded(
+                        child: ListView.builder(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 12),
+                          itemCount: _title == 'Country'
+                              ? _countrySubList.length
+                              : _title == 'State'
+                                  ? _stateSubList.length
+                                  : _citySubList.length,
+                          physics: const ClampingScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            return InkWell(
+                              onTap: () async {
+                                setState(() {
+                                  if (_title == "Country") {
+                                    bluecontroller.country.text =
+                                        _countrySubList[index].name;
+                                    _getState(_countrySubList[index].id);
+                                    _countrySubList = _countryList;
+                                    bluecontroller.state.clear();
+                                    bluecontroller.city.clear();
+                                  } else if (_title == 'State') {
+                                    bluecontroller.state.text =
+                                        _stateSubList[index].name;
+                                    _getCity(_stateSubList[index].id);
+                                    _stateSubList = _stateList;
+                                    bluecontroller.city.clear();
+                                  } else if (_title == 'City') {
+                                    bluecontroller.city.text =
+                                        _citySubList[index].name;
+                                    _citySubList = _cityList;
+                                  }
+                                });
+                                Navigator.pop(context);
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    bottom: 20.0, left: 10.0, right: 10.0),
+                                child: Text(
+                                    _title == 'Country'
+                                        ? _countrySubList[index].name
+                                        : _title == 'State'
+                                            ? _stateSubList[index].name
+                                            : _citySubList[index].name,
+                                    style: TextStyle(
+                                        color: Colors.grey.shade800,
+                                        fontSize: 16.0)),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(50.0))),
+                        onPressed: () {
+                          if (_title == 'City' && _citySubList.isEmpty) {
+                            bluecontroller.city.text = controller3.text;
+                          }
+                          _countrySubList = _countryList;
+                          _stateSubList = _stateList;
+                          _citySubList = _cityList;
+
+                          controller1.clear();
+                          controller2.clear();
+                          controller3.clear();
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Close'),
+                      )
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+      },
+      transitionBuilder: (_, anim, __, child) {
+        return SlideTransition(
+          position: Tween(begin: const Offset(0, -1), end: const Offset(0, 0))
+              .animate(anim),
+          child: child,
+        );
+      },
+    );
+  }
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Theme.of(context).primaryColor,
+        content: Text(message,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.white, fontSize: 16.0))));
+  }
+
+  InputDecoration defaultDecoration = const InputDecoration(
+      isDense: true,
+      hintText: 'Select',
+      suffixIcon: Icon(Icons.arrow_drop_down),
+      border: OutlineInputBorder());
+}
+
+class CountryModel {
+  final String id;
+  final String sortName;
+  final String name;
+  final String phoneCode;
+
+  CountryModel(
+      {required this.id,
+      required this.sortName,
+      required this.name,
+      required this.phoneCode});
+
+  factory CountryModel.fromJson(Map<String, dynamic> json) {
+    return CountryModel(
+        id: json['id'] as String,
+        sortName: json['sortname'] as String,
+        name: json['name'] as String,
+        phoneCode: json['phonecode'] as String);
+  }
+}
+
+class StateModel {
+  final String id;
+  final String name;
+  final String countryId;
+
+  StateModel({required this.id, required this.name, required this.countryId});
+
+  factory StateModel.fromJson(Map<String, dynamic> json) {
+    return StateModel(
+        id: json['id'] as String,
+        name: json['name'] as String,
+        countryId: json['country_id'] as String);
+  }
+}
+
+class CityModel {
+  final String id;
+  final String name;
+  final String stateId;
+
+  CityModel({required this.id, required this.name, required this.stateId});
+
+  factory CityModel.fromJson(Map<String, dynamic> json) {
+    return CityModel(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      stateId: json['state_id'] as String,
+    );
+  }
 }
