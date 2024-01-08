@@ -11,7 +11,6 @@ import 'package:flutter_dialogs/flutter_dialogs.dart';
 import 'package:hiremeinindiaapp/Candidate/candidate_form_state.dart';
 import 'package:hiremeinindiaapp/Models/candidated.dart';
 import 'package:hiremeinindiaapp/Models/register_model.dart';
-import 'package:hiremeinindiaapp/greyuserupload.dart';
 import 'package:hiremeinindiaapp/userpayment.dart';
 import 'package:hiremeinindiaapp/widgets/textstylebutton.dart';
 import 'package:super_tag_editor/tag_editor.dart';
@@ -28,27 +27,28 @@ import '../widgets/customtextfield.dart';
 import '../widgets/hiremeinindia.dart';
 import 'candidate_controller.dart';
 
-class GreyRegistration extends StatefulWidget {
-  const GreyRegistration({Key? key, this.candidate}) : super(key: key);
+class Registration extends StatefulWidget {
+  const Registration({Key? key, this.candidate}) : super(key: key);
 
   final Candidate? candidate;
 
   @override
-  State<GreyRegistration> createState() => _GreyRegistrationState();
+  State<Registration> createState() => _RegistrationState();
 }
 
-class _GreyRegistrationState extends State<GreyRegistration> {
+class _RegistrationState extends State<Registration> {
   String enteredOTP = '';
   String smscode = "";
   String phoneNumber = "", data = "", phone = "";
   bool isVerified = false;
+  TextEditingController otpController = TextEditingController();
   bool isOtpValid = true; // Replace this line with actual verification logic
 
   List<String> _values = [];
   List<String> _value = [];
 
   bool blueChecked = false;
-  bool greyChecked = true;
+  bool greyChecked = false;
   bool focusTagEnabled = false;
   String password = '';
 
@@ -63,36 +63,24 @@ class _GreyRegistrationState extends State<GreyRegistration> {
       FirebaseDatabase.instance.reference().child('users');
 
   static const Skill = [
-    'Home Care',
-    'Nursing',
-    'Chef',
-    'Clerk ',
-    'Admin ',
-    'Accountant',
-    'Receptionist ',
-    'Field Marketing staffs',
-    'Sales Staff',
-    'Medical Lab Technician ',
-    'Telecallers',
-    'Supervisors',
-    'Airport Ground Staffs',
-    'Costumer Support Executive',
+    'Plumber',
+    'Senior Plumber',
+    'Junior Plumber',
+    'Skill 1',
+    'Electrician',
+    'Senior Electrician',
+    'Junior Electrician',
+    'Skill 2',
   ];
   static const Workin = [
-    'Home Care',
-    'Nursing',
-    'Chef',
-    'Clerk ',
-    'Admin ',
-    'Accountant',
-    'Receptionist ',
-    'Field Marketing staffs',
-    'Sales Staff',
-    'Medical Lab Technician ',
-    'Telecallers',
-    'Supervisors',
-    'Airport Ground Staffs',
-    'Costumer Support Executive',
+    'Plumber',
+    'Senior Plumber',
+    'Junior Plumber',
+    'Skill 1',
+    'Electrician',
+    'Senior Electrician',
+    'Junior Electrician',
+    'Skill 2',
   ];
 
   _onDelete(index) {
@@ -154,7 +142,7 @@ class _GreyRegistrationState extends State<GreyRegistration> {
         return AlertDialog(
           title: Text("Enter OTP"),
           content: TextField(
-            controller: controller.otp,
+            controller: otpController,
             keyboardType: TextInputType.number,
             maxLength: 4,
           ),
@@ -165,15 +153,15 @@ class _GreyRegistrationState extends State<GreyRegistration> {
                 Navigator.of(context).pop();
 
                 // Verify entered OTP
-                print("Entered OTP: ${controller.otp.text}");
+                print("Entered OTP: ${otpController.text}");
 
-                if (await myauth.verifyOTP(otp: controller.otp.text.trim())) {
+                if (await myauth.verifyOTP(otp: otpController.text.trim())) {
                   print("OTP verification success");
-                  // Navigate to GreyRegistration page
+                  // Navigate to registration page
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => GreyRegistration(),
+                      builder: (context) => Registration(),
                     ),
                   );
                 } else {
@@ -207,14 +195,14 @@ class _GreyRegistrationState extends State<GreyRegistration> {
 
   Future<void> _verifyOtp() async {
     // Perform OTP verification here using myauth.verifyOTP(otpController.text)
-    bool isOtpValid = await myauth.verifyOTP(otp: controller.otp.text);
+    bool isOtpValid = await myauth.verifyOTP(otp: otpController.text);
 
     if (isOtpValid) {
-      // Navigate to GreyRegistration page
+      // Navigate to registration page
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => GreyRegistration(),
+          builder: (context) => Registration(),
         ),
       );
     } else {
@@ -307,7 +295,7 @@ class _GreyRegistrationState extends State<GreyRegistration> {
           context: context,
           builder: (context) => AlertDialog(
             title: Text("Mobile Number Already Registered"),
-            content: Text("Try another number for GreyRegistration"),
+            content: Text("Try another number for registration"),
             actions: [
               ElevatedButton(
                 onPressed: () {
@@ -326,7 +314,7 @@ class _GreyRegistrationState extends State<GreyRegistration> {
             await _auth.signInWithCredential(authCredential).then((value) {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => GreyRegistration()),
+                MaterialPageRoute(builder: (context) => Registration()),
               );
               setState(() {
                 isVerified = true;
@@ -372,7 +360,7 @@ class _GreyRegistrationState extends State<GreyRegistration> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => GreyRegistration()),
+                                builder: (context) => Registration()),
                           );
                           Row(
                             mainAxisSize: MainAxisSize.min,
@@ -548,7 +536,6 @@ class _GreyRegistrationState extends State<GreyRegistration> {
         centerTitle: false,
         toolbarHeight: 80,
         backgroundColor: Colors.transparent,
-        automaticallyImplyLeading: false,
         elevation: 0.0,
         actions: [
           Padding(
@@ -774,8 +761,12 @@ class _GreyRegistrationState extends State<GreyRegistration> {
                 child: Row(
                   children: [
                     Checkbox(
-                      value: false,
-                      onChanged: null,
+                      value: blueChecked,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          blueChecked = value ?? false;
+                        });
+                      },
                       fillColor: MaterialStateProperty.resolveWith<Color>(
                         (Set<MaterialState> states) {
                           if (states.contains(MaterialState.selected)) {
@@ -915,7 +906,7 @@ class _GreyRegistrationState extends State<GreyRegistration> {
                               ),
                               SizedBox(height: 60),
                               Text(
-                                translation(context).qualification,
+                                translation(context).state,
                                 style: TextStyle(
                                     fontFamily: 'Poppins',
                                     fontWeight: FontWeight.bold),
@@ -944,7 +935,7 @@ class _GreyRegistrationState extends State<GreyRegistration> {
                                 ),
                                 CustomTextfield(
                                   validator: nameValidator,
-                                  controller: controller.qualification,
+                                  controller: controller.state,
                                 ),
                               ],
                             ),
@@ -1007,13 +998,10 @@ class _GreyRegistrationState extends State<GreyRegistration> {
                             child: CustomTextfield(
                           controller: controller.mobile,
                           validator: (value) {
-                            if (value!.isEmpty) {
-                              return '*Required';
-                            } else if (value!.length != 10) {
+                            if (value!.length != 10)
                               return 'Mobile Number must be of 10 digit';
-                            }
-
-                            return null;
+                            else
+                              return null;
                           },
                         )),
                         SizedBox(
@@ -1095,6 +1083,7 @@ class _GreyRegistrationState extends State<GreyRegistration> {
                                       .isNotEmpty) {
                                     return "Already User Exist";
                                   }
+                                  ;
                                   MultiValidator([
                                     RequiredValidator(errorText: "* Required"),
                                     EmailValidator(
@@ -1115,7 +1104,7 @@ class _GreyRegistrationState extends State<GreyRegistration> {
                               // Set OTP configuration
                               myauth.setConfig(
                                 appEmail: "contact@hdevcoder.com",
-                                appName: "OTP for GreyRegistration",
+                                appName: "OTP for Registration",
                                 userEmail: controller.email.text,
                                 otpLength: 4,
                                 otpType: OTPType.digitsOnly,
@@ -1199,6 +1188,7 @@ class _GreyRegistrationState extends State<GreyRegistration> {
                                     focusNode: _focusNode,
                                     delimiters: [',', ' '],
                                     resetTextOnSubmitted: true,
+                                    // This is set to grey just to illustrate the textStyle prop
                                     textStyle:
                                         const TextStyle(color: Colors.black),
                                     onSubmitted: (outstandingValue) {
@@ -1291,7 +1281,6 @@ class _GreyRegistrationState extends State<GreyRegistration> {
                                         _value.add(item);
                                       });
                                     },
-
                                     suggestionsBoxElevation: 5,
                                     findSuggestions: (String query) {
                                       if (query.isNotEmpty) {
@@ -1500,8 +1489,7 @@ class _GreyRegistrationState extends State<GreyRegistration> {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) =>
-                                              GreyUserUpload()));
+                                          builder: (context) => HomePage()));
                                 }).onError((error, stackTrace) {
                                   print("Error ${error.toString()}");
                                 });
@@ -1528,10 +1516,10 @@ class _GreyRegistrationState extends State<GreyRegistration> {
     RegExp regex =
         RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
     if (value!.isEmpty) {
-      return '*Required';
+      return 'Please enter password';
     } else {
       if (!regex.hasMatch(value)) {
-        return 'It must be lower & upper case, number and Symbol';
+        return 'Enter valid password';
       } else {
         return null;
       }
