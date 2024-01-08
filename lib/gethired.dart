@@ -331,7 +331,7 @@ void _showgreyDialog(BuildContext context) {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => GreyRegistration()),
+                MaterialPageRoute(builder: (context) => Registration()),
               );
             },
           )
