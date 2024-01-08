@@ -1,9 +1,11 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:hiremeinindiaapp/gethired.dart';
+import 'package:hiremeinindiaapp/loginpage.dart';
 import 'package:hiremeinindiaapp/main.dart';
 import 'package:hiremeinindiaapp/widgets/customtextfield.dart';
 import 'package:get/get.dart';
+import 'Candidate/blueregistration.dart';
 import 'Providers/session.dart';
 import 'classes/language.dart';
 import 'classes/language_constants.dart';
@@ -249,7 +251,7 @@ class _HomePageState extends State<HomePage> {
                 SizedBox(
                   width: 50,
                   child: Text(
-                    AppSession().candidate?.name ?? "No Username",
+                    'Guest User',
                     maxLines: 2,
                     style: TextStyle(color: Colors.black),
                   ),
@@ -322,6 +324,43 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
+    );
+  }
+
+  void _showDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Login or Please Register"),
+          content: Text(''),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                CustomButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const LoginPage()),
+                      );
+                    },
+                    text: 'Log In'),
+                CustomButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const BlueRegistration()),
+                      );
+                    },
+                    text: 'Sign Up'),
+              ],
+            ),
+          ],
+        );
+      },
     );
   }
 }

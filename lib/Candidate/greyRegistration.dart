@@ -11,7 +11,7 @@ import 'package:flutter_dialogs/flutter_dialogs.dart';
 import 'package:hiremeinindiaapp/Candidate/candidate_form_state.dart';
 import 'package:hiremeinindiaapp/Models/candidated.dart';
 import 'package:hiremeinindiaapp/Models/register_model.dart';
-import 'package:hiremeinindiaapp/newuserupload.dart';
+import 'package:hiremeinindiaapp/greyuserupload.dart';
 import 'package:hiremeinindiaapp/userpayment.dart';
 import 'package:hiremeinindiaapp/widgets/textstylebutton.dart';
 import 'package:super_tag_editor/tag_editor.dart';
@@ -28,28 +28,27 @@ import '../widgets/customtextfield.dart';
 import '../widgets/hiremeinindia.dart';
 import 'candidate_controller.dart';
 
-class Registration extends StatefulWidget {
-  const Registration({Key? key, this.candidate}) : super(key: key);
+class GreyRegistration extends StatefulWidget {
+  const GreyRegistration({Key? key, this.candidate}) : super(key: key);
 
   final Candidate? candidate;
 
   @override
-  State<Registration> createState() => _RegistrationState();
+  State<GreyRegistration> createState() => _GreyRegistrationState();
 }
 
-class _RegistrationState extends State<Registration> {
+class _GreyRegistrationState extends State<GreyRegistration> {
   String enteredOTP = '';
   String smscode = "";
   String phoneNumber = "", data = "", phone = "";
   bool isVerified = false;
-  TextEditingController otpController = TextEditingController();
   bool isOtpValid = true; // Replace this line with actual verification logic
 
   List<String> _values = [];
   List<String> _value = [];
 
   bool blueChecked = false;
-  bool greyChecked = false;
+  bool greyChecked = true;
   bool focusTagEnabled = false;
   String password = '';
 
@@ -64,24 +63,36 @@ class _RegistrationState extends State<Registration> {
       FirebaseDatabase.instance.reference().child('users');
 
   static const Skill = [
-    'Plumber',
-    'Senior Plumber',
-    'Junior Plumber',
-    'Skill 1',
-    'Electrician',
-    'Senior Electrician',
-    'Junior Electrician',
-    'Skill 2',
+    'Home Care',
+    'Nursing',
+    'Chef',
+    'Clerk ',
+    'Admin ',
+    'Accountant',
+    'Receptionist ',
+    'Field Marketing staffs',
+    'Sales Staff',
+    'Medical Lab Technician ',
+    'Telecallers',
+    'Supervisors',
+    'Airport Ground Staffs',
+    'Costumer Support Executive',
   ];
   static const Workin = [
-    'Plumber',
-    'Senior Plumber',
-    'Junior Plumber',
-    'Skill 1',
-    'Electrician',
-    'Senior Electrician',
-    'Junior Electrician',
-    'Skill 2',
+    'Home Care',
+    'Nursing',
+    'Chef',
+    'Clerk ',
+    'Admin ',
+    'Accountant',
+    'Receptionist ',
+    'Field Marketing staffs',
+    'Sales Staff',
+    'Medical Lab Technician ',
+    'Telecallers',
+    'Supervisors',
+    'Airport Ground Staffs',
+    'Costumer Support Executive',
   ];
 
   _onDelete(index) {
@@ -143,7 +154,7 @@ class _RegistrationState extends State<Registration> {
         return AlertDialog(
           title: Text("Enter OTP"),
           content: TextField(
-            controller: otpController,
+            controller: controller.otp,
             keyboardType: TextInputType.number,
             maxLength: 4,
           ),
@@ -154,15 +165,15 @@ class _RegistrationState extends State<Registration> {
                 Navigator.of(context).pop();
 
                 // Verify entered OTP
-                print("Entered OTP: ${otpController.text}");
+                print("Entered OTP: ${controller.otp.text}");
 
-                if (await myauth.verifyOTP(otp: otpController.text.trim())) {
+                if (await myauth.verifyOTP(otp: controller.otp.text.trim())) {
                   print("OTP verification success");
-                  // Navigate to registration page
+                  // Navigate to GreyRegistration page
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Registration(),
+                      builder: (context) => GreyRegistration(),
                     ),
                   );
                 } else {
@@ -196,14 +207,14 @@ class _RegistrationState extends State<Registration> {
 
   Future<void> _verifyOtp() async {
     // Perform OTP verification here using myauth.verifyOTP(otpController.text)
-    bool isOtpValid = await myauth.verifyOTP(otp: otpController.text);
+    bool isOtpValid = await myauth.verifyOTP(otp: controller.otp.text);
 
     if (isOtpValid) {
-      // Navigate to registration page
+      // Navigate to GreyRegistration page
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => Registration(),
+          builder: (context) => GreyRegistration(),
         ),
       );
     } else {
@@ -296,7 +307,7 @@ class _RegistrationState extends State<Registration> {
           context: context,
           builder: (context) => AlertDialog(
             title: Text("Mobile Number Already Registered"),
-            content: Text("Try another number for registration"),
+            content: Text("Try another number for GreyRegistration"),
             actions: [
               ElevatedButton(
                 onPressed: () {
@@ -315,7 +326,7 @@ class _RegistrationState extends State<Registration> {
             await _auth.signInWithCredential(authCredential).then((value) {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => Registration()),
+                MaterialPageRoute(builder: (context) => GreyRegistration()),
               );
               setState(() {
                 isVerified = true;
@@ -361,7 +372,7 @@ class _RegistrationState extends State<Registration> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => Registration()),
+                                builder: (context) => GreyRegistration()),
                           );
                           Row(
                             mainAxisSize: MainAxisSize.min,
@@ -537,6 +548,7 @@ class _RegistrationState extends State<Registration> {
         centerTitle: false,
         toolbarHeight: 80,
         backgroundColor: Colors.transparent,
+        automaticallyImplyLeading: false,
         elevation: 0.0,
         actions: [
           Padding(
@@ -762,12 +774,8 @@ class _RegistrationState extends State<Registration> {
                 child: Row(
                   children: [
                     Checkbox(
-                      value: blueChecked,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          blueChecked = value ?? false;
-                        });
-                      },
+                      value: false,
+                      onChanged: null,
                       fillColor: MaterialStateProperty.resolveWith<Color>(
                         (Set<MaterialState> states) {
                           if (states.contains(MaterialState.selected)) {
@@ -907,7 +915,7 @@ class _RegistrationState extends State<Registration> {
                               ),
                               SizedBox(height: 60),
                               Text(
-                                translation(context).state,
+                                translation(context).qualification,
                                 style: TextStyle(
                                     fontFamily: 'Poppins',
                                     fontWeight: FontWeight.bold),
@@ -936,7 +944,7 @@ class _RegistrationState extends State<Registration> {
                                 ),
                                 CustomTextfield(
                                   validator: nameValidator,
-                                  controller: controller.state,
+                                  controller: controller.qualification,
                                 ),
                               ],
                             ),
@@ -999,10 +1007,13 @@ class _RegistrationState extends State<Registration> {
                             child: CustomTextfield(
                           controller: controller.mobile,
                           validator: (value) {
-                            if (value!.length != 10)
+                            if (value!.isEmpty) {
+                              return '*Required';
+                            } else if (value!.length != 10) {
                               return 'Mobile Number must be of 10 digit';
-                            else
-                              return null;
+                            }
+
+                            return null;
                           },
                         )),
                         SizedBox(
@@ -1084,7 +1095,6 @@ class _RegistrationState extends State<Registration> {
                                       .isNotEmpty) {
                                     return "Already User Exist";
                                   }
-                                  ;
                                   MultiValidator([
                                     RequiredValidator(errorText: "* Required"),
                                     EmailValidator(
@@ -1105,7 +1115,7 @@ class _RegistrationState extends State<Registration> {
                               // Set OTP configuration
                               myauth.setConfig(
                                 appEmail: "contact@hdevcoder.com",
-                                appName: "OTP for Registration",
+                                appName: "OTP for GreyRegistration",
                                 userEmail: controller.email.text,
                                 otpLength: 4,
                                 otpType: OTPType.digitsOnly,
@@ -1189,7 +1199,6 @@ class _RegistrationState extends State<Registration> {
                                     focusNode: _focusNode,
                                     delimiters: [',', ' '],
                                     resetTextOnSubmitted: true,
-                                    // This is set to grey just to illustrate the textStyle prop
                                     textStyle:
                                         const TextStyle(color: Colors.black),
                                     onSubmitted: (outstandingValue) {
@@ -1282,6 +1291,7 @@ class _RegistrationState extends State<Registration> {
                                         _value.add(item);
                                       });
                                     },
+
                                     suggestionsBoxElevation: 5,
                                     findSuggestions: (String query) {
                                       if (query.isNotEmpty) {
@@ -1490,7 +1500,8 @@ class _RegistrationState extends State<Registration> {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => HomePage()));
+                                          builder: (context) =>
+                                              GreyUserUpload()));
                                 }).onError((error, stackTrace) {
                                   print("Error ${error.toString()}");
                                 });
@@ -1517,10 +1528,10 @@ class _RegistrationState extends State<Registration> {
     RegExp regex =
         RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
     if (value!.isEmpty) {
-      return 'Please enter password';
+      return '*Required';
     } else {
       if (!regex.hasMatch(value)) {
-        return 'Enter valid password';
+        return 'It must be lower & upper case, number and Symbol';
       } else {
         return null;
       }

@@ -570,6 +570,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'India'**
   String get india;
+
+  /// No description provided for @currentCountry.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Country'**
+  String get currentCountry;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

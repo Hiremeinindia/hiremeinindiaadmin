@@ -233,62 +233,90 @@ class _LoginPageState extends State<LoginPage> {
       body: Form(
         key: _formKey,
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                translation(context).name,
-                style: TextStyle(
-                    fontFamily: 'Poppins', fontWeight: FontWeight.bold),
-              ),
-              CustomTextfield(
-                text: translation(context).name,
-                controller: controller.email,
-                onsaved: (value) {
-                  setState(() {
-                    email = value;
-                  });
-                },
-              ),
-              Text(
-                translation(context).password,
-                style: TextStyle(
-                    fontFamily: 'Poppins', fontWeight: FontWeight.bold),
-              ),
-              CustomTextfield(
-                text: translation(context).password,
-                validator: validatePassword,
-                controller: controller.password,
-                onsaved: (value) {
-                  setState(() {
-                    password = value;
-                  });
-                },
-              ),
-              CustomButtonLogin(
-                child: Text(
-                  login ? 'Login' : translation(context).signIn,
+          child: Padding(
+            padding: const EdgeInsets.all(200),
+            child: Container(
+              height: 600,
+              width: 700,
+              color: Colors.grey,
+              child: Padding(
+                padding: const EdgeInsets.all(100.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      translation(context).email,
+                      style: TextStyle(
+                          fontFamily: 'Poppins', fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    CustomTextfield(
+                      text: translation(context).email,
+                      controller: controller.email,
+                      onsaved: (value) {
+                        setState(() {
+                          email = value;
+                        });
+                      },
+                    ),
+                    SizedBox(
+                      height: 30,
+                    ),
+                    Text(
+                      translation(context).password,
+                      style: TextStyle(
+                          fontFamily: 'Poppins', fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    CustomTextfield(
+                      text: translation(context).password,
+                      validator: validatePassword,
+                      controller: controller.password,
+                      onsaved: (value) {
+                        setState(() {
+                          password = value;
+                        });
+                      },
+                    ),
+                    SizedBox(
+                      height: 40,
+                    ),
+                    CustomButtonLogin(
+                      child: Text(
+                        login ? 'Login' : translation(context).signIn,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.normal,
+                          color: Colors.white,
+                        ),
+                      ),
+                      onPressed: () async {
+                        UserCredential user = await FirebaseAuth.instance
+                            .signInWithEmailAndPassword(
+                                email: controller.email.text,
+                                password: controller.password.text);
+                        if (user != null) {
+                          email = controller.email.text;
+                          name = controller.name.text;
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) {
+                              return Hired();
+                            }),
+                          );
+                        } else {
+                          print('user does not exist');
+                        }
+                      },
+                    )
+                  ],
                 ),
-                onPressed: () async {
-                  UserCredential user = await FirebaseAuth.instance
-                      .signInWithEmailAndPassword(
-                          email: controller.email.text,
-                          password: controller.password.text);
-                  if (user != null) {
-                    email = controller.email.text;
-                    name = controller.name.text;
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) {
-                        return Hired();
-                      }),
-                    );
-                  } else {
-                    print('user does not exist');
-                  }
-                },
-              )
-            ],
+              ),
+            ),
           ),
         ),
       ),

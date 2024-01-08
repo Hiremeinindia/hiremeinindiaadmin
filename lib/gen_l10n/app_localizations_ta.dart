@@ -240,4 +240,7 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get india => 'India';
+
+  @override
+  String get currentCountry => 'Current Country';
 }

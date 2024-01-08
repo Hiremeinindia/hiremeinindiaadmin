@@ -19,6 +19,14 @@ class CandidateFormController {
   final password = TextEditingController();
   final otpm = TextEditingController();
   final code = TextEditingController();
+  final otp = TextEditingController();
+  final contry = TextEditingController();
+  final qualification = TextEditingController();
+  final city = TextEditingController();
+  final expectedWage = TextEditingController();
+  final currentWage = TextEditingController();
+  final bluecoller = TextEditingController();
+  final country = TextEditingController();
 
   TextEditingController confirmPassword = TextEditingController();
 
@@ -54,6 +62,7 @@ class CandidateFormController {
         otpm: otpm.text,
         code: code.text,
         confirmPassword: confirmPassword.text,
+        country: country.text,
       );
 
   factory CandidateFormController.fromCandidate(Candidate candidate) {
@@ -74,6 +83,92 @@ class CandidateFormController {
     controller.otpm.text = candidate.otpm!;
     controller.code.text = candidate.code!;
     controller.confirmPassword.text = candidate.confirmPassword!;
+    controller.country.text = candidate.country!;
+    return controller;
+  }
+}
+
+class BlueCandidateFormController {
+  BlueCandidateFormController();
+  TextEditingController name = TextEditingController();
+  TextEditingController mobile = TextEditingController();
+  TextEditingController email = TextEditingController();
+  final worktitle = TextEditingController();
+  final aadharno = TextEditingController();
+  final gender = TextEditingController();
+  final workexp = TextEditingController();
+  final state = TextEditingController();
+  final address = TextEditingController();
+  final skills = TextEditingController();
+  final workin = TextEditingController();
+  final password = TextEditingController();
+  final otpm = TextEditingController();
+  final code = TextEditingController();
+  final otp = TextEditingController();
+  final contry = TextEditingController();
+  final qualification = TextEditingController();
+  final city = TextEditingController();
+  final expectedWage = TextEditingController();
+  final currentWage = TextEditingController();
+  final bluecoller = TextEditingController();
+  final country = TextEditingController();
+
+  TextEditingController confirmPassword = TextEditingController();
+
+  bool isAdmin = false;
+  double commissionAmount = 0;
+
+  // String get newDocId => FirebaseFirestore.instance.collection('Candidates').doc().id;
+
+  DocumentReference? _reference;
+
+  DocumentReference get reference {
+    _reference ??=
+        FirebaseFirestore.instance.collection('bluecollaruser').doc();
+    return _reference!;
+  }
+
+  int leadCount = 0;
+  int successfullLeadCount = 0;
+
+  BlueCandidate get bluecandidate => BlueCandidate(
+        reference: reference,
+        name: name.text,
+        email: email.text,
+        mobile: mobile.text,
+        worktitle: worktitle.text,
+        aadharno: aadharno.text,
+        gender: gender.text,
+        workexp: workexp.text,
+        state: state.text,
+        address: address.text,
+        skills: skills.text,
+        workin: workin.text,
+        password: password.text,
+        otpm: otpm.text,
+        code: code.text,
+        confirmPassword: confirmPassword.text,
+        country: country.text,
+      );
+  factory BlueCandidateFormController.fromCandidate(
+      BlueCandidate bluecandidate) {
+    var controller = BlueCandidateFormController();
+    controller.name.text = bluecandidate.name!;
+    controller.mobile.text = bluecandidate.mobile!;
+    controller.email.text = bluecandidate.email!;
+    controller.worktitle.text = bluecandidate.worktitle!;
+    controller._reference = bluecandidate.reference;
+    controller.aadharno.text = bluecandidate.aadharno!;
+    controller.gender.text = bluecandidate.gender!;
+    controller.workexp.text = bluecandidate.workexp!;
+    controller.state.text = bluecandidate.state!;
+    controller.address.text = bluecandidate.address!;
+    controller.skills.text = bluecandidate.skills!;
+    controller.workin.text = bluecandidate.workin!;
+    controller.password.text = bluecandidate.password!;
+    controller.otpm.text = bluecandidate.otpm!;
+    controller.code.text = bluecandidate.code!;
+    controller.confirmPassword.text = bluecandidate.confirmPassword!;
     return controller;
   }
 }
