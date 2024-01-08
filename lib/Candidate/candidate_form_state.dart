@@ -19,6 +19,13 @@ class CandidateFormController {
   final password = TextEditingController();
   final otpm = TextEditingController();
   final code = TextEditingController();
+  final otp = TextEditingController();
+  final country = TextEditingController();
+  final qualification = TextEditingController();
+  final city = TextEditingController();
+  final expectedWage = TextEditingController();
+  final currentWage = TextEditingController();
+  final bluecoller = TextEditingController();
 
   TextEditingController confirmPassword = TextEditingController();
 

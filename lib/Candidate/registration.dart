@@ -42,7 +42,6 @@ class _RegistrationState extends State<Registration> {
   String smscode = "";
   String phoneNumber = "", data = "", phone = "";
   bool isVerified = false;
-  TextEditingController otpController = TextEditingController();
   bool isOtpValid = true; // Replace this line with actual verification logic
 
   List<String> _values = [];
@@ -143,7 +142,7 @@ class _RegistrationState extends State<Registration> {
         return AlertDialog(
           title: Text("Enter OTP"),
           content: TextField(
-            controller: otpController,
+            controller: controller.otp,
             keyboardType: TextInputType.number,
             maxLength: 4,
           ),
@@ -154,9 +153,9 @@ class _RegistrationState extends State<Registration> {
                 Navigator.of(context).pop();
 
                 // Verify entered OTP
-                print("Entered OTP: ${otpController.text}");
+                print("Entered OTP: ${controller.otp.text}");
 
-                if (await myauth.verifyOTP(otp: otpController.text.trim())) {
+                if (await myauth.verifyOTP(otp: controller.otp.text.trim())) {
                   print("OTP verification success");
                   // Navigate to registration page
                   Navigator.push(
@@ -196,7 +195,7 @@ class _RegistrationState extends State<Registration> {
 
   Future<void> _verifyOtp() async {
     // Perform OTP verification here using myauth.verifyOTP(otpController.text)
-    bool isOtpValid = await myauth.verifyOTP(otp: otpController.text);
+    bool isOtpValid = await myauth.verifyOTP(otp: controller.otp.text);
 
     if (isOtpValid) {
       // Navigate to registration page
@@ -907,7 +906,7 @@ class _RegistrationState extends State<Registration> {
                               ),
                               SizedBox(height: 60),
                               Text(
-                                translation(context).state,
+                                translation(context).qualification,
                                 style: TextStyle(
                                     fontFamily: 'Poppins',
                                     fontWeight: FontWeight.bold),
@@ -936,7 +935,7 @@ class _RegistrationState extends State<Registration> {
                                 ),
                                 CustomTextfield(
                                   validator: nameValidator,
-                                  controller: controller.state,
+                                  controller: controller.qualification,
                                 ),
                               ],
                             ),
