@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -8,7 +9,7 @@ import 'package:hiremeinindiaapp/gen_l10n/app_localizations.dart';
 import 'package:hiremeinindiaapp/userpayment.dart';
 import 'package:hiremeinindiaapp/widgets/customtextfield.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-
+import 'package:hiremeinindiaapp/image_helper.dart';
 import 'classes/language.dart';
 import 'classes/language_constants.dart';
 import 'main.dart';
@@ -443,6 +444,9 @@ class _NewUserUpload extends State<NewUserUpload> {
                             },
                           ),
                         ),
+                      SizedBox(
+                        height: 20,
+                      ),
                       CustomButton(
                         text: translation(context).picture,
                         onPressed: () async {
@@ -571,20 +575,33 @@ class _NewUserUpload extends State<NewUserUpload> {
                             border: Border.all(color: Colors.black, width: 2),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: CachedNetworkImage(
-                            imageUrl: uploadedImageUrlForVoterId!,
-                            fit: BoxFit.cover,
-                            progressIndicatorBuilder:
-                                (context, url, downloadProgress) {
-                              return Center(
-                                child: CircularProgressIndicator(
-                                    value: downloadProgress.progress),
-                              );
+                          child: Image.network(
+                            uploadedImageUrlForVoterId!,
+                            loadingBuilder: (BuildContext context, Widget child,
+                                ImageChunkEvent? loadingProgress) {
+                              if (loadingProgress == null) {
+                                return child;
+                              } else {
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                    value: loadingProgress.expectedTotalBytes !=
+                                            null
+                                        ? loadingProgress
+                                                .cumulativeBytesLoaded /
+                                            (loadingProgress
+                                                    .expectedTotalBytes ??
+                                                1)
+                                        : null,
+                                  ),
+                                );
+                              }
                             },
-                            errorWidget: (context, url, error) {
+                            errorBuilder: (BuildContext context, Object error,
+                                StackTrace? stackTrace) {
                               print('Error loading image: $error');
                               return Placeholder(); // You can replace this with any placeholder widget
                             },
+                            fit: BoxFit.cover,
                           ),
                         ),
                       CustomButton(
