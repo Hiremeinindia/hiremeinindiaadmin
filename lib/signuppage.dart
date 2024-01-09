@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
-import 'package:get/get.dart';
 import 'package:hiremeinindiaapp/homepage.dart';
 import 'package:hiremeinindiaapp/widgets/customtextfield.dart';
 import 'User/candidate_form_state.dart';

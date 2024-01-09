@@ -1,7 +1,5 @@
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:country_state_city_picker/country_state_city_picker.dart';
 import 'package:csc_picker/csc_picker.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/foundation.dart';
@@ -18,13 +16,10 @@ import '../../classes/language.dart';
 import '../../classes/language_constants.dart';
 import '../../main.dart';
 import '../../widgets/custombutton.dart';
-import '../../widgets/hiremeinindia.dart';
 import '../../Widgets/customtextstyle.dart';
 import 'package:file_picker/file_picker.dart';
 
 import 'package:firebase_storage/firebase_storage.dart';
-
-import 'package:flutter/services.dart' show rootBundle;
 
 class BlueUserUpload extends StatefulWidget {
   const BlueUserUpload();

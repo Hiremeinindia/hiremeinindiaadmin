@@ -1,14 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hiremeinindiaapp/User/GreyUser/greyRegistration.dart';
-import 'package:hiremeinindiaapp/homepage.dart';
 import 'package:hiremeinindiaapp/loginpage.dart';
 import 'package:hiremeinindiaapp/widgets/hiremeinindia.dart';
 
 import 'User/BlueUser/blueregistration.dart';
-import 'Providers/session.dart';
 import 'widgets/custombutton.dart';
 import 'package:hiremeinindiaapp/main.dart';
 import 'classes/language.dart';
