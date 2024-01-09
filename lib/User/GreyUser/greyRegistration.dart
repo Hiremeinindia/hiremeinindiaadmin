@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -8,24 +9,24 @@ import 'package:get/get_instance/get_instance.dart';
 import 'package:get/route_manager.dart';
 import 'package:email_otp/email_otp.dart';
 import 'package:flutter_dialogs/flutter_dialogs.dart';
-import 'package:hiremeinindiaapp/Candidate/candidate_form_state.dart';
+import 'package:hiremeinindiaapp/User/candidate_form_state.dart';
 import 'package:hiremeinindiaapp/Models/candidated.dart';
 import 'package:hiremeinindiaapp/Models/register_model.dart';
+import 'package:hiremeinindiaapp/User/GreyUser/greyuserupload.dart';
 import 'package:hiremeinindiaapp/userpayment.dart';
-import 'package:hiremeinindiaapp/widgets/textstylebutton.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:super_tag_editor/widgets/rich_text_widget.dart';
-import '../Providers/session.dart';
-import '../classes/language.dart';
-import '../classes/language_constants.dart';
-import '../controllers/signupcontroller.dart';
-import '../gen_l10n/app_localizations.dart';
-import '../homepage.dart';
-import '../main.dart';
-import '../widgets/custombutton.dart';
-import '../widgets/customtextfield.dart';
-import '../widgets/hiremeinindia.dart';
-import 'candidate_controller.dart';
+import '../../Providers/session.dart';
+import '../../Widgets/customtextstyle.dart';
+import '../../classes/language.dart';
+import '../../classes/language_constants.dart';
+import '../../gen_l10n/app_localizations.dart';
+import '../../homepage.dart';
+import '../../main.dart';
+import '../../widgets/custombutton.dart';
+import '../../widgets/customtextfield.dart';
+import '../../widgets/hiremeinindia.dart';
+import '../../controllers/candidate_controller.dart';
 
 class Registration extends StatefulWidget {
   const Registration({Key? key, this.candidate}) : super(key: key);
@@ -44,11 +45,16 @@ class _RegistrationState extends State<Registration> {
   TextEditingController otpController = TextEditingController();
   bool isOtpValid = true; // Replace this line with actual verification logic
 
+  final List<String> items = ['Tamil', 'English', 'French', 'Malayalam'];
+  String? selectedValue;
+  String email = '';
+  bool login = false;
+  final _formKey = GlobalKey<FormState>();
   List<String> _values = [];
   List<String> _value = [];
 
   bool blueChecked = false;
-  bool greyChecked = false;
+  bool greyChecked = true;
   bool focusTagEnabled = false;
   String password = '';
 
@@ -56,11 +62,12 @@ class _RegistrationState extends State<Registration> {
   var isLoading = false;
 
   final FocusNode _focusNode = FocusNode();
-  final _formKey = GlobalKey<FormState>();
   EmailOTP myauth = EmailOTP();
   CandidateFormController controller = CandidateFormController();
   final DatabaseReference _userRef =
       FirebaseDatabase.instance.reference().child('users');
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   static const Skill = [
     'Plumber',
@@ -530,6 +537,7 @@ class _RegistrationState extends State<Registration> {
   Widget build(BuildContext context) {
     bool _validate = false;
 
+    var updatedUser;
     return Scaffold(
       appBar: AppBar(
         title: HireMeInIndia(),
@@ -741,7 +749,7 @@ class _RegistrationState extends State<Registration> {
                 SizedBox(
                   width: 50,
                   child: Text(
-                    'Guest User',
+                    '${updatedUser.displayName}',
                     maxLines: 2,
                     style: TextStyle(color: Colors.black),
                   ),
@@ -761,16 +769,12 @@ class _RegistrationState extends State<Registration> {
                 child: Row(
                   children: [
                     Checkbox(
-                      value: blueChecked,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          blueChecked = value ?? false;
-                        });
-                      },
+                      value: false,
+                      onChanged: null,
                       fillColor: MaterialStateProperty.resolveWith<Color>(
                         (Set<MaterialState> states) {
                           if (states.contains(MaterialState.selected)) {
-                            return Colors.indigo.shade900;
+                            return const Color.fromARGB(255, 90, 97, 168);
                           }
                           return Colors.transparent;
                         },
@@ -1074,22 +1078,11 @@ class _RegistrationState extends State<Registration> {
                         Expanded(
                             child: CustomTextfield(
                                 controller: controller.email,
-                                validator: (val) {
-                                  if (AppSession()
-                                      .candidates
-                                      .where((element) =>
-                                          element.email!.toLowerCase() ==
-                                          val?.toLowerCase())
-                                      .isNotEmpty) {
-                                    return "Already User Exist";
-                                  }
-                                  ;
-                                  MultiValidator([
-                                    RequiredValidator(errorText: "* Required"),
-                                    EmailValidator(
-                                        errorText: "Enter valid email id"),
-                                  ]);
-                                })),
+                                validator: MultiValidator([
+                                  RequiredValidator(errorText: "* Required"),
+                                  EmailValidator(
+                                      errorText: "Enter valid email id"),
+                                ]))),
                         SizedBox(
                           height: 30,
                           child: ElevatedButton(
@@ -1468,7 +1461,7 @@ class _RegistrationState extends State<Registration> {
                           SizedBox(width: 50),
                           CustomButton(
                             text: translation(context).next,
-                            onPressed: () {
+                            onPressed: () async {
                               if (_formKey.currentState!.validate()) {
                                 var future;
                                 var candidateController = CandidateController(
@@ -1480,20 +1473,31 @@ class _RegistrationState extends State<Registration> {
                                   future =
                                       candidateController.updateCandidate();
                                 }
-
-                                FirebaseAuth.instance
-                                    .createUserWithEmailAndPassword(
-                                        email: controller.email.text,
-                                        password: controller.password.text)
-                                    .then((value) {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => HomePage()));
-                                }).onError((error, stackTrace) {
-                                  print("Error ${error.toString()}");
-                                });
                               }
+                              FirebaseAuth.instance
+                                  .createUserWithEmailAndPassword(
+                                      email: controller.email.text,
+                                      password: controller.password.text)
+                                  .then((value) {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            GreyUserUpload()));
+                              }).onError((error, stackTrace) {
+                                print("Error ${error.toString()}");
+                              });
+                              UserCredential userCredential =
+                                  await _auth.signInAnonymously();
+
+                              // Update the user's display name in Firestore
+                              await _firestore
+                                  .collection('users')
+                                  .doc(userCredential.user?.uid)
+                                  .set({
+                                'displayName':
+                                    'User', // Set a default display name
+                              });
                             },
                           ),
                         ],

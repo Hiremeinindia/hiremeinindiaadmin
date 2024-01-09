@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:hiremeinindiaapp/Candidate/candidate_form_state.dart';
-import 'package:hiremeinindiaapp/controllers/signupcontroller.dart';
+import 'package:hiremeinindiaapp/User/candidate_form_state.dart';
 
 import '../Models/candidated.dart';
 import '../Models/results.dart';

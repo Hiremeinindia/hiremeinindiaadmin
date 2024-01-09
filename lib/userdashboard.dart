@@ -1,12 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:hiremeinindiaapp/adminconsole.dart';
+import 'package:hiremeinindiaapp/Admin/adminconsole.dart';
 import 'package:hiremeinindiaapp/widgets/customcard.dart';
 
+import 'Widgets/customtextstyle.dart';
 import 'widgets/custombutton.dart';
 import 'widgets/hiremeinindia.dart';
 import 'classes/language_constants.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:hiremeinindiaapp/widgets/textstylebutton.dart';
 import 'classes/language.dart';
 import 'gen_l10n/app_localizations.dart';
 import 'main.dart';
@@ -21,6 +22,23 @@ class _UserDashboard extends State<UserDashboard> {
   @override
   bool isChecked = false;
   bool dropdownValue = false;
+  late User
+      _user; // Make sure to import the User class from 'package:firebase_auth/firebase_auth.dart'
+
+  @override
+  void initState() {
+    super.initState();
+    _getUser(); // Fetch the user during initialization
+  }
+
+  Future<void> _getUser() async {
+    User? currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      setState(() {
+        _user = currentUser;
+      });
+    }
+  }
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -232,12 +250,20 @@ class _UserDashboard extends State<UserDashboard> {
                     ),
                   ),
                   SizedBox(width: 8.0),
-                  SizedBox(
-                    width: 50,
-                    child: Text(
-                      'Guest User',
-                      maxLines: 2,
-                      style: TextStyle(color: Colors.black),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '  ${_user.displayName ?? 'Guest'}',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        Text(
+                          'User',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ],
                     ),
                   ),
                 ],

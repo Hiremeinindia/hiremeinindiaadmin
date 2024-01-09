@@ -8,24 +8,24 @@ import 'package:get/get_instance/get_instance.dart';
 import 'package:get/route_manager.dart';
 import 'package:email_otp/email_otp.dart';
 import 'package:flutter_dialogs/flutter_dialogs.dart';
-import 'package:hiremeinindiaapp/Candidate/candidate_form_state.dart';
+import 'package:hiremeinindiaapp/User/candidate_form_state.dart';
 import 'package:hiremeinindiaapp/Models/candidated.dart';
 import 'package:hiremeinindiaapp/Models/register_model.dart';
 import 'package:hiremeinindiaapp/userpayment.dart';
-import 'package:hiremeinindiaapp/widgets/textstylebutton.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:super_tag_editor/widgets/rich_text_widget.dart';
-import '../Providers/session.dart';
-import '../blueuserupload.dart';
-import '../classes/language.dart';
-import '../classes/language_constants.dart';
-import '../gen_l10n/app_localizations.dart';
-import '../homepage.dart';
-import '../main.dart';
-import '../widgets/custombutton.dart';
-import '../widgets/customtextfield.dart';
-import '../widgets/hiremeinindia.dart';
-import 'candidate_controller.dart';
+import '../../Providers/session.dart';
+import '../../Widgets/customtextstyle.dart';
+import 'blueuserupload.dart';
+import '../../classes/language.dart';
+import '../../classes/language_constants.dart';
+import '../../gen_l10n/app_localizations.dart';
+import '../../homepage.dart';
+import '../../main.dart';
+import '../../widgets/custombutton.dart';
+import '../../widgets/customtextfield.dart';
+import '../../widgets/hiremeinindia.dart';
+import '../../controllers/candidate_controller.dart';
 
 class BlueRegistration extends StatefulWidget {
   const BlueRegistration({Key? key, this.bluecandidate}) : super(key: key);
@@ -45,22 +45,9 @@ class _BlueRegistrationState extends State<BlueRegistration> {
 
   List<String> _values = [];
   List<String> _value = [];
-
-  bool blueChecked = true;
-  bool greyChecked = false;
-  bool focusTagEnabled = false;
-  String password = '';
-
-  var isLoading = false;
-
-  final FocusNode _focusNode = FocusNode();
-  final _formKey = GlobalKey<FormState>();
-  EmailOTP myauth = EmailOTP();
-  BlueCandidateFormController bluecontroller = BlueCandidateFormController();
-  final DatabaseReference _blueuserRef =
-      FirebaseDatabase.instance.reference().child('bluecollarusers');
-
-  static const Skill = [
+  List<String> selectedValues = [];
+  String? dropdownValue;
+  List<String> Skill = [
     'Electrician',
     'Mechanic',
     'Construction Helper ',
@@ -93,6 +80,20 @@ class _BlueRegistrationState extends State<BlueRegistration> {
     'Catering Workers',
     'Pest Control'
   ];
+  bool blueChecked = true;
+  bool greyChecked = false;
+  bool focusTagEnabled = false;
+  String password = '';
+
+  var isLoading = false;
+
+  final FocusNode _focusNode = FocusNode();
+  final _formKey = GlobalKey<FormState>();
+  EmailOTP myauth = EmailOTP();
+  BlueCandidateFormController bluecontroller = BlueCandidateFormController();
+  final DatabaseReference _blueuserRef =
+      FirebaseDatabase.instance.reference().child('bluecollarusers');
+
   static const Workin = [
     'Electrician',
     'Mechanic',
@@ -1208,136 +1209,58 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                                 fontWeight: FontWeight.bold),
                           ),
                           SizedBox(width: 10),
-                          Expanded(
-                            child: Container(
-                              height: 35,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(1),
-                                  border: Border(
-                                      bottom: BorderSide(color: Colors.black))),
-                              child: ListView(
-                                children: <Widget>[
-                                  TagEditor<String>(
-                                    length: _value.length,
-                                    controller: bluecontroller.skills,
-                                    focusNode: _focusNode,
-                                    delimiters: [',', ' '],
-                                    resetTextOnSubmitted: true,
-                                    textStyle:
-                                        const TextStyle(color: Colors.black),
-                                    onSubmitted: (outstandingValue) {
+                          Wrap(
+                            spacing: 8.0,
+                            runSpacing: 8.0,
+                            children: selectedValues
+                                .map(
+                                  (value) => Chip(
+                                    label: Text(value),
+                                    onDeleted: () {
                                       setState(() {
-                                        _value.add(outstandingValue);
+                                        selectedValues.remove(value);
                                       });
-                                    },
-                                    inputDecoration: const InputDecoration(
-                                      border: InputBorder.none,
-                                    ),
-                                    onTagChanged: (newValue) {
-                                      setState(() {
-                                        _value.add(newValue);
-                                      });
-                                    },
-                                    tagBuilder: (context, index) => Container(
-                                      color: focusTagEnabled &&
-                                              index == _value.length - 1
-                                          ? Colors.redAccent
-                                          : Colors.white,
-                                      child: _Chip(
-                                        index: index,
-                                        label: _value[index],
-                                        onDeleted: _onDeletee,
-                                      ),
-                                    ),
-                                    // InputFormatters example, this disallow \ and /
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.deny(
-                                          RegExp(r'[/\\]'))
-                                    ],
-                                    suggestionBuilder: (context,
-                                        state,
-                                        data,
-                                        index,
-                                        length,
-                                        highlight,
-                                        suggestionValid) {
-                                      var borderRadius = const BorderRadius.all(
-                                          Radius.circular(30));
-                                      if (index == 0) {
-                                        borderRadius = const BorderRadius.only(
-                                          topLeft: Radius.circular(30),
-                                          topRight: Radius.circular(30),
-                                        );
-                                      } else if (index == length - 1) {
-                                        borderRadius = const BorderRadius.only(
-                                          bottomRight: Radius.circular(30),
-                                          bottomLeft: Radius.circular(30),
-                                        );
-                                      }
-                                      return InkWell(
-                                        onTap: () {
-                                          setState(() {
-                                            _value.add(data);
-                                          });
-                                          state.resetTextField();
-                                          state.closeSuggestionBox();
-                                        },
-                                        child: Container(
-                                            width: 600,
-                                            decoration: highlight
-                                                ? BoxDecoration(
-                                                    color: Theme.of(context)
-                                                        .focusColor,
-                                                    borderRadius: borderRadius)
-                                                : null,
-                                            padding: const EdgeInsets.all(16),
-                                            child: RichTextWidget(
-                                              wordSearched:
-                                                  suggestionValid ?? '',
-                                              textOrigin: data,
-                                            )),
-                                      );
-                                    },
-                                    onFocusTagAction: (focused) {
-                                      setState(() {
-                                        focusTagEnabled = focused;
-                                      });
-                                    },
-                                    onDeleteTagAction: () {
-                                      if (_value.isNotEmpty) {
-                                        setState(() {
-                                          _value.removeLast();
-                                        });
-                                      }
-                                    },
-                                    onSelectOptionAction: (item) {
-                                      setState(() {
-                                        _value.add(item);
-                                      });
-                                    },
-
-                                    suggestionsBoxElevation: 5,
-                                    findSuggestions: (String query) {
-                                      if (query.isNotEmpty) {
-                                        var lowercaseQuery =
-                                            query.toLowerCase();
-                                        return Skill.where((profile) {
-                                          return profile.toLowerCase().contains(
-                                                  query.toLowerCase()) ||
-                                              profile.toLowerCase().contains(
-                                                  query.toLowerCase());
-                                        }).toList(growable: false)
-                                          ..sort((a, b) => a
-                                              .toLowerCase()
-                                              .indexOf(lowercaseQuery)
-                                              .compareTo(b
-                                                  .toLowerCase()
-                                                  .indexOf(lowercaseQuery)));
-                                      }
-                                      return [];
                                     },
                                   ),
-                                ],
+                                )
+                                .toList(),
+                          ),
+                          Expanded(
+                            child: Container(
+                              height: 30,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(1),
+                                  border: Border.all(color: Colors.black)),
+                              child: DropdownButton<String>(
+                                value: dropdownValue,
+                                icon: Align(
+                                    alignment: Alignment.bottomRight,
+                                    child: Icon(Icons.arrow_downward)),
+                                iconSize: 24,
+                                elevation: 16,
+                                style:
+                                    const TextStyle(color: Colors.deepPurple),
+                                underline: Container(
+                                  height: 0,
+                                ),
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    int selectionLimit = 2;
+                                    if (newValue != null &&
+                                        !selectedValues.contains(newValue) &&
+                                        selectedValues.length <
+                                            selectionLimit) {
+                                      selectedValues.add(newValue);
+                                    }
+                                  });
+                                },
+                                items: Skill.map<DropdownMenuItem<String>>(
+                                    (String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(value),
+                                  );
+                                }).toList(),
                               ),
                             ),
                           ),

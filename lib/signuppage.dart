@@ -4,7 +4,7 @@ import 'package:form_field_validator/form_field_validator.dart';
 import 'package:get/get.dart';
 import 'package:hiremeinindiaapp/homepage.dart';
 import 'package:hiremeinindiaapp/widgets/customtextfield.dart';
-import 'controllers/signupcontroller.dart';
+import 'User/candidate_form_state.dart';
 import 'widgets/custombutton.dart';
 import 'widgets/hiremeinindia.dart';
 
@@ -29,7 +29,8 @@ class _SignUpPageState extends State<SignUpPage> {
     }
   }
 
-  final controller = Get.put(SignUpController());
+  CandidateFormController controller = CandidateFormController();
+
   final List<String> items = ['Tamil', 'English', 'French', 'Malayalam'];
   String? selectedValue;
   String email = '';
