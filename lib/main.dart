@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hiremeinindiaapp/gen_l10n/app_localizations.dart';
 
 import 'User/BlueUser/blueregistration.dart';
+import 'User/GreyUser/greyRegistration.dart';
 import 'classes/language_constants.dart';
 
 void main() async {
@@ -57,7 +58,7 @@ class _HireAppState extends State<HireApp> {
       supportedLocales: AppLocalizations.supportedLocales,
       locale: _locale,
       debugShowCheckedModeBanner: false,
-      home: BlueRegistration(),
+      home: Registration(),
     );
   }
 }
