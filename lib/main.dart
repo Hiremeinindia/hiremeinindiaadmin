@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hiremeinindiaapp/gen_l10n/app_localizations.dart';
+import 'package:hiremeinindiaapp/userpayment.dart';
 
 import 'User/BlueUser/blueregistration.dart';
 import 'User/GreyUser/greyRegistration.dart';
@@ -58,7 +59,7 @@ class _HireAppState extends State<HireApp> {
       supportedLocales: AppLocalizations.supportedLocales,
       locale: _locale,
       debugShowCheckedModeBanner: false,
-      home: Registration(),
+      home: BlueRegistration(),
     );
   }
 }
