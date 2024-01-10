@@ -10,7 +10,8 @@ class CandidateController {
   });
   final CandidateFormController formController;
 
-  static final candidateRef = FirebaseFirestore.instance.collection('users');
+  static final candidateRef =
+      FirebaseFirestore.instance.collection('greycollaruser');
 
   Candidate get candidate => formController.candidate;
 

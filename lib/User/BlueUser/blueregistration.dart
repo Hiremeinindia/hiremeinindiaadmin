@@ -41,7 +41,7 @@ class _BlueRegistrationState extends State<BlueRegistration> {
 
   List<String> _values = [];
   List<String> _value = [];
-  List<String> selectedSkill = [];
+  List<String> selectedSkills = [];
   List<String> selectedWorkin = [];
 
   String? skillvalue;
@@ -177,13 +177,6 @@ class _BlueRegistrationState extends State<BlueRegistration> {
       return 'Invalid format';
     }
     return null;
-  }
-
-  void storeChipsToFirestore() async {
-    // Create a new document in the Firestore collection
-    await FirebaseFirestore.instance.collection('bluecollaruser').doc();
-
-    // Optionally, you can display a message or perform other actions after storing the data.
   }
 
   void _showOtpDialog() {
@@ -327,6 +320,26 @@ class _BlueRegistrationState extends State<BlueRegistration> {
         );
       },
     );
+  }
+
+  void updateSkillsInFirestore(List<String> skills) async {
+    // Get the current user
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      String uid = user.uid;
+
+      try {
+        await FirebaseFirestore.instance
+            .collection('blucollaruser')
+            .doc(uid)
+            .update({'selectedSkills': selectedSkills});
+
+        print('Skills updated successfully in Firestore');
+      } catch (error) {
+        print('Error updating skills in Firestore: $error');
+      }
+    }
   }
 
   Future<bool> _signInWithMobileNumber() async {
@@ -792,12 +805,20 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                   ),
                 ),
                 SizedBox(width: 8.0),
-                SizedBox(
-                  width: 50,
-                  child: Text(
-                    'Guest User',
-                    maxLines: 2,
-                    style: TextStyle(color: Colors.black),
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Guest',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      Text(
+                        'User',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -915,21 +936,21 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                                   height: 40,
                                 ),
                                 CustomTextfield(
-                                  //   validator: nameValidator,
+                                  validator: nameValidator,
                                   controller: bluecontroller.worktitle,
                                 ),
                                 SizedBox(
                                   height: 40,
                                 ),
                                 CustomTextfield(
-                                  //validator: (value) {
-                                  //  if (value!.isEmpty) {
+                                  // validator: (value) {
+                                  //   if (value!.isEmpty) {
                                   //     return '*Required';
                                   //   } else if (value!.length != 12) {
-                                  //    return 'Aadhar Number must be of 12 digit';
+                                  //     return 'Aadhar Number must be of 12 digit';
                                   //   }
                                   //   return null;
-                                  //   },
+                                  // },
                                   controller: bluecontroller.aadharno,
                                 ),
                               ],
@@ -1047,15 +1068,15 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                         Expanded(
                             child: CustomTextfield(
                           controller: bluecontroller.mobile,
-                          //    validator: (value) {
-                          //     if (value!.isEmpty) {
-                          //      return '*Required';
-                          //     } else if (value!.length != 10) {
-                          //       return 'Mobile Number must be of 10 digit';
-                          //      }
+                          // validator: (value) {
+                          //   if (value!.isEmpty) {
+                          //     return '*Required';
+                          //   } else if (value!.length != 10) {
+                          //     return 'Mobile Number must be of 10 digit';
+                          //   }
 
-                          //      return null;
-                          //     },
+                          //   return null;
+                          // },
                         )),
                         SizedBox(
                           height: 30,
@@ -1126,13 +1147,12 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                         SizedBox(width: 55),
                         Expanded(
                           child: CustomTextfield(
-                            controller: bluecontroller.email,
-                            //   validator: MultiValidator([
-                            //   RequiredValidator(errorText: "* Required"),
-                            // EmailValidator(
-                            //   errorText: "Enter valid email id"),
-                            // ])
-                          ),
+                              controller: bluecontroller.email,
+                              validator: MultiValidator([
+                                RequiredValidator(errorText: "* Required"),
+                                EmailValidator(
+                                    errorText: "Enter valid email id"),
+                              ])),
                         ),
                         SizedBox(
                           height: 30,
@@ -1220,7 +1240,7 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                           Wrap(
                             spacing: 8.0,
                             runSpacing: 8.0,
-                            children: selectedSkill
+                            children: selectedSkills
                                 .map(
                                   (value) => Chip(
                                     backgroundColor: Colors.indigo.shade900,
@@ -1230,7 +1250,7 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                                     ),
                                     onDeleted: () {
                                       setState(() {
-                                        selectedSkill.remove(value);
+                                        selectedSkills.remove(value);
                                       });
                                     },
                                   ),
@@ -1251,9 +1271,17 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                                       .collection('blucollaruser')
                                       .snapshots(),
                                   builder: (context, snapshot) {
+                                    if (snapshot.hasError) {
+                                      return Text('Error: ${snapshot.error}');
+                                    }
+
+                                    if (!snapshot.hasData) {
+                                      return CircularProgressIndicator();
+                                    }
+
                                     return DropdownButtonHideUnderline(
                                       child: DropdownButton2<String>(
-                                        value: skillvalue,
+                                        value: null,
                                         buttonStyleData: ButtonStyleData(
                                           height: 30,
                                           width: 200,
@@ -1317,9 +1345,12 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                                           setState(() {
                                             int selectionLimit = 2;
                                             if (newValue != null &&
-                                                !selectedSkill
-                                                    .contains(newValue)) {
-                                              selectedSkill.add(newValue);
+                                                selectedSkills.length <
+                                                    selectionLimit) {
+                                              if (!selectedSkills
+                                                  .contains(newValue)) {
+                                                selectedSkills.add(newValue);
+                                              }
                                             }
                                           });
                                         },
@@ -1441,6 +1472,7 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                                       if (newValue != null &&
                                           !selectedWorkin.contains(newValue)) {
                                         selectedWorkin.add(newValue);
+                                        updateSkillsInFirestore(selectedSkills);
                                       }
                                     });
                                   },
@@ -1485,7 +1517,6 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                                       bluecandidateController.updateCandidate();
                                 }
 
-                                storeChipsToFirestore();
                                 FirebaseAuth.instance
                                     .createUserWithEmailAndPassword(
                                         email: bluecontroller.email.text,
