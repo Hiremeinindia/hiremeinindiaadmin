@@ -14,7 +14,7 @@ class CandidateFormController {
   final workexp = TextEditingController();
   final state = TextEditingController();
   final address = TextEditingController();
-  final skills = TextEditingController();
+  List<String>? selectedSkill = [];
   final workin = TextEditingController();
   final password = TextEditingController();
   final otpm = TextEditingController();
@@ -38,7 +38,8 @@ class CandidateFormController {
   DocumentReference? _reference;
 
   DocumentReference get reference {
-    _reference ??= FirebaseFirestore.instance.collection('users').doc();
+    _reference ??=
+        FirebaseFirestore.instance.collection('greycollaruser').doc();
     return _reference!;
   }
 
@@ -56,7 +57,7 @@ class CandidateFormController {
         workexp: workexp.text,
         state: state.text,
         address: address.text,
-        skills: skills.text,
+        selectedSkill: selectedSkill,
         workin: workin.text,
         password: password.text,
         otpm: otpm.text,
@@ -77,7 +78,7 @@ class CandidateFormController {
     controller.workexp.text = candidate.workexp!;
     controller.state.text = candidate.state!;
     controller.address.text = candidate.address!;
-    controller.skills.text = candidate.skills!;
+    controller.selectedSkill = candidate.selectedSkill ?? [];
     controller.workin.text = candidate.workin!;
     controller.password.text = candidate.password!;
     controller.otpm.text = candidate.otpm!;
@@ -113,8 +114,8 @@ class BlueCandidateFormController {
   final country = TextEditingController();
 
   TextEditingController confirmPassword = TextEditingController();
-  List<String> skills = [];
-  String selectedSkill = "";
+  List<String> selectedSkills = [];
+
   bool isAdmin = false;
   double commissionAmount = 0;
 
@@ -142,7 +143,7 @@ class BlueCandidateFormController {
         workexp: workexp.text,
         state: state.text,
         address: address.text,
-        skills: skills,
+        selectedSkills: selectedSkills,
         workin: workin.text,
         password: password.text,
         otpm: otpm.text,
@@ -157,13 +158,13 @@ class BlueCandidateFormController {
     controller.mobile.text = bluecandidate.mobile!;
     controller.email.text = bluecandidate.email!;
     controller.worktitle.text = bluecandidate.worktitle!;
-    controller._reference = bluecandidate.reference;
     controller.aadharno.text = bluecandidate.aadharno!;
     controller.gender.text = bluecandidate.gender!;
     controller.workexp.text = bluecandidate.workexp!;
     controller.state.text = bluecandidate.state!;
     controller.address.text = bluecandidate.address!;
-    controller.skills = bluecandidate.skills!;
+
+    controller.selectedSkills = bluecandidate.selectedSkills ?? [];
     controller.workin.text = bluecandidate.workin!;
     controller.password.text = bluecandidate.password!;
     controller.otpm.text = bluecandidate.otpm!;

@@ -8,7 +8,6 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'classes/language.dart';
 import 'gen_l10n/app_localizations.dart';
 import 'main.dart';
-import 'package:pay/pay.dart';
 
 class NewUserPayment extends StatefulWidget {
   const NewUserPayment();
@@ -19,13 +18,7 @@ class NewUserPayment extends StatefulWidget {
 class _NewUserPayment extends State<NewUserPayment> {
   @override
   bool isChecked = false;
-  final _paymentItems = [
-    PaymentItem(
-      label: 'Total',
-      amount: '99.99',
-      status: PaymentItemStatus.final_price,
-    )
-  ];
+
   void onGooglePayResult(paymentResult) {
     debugPrint(paymentResult.toString());
   }
@@ -347,22 +340,6 @@ class _NewUserPayment extends State<NewUserPayment> {
                     text: translation(context).paymentGateway,
                     onPressed: () {},
                   )),
-                  SizedBox(
-                    width: 40,
-                  ),
-                  Container(
-                    color: Colors.red, // Change color as needed
-                    child: GooglePayButton(
-                      paymentConfigurationAsset: 'assets/gpay.json',
-                      paymentItems: _paymentItems,
-                      type: GooglePayButtonType.pay,
-                      margin: const EdgeInsets.only(top: 15.0),
-                      onPaymentResult: onGooglePayResult,
-                      loadingIndicator: const Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    ),
-                  )
                 ],
               ),
               SizedBox(

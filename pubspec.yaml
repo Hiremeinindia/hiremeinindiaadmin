@@ -69,7 +69,7 @@ dependencies:
   cached_network_image: ^3.3.1
   country_state_city_picker: ^1.2.8
   country_state_city_pro: ^0.0.6
-  pay: ^1.1.2
+
   
 
 dev_dependencies:
@@ -96,9 +96,10 @@ flutter:
   uses-material-design: true
   generate: true
   # To add assets to your application, add an assets section, like this:
-  assets:
-    - assets/gpay.json
-  
+  # assets:
+  #  - assets/
+  #   - images/a_dot_burr.jpeg
+  #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

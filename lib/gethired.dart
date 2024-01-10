@@ -31,7 +31,7 @@ class _HiredState extends State<Hired> {
 
   Future<int> bluecountDocuments() async {
     QuerySnapshot<Map<String, dynamic>> myDoc =
-        await firestore.collection('users').get();
+        await firestore.collection('greycollaruser').get();
     List<DocumentSnapshot<Map<String, dynamic>>> myDocCount = myDoc.docs;
     return myDocCount.length; // Return the count of documents in the collection
   }
