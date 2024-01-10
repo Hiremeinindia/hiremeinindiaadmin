@@ -99,7 +99,6 @@ class BlueCandidateFormController {
   final workexp = TextEditingController();
   final state = TextEditingController();
   final address = TextEditingController();
-  final skills = TextEditingController();
   final workin = TextEditingController();
   final password = TextEditingController();
   final otpm = TextEditingController();
@@ -114,7 +113,8 @@ class BlueCandidateFormController {
   final country = TextEditingController();
 
   TextEditingController confirmPassword = TextEditingController();
-
+  List<String> skills = [];
+  String selectedSkill = "";
   bool isAdmin = false;
   double commissionAmount = 0;
 
@@ -142,7 +142,7 @@ class BlueCandidateFormController {
         workexp: workexp.text,
         state: state.text,
         address: address.text,
-        skills: skills.text,
+        skills: skills,
         workin: workin.text,
         password: password.text,
         otpm: otpm.text,
@@ -163,7 +163,7 @@ class BlueCandidateFormController {
     controller.workexp.text = bluecandidate.workexp!;
     controller.state.text = bluecandidate.state!;
     controller.address.text = bluecandidate.address!;
-    controller.skills.text = bluecandidate.skills!;
+    controller.skills = bluecandidate.skills!;
     controller.workin.text = bluecandidate.workin!;
     controller.password.text = bluecandidate.password!;
     controller.otpm.text = bluecandidate.otpm!;
