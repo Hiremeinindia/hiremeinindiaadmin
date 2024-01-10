@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:hiremeinindiaapp/userdashboard.dart';
+import 'package:hiremeinindiaapp/loginpage.dart';
+import 'Widgets/customtextstyle.dart';
 import 'classes/language_constants.dart';
 import 'widgets/custombutton.dart';
 import 'widgets/hiremeinindia.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:hiremeinindiaapp/widgets/textstylebutton.dart';
 import 'classes/language.dart';
 import 'gen_l10n/app_localizations.dart';
 import 'main.dart';
@@ -348,8 +348,7 @@ class _NewUserPayment extends State<NewUserPayment> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => const UserDashboard()),
+                        MaterialPageRoute(builder: (context) => LoginPage()),
                       );
                     },
                   ),

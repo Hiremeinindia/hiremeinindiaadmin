@@ -1,11 +1,11 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
-import 'package:hiremeinindiaapp/corporateconsole.dart';
 import 'package:hiremeinindiaapp/widgets/hiremeinindia.dart';
-import 'package:hiremeinindiaapp/widgets/textstylebutton.dart';
 
-import 'classes/language_constants.dart';
-import 'widgets/customcard.dart';
+import '../CorporateConsole/corporateconsole.dart';
+import '../Widgets/customtextstyle.dart';
+import '../classes/language_constants.dart';
+import '../widgets/customcard.dart';
 
 class AdminConsole extends StatefulWidget {
   const AdminConsole();

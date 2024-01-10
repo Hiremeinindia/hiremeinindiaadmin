@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:hiremeinindiaapp/services/functions/firebaseFunctions.dart';
+
+import 'firebaseFunctions.dart';
 
 class AuthServices {
   static signupUser(String email, String password, BuildContext context) async {

@@ -1,20 +1,15 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:form_field_validator/form_field_validator.dart';
-import 'package:hiremeinindiaapp/gen_l10n/app_localizations_en.dart';
-import 'package:hiremeinindiaapp/gethired.dart';
-import 'package:get/get.dart';
 import 'package:hiremeinindiaapp/main.dart';
-import 'package:hiremeinindiaapp/services/functions/authFunctions.dart';
+import 'package:hiremeinindiaapp/userdashboard.dart';
 import 'package:hiremeinindiaapp/widgets/customtextfield.dart';
+import 'User/candidate_form_state.dart';
+import 'Widgets/customtextstyle.dart';
 import 'classes/language.dart';
 import 'classes/language_constants.dart';
-import 'controllers/signupcontroller.dart';
 import 'gen_l10n/app_localizations.dart';
-import 'homepage.dart';
 import 'widgets/custombutton.dart';
-import 'widgets/textstylebutton.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage();
@@ -37,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  final controller = Get.put(SignUpController());
+  CandidateFormController controller = CandidateFormController();
 
   String? selectedValue;
   String email = '';
@@ -305,7 +300,7 @@ class _LoginPageState extends State<LoginPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) {
-                              return Hired();
+                              return UserDashboard();
                             }),
                           );
                         } else {

@@ -1,86 +1,131 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:form_field_validator/form_field_validator.dart';
-import 'package:get/get_instance/get_instance.dart';
-import 'package:get/route_manager.dart';
+
 import 'package:email_otp/email_otp.dart';
 import 'package:flutter_dialogs/flutter_dialogs.dart';
-import 'package:hiremeinindiaapp/Candidate/candidate_form_state.dart';
+import 'package:hiremeinindiaapp/User/candidate_form_state.dart';
 import 'package:hiremeinindiaapp/Models/candidated.dart';
-import 'package:hiremeinindiaapp/Models/register_model.dart';
-import 'package:hiremeinindiaapp/userpayment.dart';
-import 'package:hiremeinindiaapp/widgets/textstylebutton.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:super_tag_editor/widgets/rich_text_widget.dart';
-import '../Providers/session.dart';
-import '../classes/language.dart';
-import '../classes/language_constants.dart';
-import '../controllers/signupcontroller.dart';
-import '../gen_l10n/app_localizations.dart';
-import '../homepage.dart';
-import '../main.dart';
-import '../widgets/custombutton.dart';
-import '../widgets/customtextfield.dart';
-import '../widgets/hiremeinindia.dart';
-import 'candidate_controller.dart';
+import '../../Widgets/customtextstyle.dart';
+import 'blueuserupload.dart';
+import '../../classes/language.dart';
+import '../../classes/language_constants.dart';
+import '../../gen_l10n/app_localizations.dart';
+import '../../main.dart';
+import '../../widgets/custombutton.dart';
+import '../../widgets/customtextfield.dart';
+import '../../widgets/hiremeinindia.dart';
+import '../../controllers/candidate_controller.dart';
 
-class Registration extends StatefulWidget {
-  const Registration({Key? key, this.candidate}) : super(key: key);
+class BlueRegistration extends StatefulWidget {
+  const BlueRegistration({Key? key, this.bluecandidate}) : super(key: key);
 
-  final Candidate? candidate;
+  final BlueCandidate? bluecandidate;
 
   @override
-  State<Registration> createState() => _RegistrationState();
+  State<BlueRegistration> createState() => _BlueRegistrationState();
 }
 
-class _RegistrationState extends State<Registration> {
+class _BlueRegistrationState extends State<BlueRegistration> {
   String enteredOTP = '';
   String smscode = "";
   String phoneNumber = "", data = "", phone = "";
   bool isVerified = false;
-  TextEditingController otpController = TextEditingController();
   bool isOtpValid = true; // Replace this line with actual verification logic
 
   List<String> _values = [];
   List<String> _value = [];
+  List<String> selectedSkill = [];
+  List<String> selectedWorkin = [];
 
-  bool blueChecked = false;
+  String? skillvalue;
+
+  String? wokinvalue;
+  List<String> Skill = [
+    'Electrician',
+    'Mechanic',
+    'Construction Helper ',
+    'Meson ',
+    'Ac Technician',
+    'Telecom Technician',
+    'Plumber',
+    'Construction Worker',
+    'Welder',
+    'Fitter',
+    'Carpenter',
+    'Machine Operators',
+    'Operator',
+    'Drivers',
+    'Painter ',
+    'Aircraft mechanic',
+    'Security',
+    'Logistics Labours',
+    'Airport Ground workers',
+    'Delivery Workers',
+    'Cleaners',
+    'Cook',
+    'Office Boy',
+    'Maid',
+    'Collection Staff',
+    'Shop Keepers',
+    'Electronic repair Technicians ',
+    'Barber',
+    'Beautician',
+    'Catering Workers',
+    'Pest Control'
+  ];
+  bool blueChecked = true;
   bool greyChecked = false;
   bool focusTagEnabled = false;
   String password = '';
 
-  late final Candidate? candidate;
   var isLoading = false;
 
   final FocusNode _focusNode = FocusNode();
   final _formKey = GlobalKey<FormState>();
   EmailOTP myauth = EmailOTP();
-  CandidateFormController controller = CandidateFormController();
-  final DatabaseReference _userRef =
-      FirebaseDatabase.instance.reference().child('users');
+  BlueCandidateFormController bluecontroller = BlueCandidateFormController();
+  final DatabaseReference _blueuserRef =
+      FirebaseDatabase.instance.reference().child('bluecollarusers');
 
-  static const Skill = [
-    'Plumber',
-    'Senior Plumber',
-    'Junior Plumber',
-    'Skill 1',
+  List<String> Workin = [
     'Electrician',
-    'Senior Electrician',
-    'Junior Electrician',
-    'Skill 2',
-  ];
-  static const Workin = [
+    'Mechanic',
+    'Construction Helper ',
+    'Meson ',
+    'Ac Technician',
+    'Telecom Technician',
     'Plumber',
-    'Senior Plumber',
-    'Junior Plumber',
-    'Skill 1',
-    'Electrician',
-    'Senior Electrician',
-    'Junior Electrician',
-    'Skill 2',
+    'Construction Worker',
+    'Welder',
+    'Fitter',
+    'Carpenter',
+    'Machine Operators',
+    'Operator',
+    'Drivers',
+    'Painter ',
+    'Aircraft mechanic',
+    'Security',
+    'Logistics Labours',
+    'Airport Ground workers',
+    'Delivery Workers',
+    'Cleaners',
+    'Cook',
+    'Office Boy',
+    'Maid',
+    'Collection Staff',
+    'Shop Keepers',
+    'Electronic repair Technicians ',
+    'Barber',
+    'Beautician',
+    'Catering Workers',
+    'Pest Control'
   ];
 
   _onDelete(index) {
@@ -102,7 +147,7 @@ class _RegistrationState extends State<Registration> {
   }
 
   dispose() {
-    controller.name.dispose();
+    bluecontroller.name.dispose();
     super.dispose();
   }
 
@@ -134,6 +179,13 @@ class _RegistrationState extends State<Registration> {
     return null;
   }
 
+  void storeChipsToFirestore() async {
+    // Create a new document in the Firestore collection
+    await FirebaseFirestore.instance.collection('bluecollaruser').doc();
+
+    // Optionally, you can display a message or perform other actions after storing the data.
+  }
+
   void _showOtpDialog() {
     print("otp2");
     showDialog(
@@ -142,7 +194,7 @@ class _RegistrationState extends State<Registration> {
         return AlertDialog(
           title: Text("Enter OTP"),
           content: TextField(
-            controller: otpController,
+            controller: bluecontroller.otp,
             keyboardType: TextInputType.number,
             maxLength: 4,
           ),
@@ -153,15 +205,16 @@ class _RegistrationState extends State<Registration> {
                 Navigator.of(context).pop();
 
                 // Verify entered OTP
-                print("Entered OTP: ${otpController.text}");
+                print("Entered OTP: ${bluecontroller.otp.text}");
 
-                if (await myauth.verifyOTP(otp: otpController.text.trim())) {
+                if (await myauth.verifyOTP(
+                    otp: bluecontroller.otp.text.trim())) {
                   print("OTP verification success");
-                  // Navigate to registration page
+                  // Navigate to BlueRegistration page
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Registration(),
+                      builder: (context) => BlueRegistration(),
                     ),
                   );
                 } else {
@@ -194,15 +247,15 @@ class _RegistrationState extends State<Registration> {
   }
 
   Future<void> _verifyOtp() async {
-    // Perform OTP verification here using myauth.verifyOTP(otpController.text)
-    bool isOtpValid = await myauth.verifyOTP(otp: otpController.text);
+    // Perform OTP verification here using myauth.verifyOTP(otpbluecontroller.text)
+    bool isOtpValid = await myauth.verifyOTP(otp: bluecontroller.otp.text);
 
     if (isOtpValid) {
-      // Navigate to registration page
+      // Navigate to BlueRegistration page
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => Registration(),
+          builder: (context) => BlueRegistration(),
         ),
       );
     } else {
@@ -278,7 +331,7 @@ class _RegistrationState extends State<Registration> {
 
   Future<bool> _signInWithMobileNumber() async {
     print("register1");
-    String mobileNumber = controller.mobile.text;
+    String mobileNumber = bluecontroller.mobile.text;
     FirebaseAuth _auth = FirebaseAuth.instance;
 
     try {
@@ -295,7 +348,7 @@ class _RegistrationState extends State<Registration> {
           context: context,
           builder: (context) => AlertDialog(
             title: Text("Mobile Number Already Registered"),
-            content: Text("Try another number for registration"),
+            content: Text("Try another number for BlueRegistration"),
             actions: [
               ElevatedButton(
                 onPressed: () {
@@ -309,12 +362,12 @@ class _RegistrationState extends State<Registration> {
       } else {
         // If the number is not registered, proceed with phone number verification
         await _auth.verifyPhoneNumber(
-          phoneNumber: "+91${controller.mobile.text}",
+          phoneNumber: "+91${bluecontroller.mobile.text}",
           verificationCompleted: (PhoneAuthCredential authCredential) async {
             await _auth.signInWithCredential(authCredential).then((value) {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => Registration()),
+                MaterialPageRoute(builder: (context) => BlueRegistration()),
               );
               setState(() {
                 isVerified = true;
@@ -339,7 +392,7 @@ class _RegistrationState extends State<Registration> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     TextField(
-                      controller: controller.code,
+                      controller: bluecontroller.code,
                     ),
                   ],
                 ),
@@ -347,7 +400,7 @@ class _RegistrationState extends State<Registration> {
                   ElevatedButton(
                     onPressed: () {
                       FirebaseAuth auth = FirebaseAuth.instance;
-                      String smsCode = controller.code.text;
+                      String smsCode = bluecontroller.code.text;
                       PhoneAuthCredential _credential =
                           PhoneAuthProvider.credential(
                         verificationId: storedVerificationId,
@@ -360,7 +413,7 @@ class _RegistrationState extends State<Registration> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => Registration()),
+                                builder: (context) => BlueRegistration()),
                           );
                           Row(
                             mainAxisSize: MainAxisSize.min,
@@ -534,6 +587,7 @@ class _RegistrationState extends State<Registration> {
       appBar: AppBar(
         title: HireMeInIndia(),
         centerTitle: false,
+        automaticallyImplyLeading: false,
         toolbarHeight: 80,
         backgroundColor: Colors.transparent,
         elevation: 0.0,
@@ -785,16 +839,12 @@ class _RegistrationState extends State<Registration> {
                       translation(context).blueColler,
                     ),
                     Checkbox(
-                      value: greyChecked,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          greyChecked = value ?? false;
-                        });
-                      },
+                      value: false,
+                      onChanged: null,
                       fillColor: MaterialStateProperty.resolveWith<Color>(
                         (Set<MaterialState> states) {
                           if (states.contains(MaterialState.selected)) {
-                            return Colors.indigo.shade900;
+                            return const Color.fromARGB(255, 90, 97, 168);
                           }
                           return Colors.transparent;
                         },
@@ -859,28 +909,28 @@ class _RegistrationState extends State<Registration> {
                               children: [
                                 CustomTextfield(
                                   validator: nameValidator,
-                                  controller: controller.name,
+                                  controller: bluecontroller.name,
                                 ),
                                 SizedBox(
                                   height: 40,
                                 ),
                                 CustomTextfield(
-                                  validator: nameValidator,
-                                  controller: controller.worktitle,
+                                  //   validator: nameValidator,
+                                  controller: bluecontroller.worktitle,
                                 ),
                                 SizedBox(
                                   height: 40,
                                 ),
                                 CustomTextfield(
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return '*Required';
-                                    } else if (value!.length != 12) {
-                                      return 'Aadhar Number must be of 12 digit';
-                                    }
-                                    return null;
-                                  },
-                                  controller: controller.aadharno,
+                                  //validator: (value) {
+                                  //  if (value!.isEmpty) {
+                                  //     return '*Required';
+                                  //   } else if (value!.length != 12) {
+                                  //    return 'Aadhar Number must be of 12 digit';
+                                  //   }
+                                  //   return null;
+                                  //   },
+                                  controller: bluecontroller.aadharno,
                                 ),
                               ],
                             ),
@@ -906,7 +956,7 @@ class _RegistrationState extends State<Registration> {
                               ),
                               SizedBox(height: 60),
                               Text(
-                                translation(context).state,
+                                translation(context).qualification,
                                 style: TextStyle(
                                     fontFamily: 'Poppins',
                                     fontWeight: FontWeight.bold),
@@ -921,21 +971,21 @@ class _RegistrationState extends State<Registration> {
                               children: [
                                 CustomTextfield(
                                   validator: nameValidator,
-                                  controller: controller.gender,
+                                  controller: bluecontroller.gender,
                                 ),
                                 SizedBox(
                                   height: 40,
                                 ),
                                 CustomTextfield(
                                   validator: workexpValidator,
-                                  controller: controller.workexp,
+                                  controller: bluecontroller.workexp,
                                 ),
                                 SizedBox(
                                   height: 40,
                                 ),
                                 CustomTextfield(
                                   validator: nameValidator,
-                                  controller: controller.state,
+                                  controller: bluecontroller.qualification,
                                 ),
                               ],
                             ),
@@ -956,7 +1006,7 @@ class _RegistrationState extends State<Registration> {
                         Expanded(
                             child: CustomTextfield(
                           validator: workexpValidator,
-                          controller: controller.address,
+                          controller: bluecontroller.address,
                         )),
                         SizedBox(
                           height: 40,
@@ -974,13 +1024,13 @@ class _RegistrationState extends State<Registration> {
                         SizedBox(width: 60),
                         Expanded(
                             child: CustomTextfield(
-                          validator: validatePassword,
+                          // validator: validatePassword,
                           onsaved: (value) {
                             setState(() {
                               password = value;
                             });
                           },
-                          controller: controller.password,
+                          controller: bluecontroller.password,
                         )),
                       ]),
                       SizedBox(
@@ -996,13 +1046,16 @@ class _RegistrationState extends State<Registration> {
                         SizedBox(width: 65),
                         Expanded(
                             child: CustomTextfield(
-                          controller: controller.mobile,
-                          validator: (value) {
-                            if (value!.length != 10)
-                              return 'Mobile Number must be of 10 digit';
-                            else
-                              return null;
-                          },
+                          controller: bluecontroller.mobile,
+                          //    validator: (value) {
+                          //     if (value!.isEmpty) {
+                          //      return '*Required';
+                          //     } else if (value!.length != 10) {
+                          //       return 'Mobile Number must be of 10 digit';
+                          //      }
+
+                          //      return null;
+                          //     },
                         )),
                         SizedBox(
                           height: 30,
@@ -1015,7 +1068,7 @@ class _RegistrationState extends State<Registration> {
                             ),
                             onPressed: () async {
                               print("phone1");
-                              String mobileNumber = controller.mobile.text;
+                              String mobileNumber = bluecontroller.mobile.text;
                               print(mobileNumber);
 
                               // Check if the user is already registered or in the blocklist
@@ -1072,24 +1125,15 @@ class _RegistrationState extends State<Registration> {
                         ),
                         SizedBox(width: 55),
                         Expanded(
-                            child: CustomTextfield(
-                                controller: controller.email,
-                                validator: (val) {
-                                  if (AppSession()
-                                      .candidates
-                                      .where((element) =>
-                                          element.email!.toLowerCase() ==
-                                          val?.toLowerCase())
-                                      .isNotEmpty) {
-                                    return "Already User Exist";
-                                  }
-                                  ;
-                                  MultiValidator([
-                                    RequiredValidator(errorText: "* Required"),
-                                    EmailValidator(
-                                        errorText: "Enter valid email id"),
-                                  ]);
-                                })),
+                          child: CustomTextfield(
+                            controller: bluecontroller.email,
+                            //   validator: MultiValidator([
+                            //   RequiredValidator(errorText: "* Required"),
+                            // EmailValidator(
+                            //   errorText: "Enter valid email id"),
+                            // ])
+                          ),
+                        ),
                         SizedBox(
                           height: 30,
                           child: ElevatedButton(
@@ -1104,8 +1148,8 @@ class _RegistrationState extends State<Registration> {
                               // Set OTP configuration
                               myauth.setConfig(
                                 appEmail: "contact@hdevcoder.com",
-                                appName: "OTP for Registration",
-                                userEmail: controller.email.text,
+                                appName: "OTP for BlueRegistration",
+                                userEmail: bluecontroller.email.text,
                                 otpLength: 4,
                                 otpType: OTPType.digitsOnly,
                               );
@@ -1173,137 +1217,123 @@ class _RegistrationState extends State<Registration> {
                                 fontWeight: FontWeight.bold),
                           ),
                           SizedBox(width: 10),
-                          Expanded(
-                            child: Container(
-                              height: 35,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(1),
-                                  border: Border(
-                                      bottom: BorderSide(color: Colors.black))),
-                              child: ListView(
-                                children: <Widget>[
-                                  TagEditor<String>(
-                                    length: _value.length,
-                                    controller: controller.skills,
-                                    focusNode: _focusNode,
-                                    delimiters: [',', ' '],
-                                    resetTextOnSubmitted: true,
-                                    // This is set to grey just to illustrate the textStyle prop
-                                    textStyle:
-                                        const TextStyle(color: Colors.black),
-                                    onSubmitted: (outstandingValue) {
-                                      setState(() {
-                                        _value.add(outstandingValue);
-                                      });
-                                    },
-                                    inputDecoration: const InputDecoration(
-                                      border: InputBorder.none,
+                          Wrap(
+                            spacing: 8.0,
+                            runSpacing: 8.0,
+                            children: selectedSkill
+                                .map(
+                                  (value) => Chip(
+                                    backgroundColor: Colors.indigo.shade900,
+                                    label: Text(
+                                      value,
+                                      style: TextStyle(color: Colors.white),
                                     ),
-                                    onTagChanged: (newValue) {
+                                    onDeleted: () {
                                       setState(() {
-                                        _value.add(newValue);
+                                        selectedSkill.remove(value);
                                       });
-                                    },
-                                    tagBuilder: (context, index) => Container(
-                                      color: focusTagEnabled &&
-                                              index == _value.length - 1
-                                          ? Colors.redAccent
-                                          : Colors.white,
-                                      child: _Chip(
-                                        index: index,
-                                        label: _value[index],
-                                        onDeleted: _onDeletee,
-                                      ),
-                                    ),
-                                    // InputFormatters example, this disallow \ and /
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.deny(
-                                          RegExp(r'[/\\]'))
-                                    ],
-                                    suggestionBuilder: (context,
-                                        state,
-                                        data,
-                                        index,
-                                        length,
-                                        highlight,
-                                        suggestionValid) {
-                                      var borderRadius = const BorderRadius.all(
-                                          Radius.circular(30));
-                                      if (index == 0) {
-                                        borderRadius = const BorderRadius.only(
-                                          topLeft: Radius.circular(30),
-                                          topRight: Radius.circular(30),
-                                        );
-                                      } else if (index == length - 1) {
-                                        borderRadius = const BorderRadius.only(
-                                          bottomRight: Radius.circular(30),
-                                          bottomLeft: Radius.circular(30),
-                                        );
-                                      }
-                                      return InkWell(
-                                        onTap: () {
-                                          setState(() {
-                                            _value.add(data);
-                                          });
-                                          state.resetTextField();
-                                          state.closeSuggestionBox();
-                                        },
-                                        child: Container(
-                                            width: 600,
-                                            decoration: highlight
-                                                ? BoxDecoration(
-                                                    color: Theme.of(context)
-                                                        .focusColor,
-                                                    borderRadius: borderRadius)
-                                                : null,
-                                            padding: const EdgeInsets.all(16),
-                                            child: RichTextWidget(
-                                              wordSearched:
-                                                  suggestionValid ?? '',
-                                              textOrigin: data,
-                                            )),
-                                      );
-                                    },
-                                    onFocusTagAction: (focused) {
-                                      setState(() {
-                                        focusTagEnabled = focused;
-                                      });
-                                    },
-                                    onDeleteTagAction: () {
-                                      if (_value.isNotEmpty) {
-                                        setState(() {
-                                          _value.removeLast();
-                                        });
-                                      }
-                                    },
-                                    onSelectOptionAction: (item) {
-                                      setState(() {
-                                        _value.add(item);
-                                      });
-                                    },
-                                    suggestionsBoxElevation: 5,
-                                    findSuggestions: (String query) {
-                                      if (query.isNotEmpty) {
-                                        var lowercaseQuery =
-                                            query.toLowerCase();
-                                        return Skill.where((profile) {
-                                          return profile.toLowerCase().contains(
-                                                  query.toLowerCase()) ||
-                                              profile.toLowerCase().contains(
-                                                  query.toLowerCase());
-                                        }).toList(growable: false)
-                                          ..sort((a, b) => a
-                                              .toLowerCase()
-                                              .indexOf(lowercaseQuery)
-                                              .compareTo(b
-                                                  .toLowerCase()
-                                                  .indexOf(lowercaseQuery)));
-                                      }
-                                      return [];
                                     },
                                   ),
-                                ],
-                              ),
+                                )
+                                .toList(),
+                          ),
+                          SizedBox(
+                            width: 20,
+                          ),
+                          Expanded(
+                            child: Container(
+                              height: 30,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(1),
+                                  border: Border.all(color: Colors.black)),
+                              child: StreamBuilder<QuerySnapshot>(
+                                  stream: FirebaseFirestore.instance
+                                      .collection('blucollaruser')
+                                      .snapshots(),
+                                  builder: (context, snapshot) {
+                                    return DropdownButtonHideUnderline(
+                                      child: DropdownButton2<String>(
+                                        value: skillvalue,
+                                        buttonStyleData: ButtonStyleData(
+                                          height: 30,
+                                          width: 200,
+                                          elevation: 1,
+                                          padding: const EdgeInsets.only(
+                                              left: 14, right: 14),
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(4),
+                                            border: Border.all(
+                                              color: Colors.black26,
+                                            ),
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        iconStyleData: const IconStyleData(
+                                          icon: Icon(
+                                            Icons.arrow_drop_down_sharp,
+                                          ),
+                                          iconSize: 25,
+                                          iconEnabledColor: Colors.white,
+                                          iconDisabledColor: null,
+                                        ),
+                                        dropdownStyleData: DropdownStyleData(
+                                          maxHeight: 210,
+                                          width: 300,
+                                          elevation: 0,
+                                          padding: EdgeInsets.only(
+                                              left: 10,
+                                              right: 10,
+                                              top: 5,
+                                              bottom: 15),
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(5),
+                                            border:
+                                                Border.all(color: Colors.black),
+                                            color: Colors.indigo.shade900,
+                                          ),
+                                          scrollPadding: EdgeInsets.all(5),
+                                          scrollbarTheme: ScrollbarThemeData(
+                                            thickness: MaterialStateProperty
+                                                .all<double>(6),
+                                            thumbVisibility:
+                                                MaterialStateProperty.all<bool>(
+                                                    true),
+                                          ),
+                                        ),
+                                        menuItemStyleData:
+                                            const MenuItemStyleData(
+                                          height: 25,
+                                          padding: EdgeInsets.only(
+                                              left: 14, right: 14),
+                                        ),
+                                        style: const TextStyle(
+                                            color: Colors.white),
+                                        underline: Container(
+                                          height: 0,
+                                        ),
+                                        onChanged: (String? newValue) {
+                                          setState(() {
+                                            int selectionLimit = 2;
+                                            if (newValue != null &&
+                                                !selectedSkill
+                                                    .contains(newValue)) {
+                                              selectedSkill.add(newValue);
+                                            }
+                                          });
+                                        },
+                                        items:
+                                            Skill.map<DropdownMenuItem<String>>(
+                                                (String value) {
+                                          return DropdownMenuItem<String>(
+                                            value: value,
+                                            child: Text(value),
+                                          );
+                                        }).toList(),
+                                      ),
+                                    );
+                                  }),
                             ),
                           ),
                         ],
@@ -1320,136 +1350,108 @@ class _RegistrationState extends State<Registration> {
                                 fontWeight: FontWeight.bold),
                           ),
                           SizedBox(width: 10),
-                          Expanded(
-                            child: Container(
-                              height: 35,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(1),
-                                  border: Border(
-                                      bottom: BorderSide(color: Colors.black))),
-                              child: ListView(
-                                children: <Widget>[
-                                  TagEditor<String>(
-                                    length: _values.length,
-                                    controller: controller.workin,
-                                    focusNode: _focusNode,
-                                    delimiters: [',', ' '],
-                                    resetTextOnSubmitted: true,
-                                    // This is set to grey just to illustrate the textStyle prop
-                                    textStyle:
-                                        const TextStyle(color: Colors.black),
-                                    onSubmitted: (outstandingValue) {
-                                      setState(() {
-                                        _values.add(outstandingValue);
-                                      });
-                                    },
-                                    inputDecoration: const InputDecoration(
-                                      border: InputBorder.none,
+                          Wrap(
+                            spacing: 8.0,
+                            runSpacing: 8.0,
+                            children: selectedWorkin
+                                .map(
+                                  (value) => Chip(
+                                    backgroundColor: Colors.indigo.shade900,
+                                    label: Text(
+                                      value,
+                                      style: TextStyle(color: Colors.white),
                                     ),
-                                    onTagChanged: (newValue) {
+                                    onDeleted: () {
                                       setState(() {
-                                        _values.add(newValue);
+                                        selectedWorkin.remove(value);
                                       });
-                                    },
-                                    tagBuilder: (context, index) => Container(
-                                      color: focusTagEnabled &&
-                                              index == _values.length - 1
-                                          ? Colors.redAccent
-                                          : Colors.white,
-                                      child: _Chip(
-                                        index: index,
-                                        label: _values[index],
-                                        onDeleted: _onDelete,
-                                      ),
-                                    ),
-                                    // InputFormatters example, this disallow \ and /
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.deny(
-                                          RegExp(r'[/\\]'))
-                                    ],
-                                    suggestionBuilder: (context,
-                                        state,
-                                        data,
-                                        index,
-                                        length,
-                                        highlight,
-                                        suggestionValid) {
-                                      var borderRadius = const BorderRadius.all(
-                                          Radius.circular(30));
-                                      if (index == 0) {
-                                        borderRadius = const BorderRadius.only(
-                                          topLeft: Radius.circular(30),
-                                          topRight: Radius.circular(30),
-                                        );
-                                      } else if (index == length - 1) {
-                                        borderRadius = const BorderRadius.only(
-                                          bottomRight: Radius.circular(30),
-                                          bottomLeft: Radius.circular(30),
-                                        );
-                                      }
-                                      return InkWell(
-                                        onTap: () {
-                                          setState(() {
-                                            _values.add(data);
-                                          });
-                                          state.resetTextField();
-                                          state.closeSuggestionBox();
-                                        },
-                                        child: Container(
-                                            width: 600,
-                                            decoration: highlight
-                                                ? BoxDecoration(
-                                                    color: Theme.of(context)
-                                                        .focusColor,
-                                                    borderRadius: borderRadius)
-                                                : null,
-                                            padding: const EdgeInsets.all(16),
-                                            child: RichTextWidget(
-                                              wordSearched:
-                                                  suggestionValid ?? '',
-                                              textOrigin: data,
-                                            )),
-                                      );
-                                    },
-                                    onFocusTagAction: (focused) {
-                                      setState(() {
-                                        focusTagEnabled = focused;
-                                      });
-                                    },
-                                    onDeleteTagAction: () {
-                                      if (_values.isNotEmpty) {
-                                        setState(() {
-                                          _values.removeLast();
-                                        });
-                                      }
-                                    },
-                                    onSelectOptionAction: (item) {
-                                      setState(() {
-                                        _values.add(item);
-                                      });
-                                    },
-                                    suggestionsBoxElevation: 5,
-                                    findSuggestions: (String query) {
-                                      if (query.isNotEmpty) {
-                                        var lowercaseQuery =
-                                            query.toLowerCase();
-                                        return Workin.where((profile) {
-                                          return profile.toLowerCase().contains(
-                                                  query.toLowerCase()) ||
-                                              profile.toLowerCase().contains(
-                                                  query.toLowerCase());
-                                        }).toList(growable: false)
-                                          ..sort((a, b) => a
-                                              .toLowerCase()
-                                              .indexOf(lowercaseQuery)
-                                              .compareTo(b
-                                                  .toLowerCase()
-                                                  .indexOf(lowercaseQuery)));
-                                      }
-                                      return [];
                                     },
                                   ),
-                                ],
+                                )
+                                .toList(),
+                          ),
+                          SizedBox(
+                            width: 20,
+                          ),
+                          Expanded(
+                            child: Container(
+                              height: 30,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(1),
+                                  border: Border.all(color: Colors.black)),
+                              child: DropdownButtonHideUnderline(
+                                child: DropdownButton2<String>(
+                                  value: wokinvalue,
+                                  buttonStyleData: ButtonStyleData(
+                                    height: 30,
+                                    width: 200,
+                                    elevation: 1,
+                                    padding: const EdgeInsets.only(
+                                        left: 14, right: 14),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(4),
+                                      border: Border.all(
+                                        color: Colors.black26,
+                                      ),
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  iconStyleData: const IconStyleData(
+                                    icon: Icon(
+                                      Icons.arrow_drop_down_sharp,
+                                    ),
+                                    iconSize: 25,
+                                    iconEnabledColor: Colors.white,
+                                    iconDisabledColor: null,
+                                  ),
+                                  dropdownStyleData: DropdownStyleData(
+                                    maxHeight: 210,
+                                    width: 300,
+                                    elevation: 0,
+                                    padding: EdgeInsets.only(
+                                        left: 10,
+                                        right: 10,
+                                        top: 5,
+                                        bottom: 15),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(5),
+                                      border: Border.all(color: Colors.black),
+                                      color: Colors.indigo.shade900,
+                                    ),
+                                    scrollPadding: EdgeInsets.all(5),
+                                    scrollbarTheme: ScrollbarThemeData(
+                                      thickness:
+                                          MaterialStateProperty.all<double>(6),
+                                      thumbVisibility:
+                                          MaterialStateProperty.all<bool>(true),
+                                    ),
+                                  ),
+                                  menuItemStyleData: const MenuItemStyleData(
+                                    height: 25,
+                                    padding:
+                                        EdgeInsets.only(left: 14, right: 14),
+                                  ),
+                                  style: const TextStyle(color: Colors.white),
+                                  underline: Container(
+                                    height: 0,
+                                  ),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      int selectionLimit = 2;
+                                      if (newValue != null &&
+                                          !selectedWorkin.contains(newValue)) {
+                                        selectedWorkin.add(newValue);
+                                      }
+                                    });
+                                  },
+                                  items: Workin.map<DropdownMenuItem<String>>(
+                                      (String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(value),
+                                    );
+                                  }).toList(),
+                                ),
                               ),
                             ),
                           ),
@@ -1471,25 +1473,29 @@ class _RegistrationState extends State<Registration> {
                             onPressed: () {
                               if (_formKey.currentState!.validate()) {
                                 var future;
-                                var candidateController = CandidateController(
-                                    formController: controller);
-                                if (widget.candidate == null) {}
-                                if (widget.candidate == null) {
-                                  future = candidateController.addCandidate();
+                                var bluecandidateController =
+                                    BlueCandidateController(
+                                        blueformController: bluecontroller);
+                                if (widget.bluecandidate == null) {}
+                                if (widget.bluecandidate == null) {
+                                  future =
+                                      bluecandidateController.addCandidate();
                                 } else {
                                   future =
-                                      candidateController.updateCandidate();
+                                      bluecandidateController.updateCandidate();
                                 }
 
+                                storeChipsToFirestore();
                                 FirebaseAuth.instance
                                     .createUserWithEmailAndPassword(
-                                        email: controller.email.text,
-                                        password: controller.password.text)
+                                        email: bluecontroller.email.text,
+                                        password: bluecontroller.password.text)
                                     .then((value) {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => HomePage()));
+                                          builder: (context) =>
+                                              BlueUserUpload()));
                                 }).onError((error, stackTrace) {
                                   print("Error ${error.toString()}");
                                 });
@@ -1516,10 +1522,10 @@ class _RegistrationState extends State<Registration> {
     RegExp regex =
         RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
     if (value!.isEmpty) {
-      return 'Please enter password';
+      return '*Required';
     } else {
       if (!regex.hasMatch(value)) {
-        return 'Enter valid password';
+        return 'It must be lower & upper case, number and Symbol';
       } else {
         return null;
       }

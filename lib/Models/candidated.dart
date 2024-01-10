@@ -118,7 +118,7 @@ class BlueCandidate {
   final String? workexp;
   final String? state;
   final String? address;
-  final String? skills;
+  final List<String>? skills;
   final String? workin;
   final String? password;
   final String? otpm;
@@ -180,7 +180,7 @@ class BlueCandidate {
         worktitle: data["worktitle"],
         state: data["state"],
         address: data["address"],
-        skills: data["skills"],
+        skills: List<String>.from(data["skills"] ?? []),
         workin: data["workin"],
         password: data["password"],
         otpm: data["otpm"],
@@ -201,7 +201,7 @@ class BlueCandidate {
         worktitle: data["worktitle"],
         state: data["state"],
         address: data["address"],
-        skills: data["skills"],
+        skills: List<String>.from(data["skills"] ?? []),
         workin: data["workin"],
         password: data["password"],
         otpm: data["otpm"],

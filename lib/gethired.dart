@@ -1,19 +1,17 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:hiremeinindiaapp/Candidate/greyRegistration.dart';
-import 'package:hiremeinindiaapp/homepage.dart';
+import 'package:hiremeinindiaapp/User/GreyUser/greyRegistration.dart';
 import 'package:hiremeinindiaapp/loginpage.dart';
 import 'package:hiremeinindiaapp/widgets/hiremeinindia.dart';
 
-import 'Candidate/blueregistration.dart';
-import 'Providers/session.dart';
+import 'User/BlueUser/blueregistration.dart';
 import 'widgets/custombutton.dart';
 import 'package:hiremeinindiaapp/main.dart';
 import 'classes/language.dart';
 import 'classes/language_constants.dart';
 import 'gen_l10n/app_localizations.dart';
-import 'widgets/textstylebutton.dart';
+import 'Widgets/customtextstyle.dart';
 
 class Hired extends StatefulWidget {
   const Hired();
@@ -22,8 +20,25 @@ class Hired extends StatefulWidget {
 }
 
 class _HiredState extends State<Hired> {
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  Future<int> greycountDocuments() async {
+    QuerySnapshot<Map<String, dynamic>> myDoc =
+        await firestore.collection('bluecollaruser').get();
+    List<DocumentSnapshot<Map<String, dynamic>>> myDocCount = myDoc.docs;
+    return myDocCount.length; // Return the count of documents in the collection
+  }
+
+  Future<int> bluecountDocuments() async {
+    QuerySnapshot<Map<String, dynamic>> myDoc =
+        await firestore.collection('users').get();
+    List<DocumentSnapshot<Map<String, dynamic>>> myDocCount = myDoc.docs;
+    return myDocCount.length; // Return the count of documents in the collection
+  }
+
   @override
   Widget build(BuildContext context) {
+    var query;
     return Scaffold(
       appBar: AppBar(
         title: HireMeInIndia(),
@@ -240,7 +255,31 @@ class _HiredState extends State<Hired> {
                           onPressed: () {
                             _showblueDialog();
                           },
-                        ))
+                        )),
+                    SizedBox(
+                      height: 7,
+                    ),
+                    FutureBuilder<int>(
+                      future: bluecountDocuments(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return CircularProgressIndicator();
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else {
+                          int docCount = snapshot.data ?? 0;
+                          return Text(
+                            ' $docCount',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.normal,
+                              color: Colors.indigo.shade900,
+                            ),
+                          );
+                        }
+                      },
+                    ),
                   ],
                 ),
                 SizedBox(width: 50),
@@ -261,7 +300,31 @@ class _HiredState extends State<Hired> {
                           onPressed: () {
                             _showgreyDialog(context);
                           },
-                        ))
+                        )),
+                    SizedBox(
+                      height: 7,
+                    ),
+                    FutureBuilder<int>(
+                      future: greycountDocuments(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return CircularProgressIndicator();
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else {
+                          int docCount = snapshot.data ?? 0;
+                          return Text(
+                            ' $docCount',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.normal,
+                              color: Colors.indigo.shade900,
+                            ),
+                          );
+                        }
+                      },
+                    ),
                   ],
                 ),
               ],

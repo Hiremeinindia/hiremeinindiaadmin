@@ -1,46 +1,76 @@
 import 'package:flutter/material.dart';
 
 class Sample extends StatefulWidget {
+  const Sample();
   @override
-  _SampleState createState() => _SampleState();
+  State<Sample> createState() => _SampleState();
 }
 
 class _SampleState extends State<Sample> {
-  bool isCheckboxEnabled = false;
+  List<String> selectedValues = [];
+  String? dropdownValue;
+
+  List<String> options = ['Option 1', 'Option 2', 'Option 3', 'Option 4'];
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        ElevatedButton(
-          onPressed: () {
-            // Enable the checkbox when the button is pressed
-            setState(() {
-              isCheckboxEnabled = true;
-            });
-          },
-          child: Text('Enable Checkbox'),
-        ),
-        SizedBox(height: 20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Dropdown with Chips'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
           children: [
-            SizedBox(
-              child: Checkbox(
-                value: isCheckboxEnabled,
-                onChanged: (value) {
-                  // You can add your logic here when the checkbox is changed
-                  setState(() {
-                    isCheckboxEnabled = value ?? false;
-                  });
-                },
-              ),
+            Row(
+              children: [
+                DropdownButton<String>(
+                  value: dropdownValue,
+                  icon: const Icon(Icons.arrow_downward),
+                  iconSize: 24,
+                  elevation: 16,
+                  style: const TextStyle(color: Colors.deepPurple),
+                  underline: Container(
+                    height: 2,
+                    color: Colors.deepPurpleAccent,
+                  ),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      dropdownValue = newValue;
+                      if (newValue != null) {
+                        selectedValues.add(newValue);
+                      }
+                    });
+                  },
+                  items: options.map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
+              ],
             ),
-            Text('My Checkbox'),
+            SizedBox(height: 16),
+            Wrap(
+              spacing: 8.0,
+              runSpacing: 8.0,
+              children: selectedValues
+                  .map(
+                    (value) => Chip(
+                      label: Text(value),
+                      onDeleted: () {
+                        setState(() {
+                          selectedValues.remove(value);
+                        });
+                      },
+                    ),
+                  )
+                  .toList(),
+            ),
           ],
         ),
-      ],
+      ),
     );
   }
 }

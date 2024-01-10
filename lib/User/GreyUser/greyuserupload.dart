@@ -12,13 +12,13 @@ import 'package:hiremeinindiaapp/userpayment.dart';
 import 'package:hiremeinindiaapp/widgets/customtextfield.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-import 'Candidate/candidate_form_state.dart';
-import 'classes/language.dart';
-import 'classes/language_constants.dart';
-import 'main.dart';
-import 'widgets/custombutton.dart';
-import 'widgets/hiremeinindia.dart';
-import 'widgets/textstylebutton.dart';
+import '../candidate_form_state.dart';
+import '../../classes/language.dart';
+import '../../classes/language_constants.dart';
+import '../../Widgets/customtextstyle.dart';
+import '../../main.dart';
+import '../../widgets/custombutton.dart';
+import '../../widgets/hiremeinindia.dart';
 import 'package:file_picker/file_picker.dart';
 
 import 'package:firebase_storage/firebase_storage.dart';
@@ -47,7 +47,11 @@ class _GreyUserUpload extends State<GreyUserUpload> {
   String? downloadURL5;
   PlatformFile? pickedFile;
   UploadTask? uploadTask;
-
+  final List<String> items = ['Tamil', 'English', 'French', 'Malayalam'];
+  String? selectedValue;
+  String email = '';
+  String password = '';
+  bool login = false;
   String? countryValue;
   String? stateValue;
   String? cityValue;
@@ -441,12 +445,8 @@ class _GreyUserUpload extends State<GreyUserUpload> {
                 ),
                 Text(translation(context).blueColler),
                 Checkbox(
-                  value: isChecked,
-                  onChanged: (bool? value) {
-                    setState(() {
-                      isChecked = value ?? false;
-                    });
-                  },
+                  value: false,
+                  onChanged: null,
                   fillColor: MaterialStateProperty.resolveWith<Color>(
                     (Set<MaterialState> states) {
                       if (states.contains(MaterialState.selected)) {

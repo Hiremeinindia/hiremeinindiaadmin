@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -8,123 +9,81 @@ import 'package:get/get_instance/get_instance.dart';
 import 'package:get/route_manager.dart';
 import 'package:email_otp/email_otp.dart';
 import 'package:flutter_dialogs/flutter_dialogs.dart';
-import 'package:hiremeinindiaapp/Candidate/candidate_form_state.dart';
+import 'package:hiremeinindiaapp/User/candidate_form_state.dart';
 import 'package:hiremeinindiaapp/Models/candidated.dart';
-import 'package:hiremeinindiaapp/Models/register_model.dart';
-import 'package:hiremeinindiaapp/userpayment.dart';
-import 'package:hiremeinindiaapp/widgets/textstylebutton.dart';
+import 'package:hiremeinindiaapp/User/GreyUser/greyuserupload.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:super_tag_editor/widgets/rich_text_widget.dart';
-import '../Providers/session.dart';
-import '../blueuserupload.dart';
-import '../classes/language.dart';
-import '../classes/language_constants.dart';
-import '../gen_l10n/app_localizations.dart';
-import '../homepage.dart';
-import '../main.dart';
-import '../widgets/custombutton.dart';
-import '../widgets/customtextfield.dart';
-import '../widgets/hiremeinindia.dart';
-import 'candidate_controller.dart';
+import '../../Widgets/customtextstyle.dart';
+import '../../classes/language.dart';
+import '../../classes/language_constants.dart';
+import '../../gen_l10n/app_localizations.dart';
+import '../../main.dart';
+import '../../widgets/custombutton.dart';
+import '../../widgets/customtextfield.dart';
+import '../../widgets/hiremeinindia.dart';
+import '../../controllers/candidate_controller.dart';
 
-class BlueRegistration extends StatefulWidget {
-  const BlueRegistration({Key? key, this.bluecandidate}) : super(key: key);
+class Registration extends StatefulWidget {
+  const Registration({Key? key, this.candidate}) : super(key: key);
 
-  final BlueCandidate? bluecandidate;
+  final Candidate? candidate;
 
   @override
-  State<BlueRegistration> createState() => _BlueRegistrationState();
+  State<Registration> createState() => _RegistrationState();
 }
 
-class _BlueRegistrationState extends State<BlueRegistration> {
+class _RegistrationState extends State<Registration> {
   String enteredOTP = '';
   String smscode = "";
   String phoneNumber = "", data = "", phone = "";
   bool isVerified = false;
+  TextEditingController otpController = TextEditingController();
   bool isOtpValid = true; // Replace this line with actual verification logic
 
+  final List<String> items = ['Tamil', 'English', 'French', 'Malayalam'];
+  String? selectedValue;
+  String email = '';
+  bool login = false;
+  final _formKey = GlobalKey<FormState>();
   List<String> _values = [];
   List<String> _value = [];
 
-  bool blueChecked = true;
-  bool greyChecked = false;
+  bool blueChecked = false;
+  bool greyChecked = true;
   bool focusTagEnabled = false;
   String password = '';
 
+  late final Candidate? candidate;
   var isLoading = false;
 
   final FocusNode _focusNode = FocusNode();
-  final _formKey = GlobalKey<FormState>();
   EmailOTP myauth = EmailOTP();
-  BlueCandidateFormController bluecontroller = BlueCandidateFormController();
-  final DatabaseReference _blueuserRef =
-      FirebaseDatabase.instance.reference().child('bluecollarusers');
+  CandidateFormController controller = CandidateFormController();
+  final DatabaseReference _userRef =
+      FirebaseDatabase.instance.reference().child('users');
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   static const Skill = [
-    'Electrician',
-    'Mechanic',
-    'Construction Helper ',
-    'Meson ',
-    'Ac Technician',
-    'Telecom Technician',
     'Plumber',
-    'Construction Worker',
-    'Welder',
-    'Fitter',
-    'Carpenter',
-    'Machine Operators',
-    'Operator',
-    'Drivers',
-    'Painter ',
-    'Aircraft mechanic',
-    'Security',
-    'Logistics Labours',
-    'Airport Ground workers',
-    'Delivery Workers',
-    'Cleaners',
-    'Cook',
-    'Office Boy',
-    'Maid',
-    'Collection Staff',
-    'Shop Keepers',
-    'Electronic repair Technicians ',
-    'Barber',
-    'Beautician',
-    'Catering Workers',
-    'Pest Control'
+    'Senior Plumber',
+    'Junior Plumber',
+    'Skill 1',
+    'Electrician',
+    'Senior Electrician',
+    'Junior Electrician',
+    'Skill 2',
   ];
   static const Workin = [
-    'Electrician',
-    'Mechanic',
-    'Construction Helper ',
-    'Meson ',
-    'Ac Technician',
-    'Telecom Technician',
     'Plumber',
-    'Construction Worker',
-    'Welder',
-    'Fitter',
-    'Carpenter',
-    'Machine Operators',
-    'Operator',
-    'Drivers',
-    'Painter ',
-    'Aircraft mechanic',
-    'Security',
-    'Logistics Labours',
-    'Airport Ground workers',
-    'Delivery Workers',
-    'Cleaners',
-    'Cook',
-    'Office Boy',
-    'Maid',
-    'Collection Staff',
-    'Shop Keepers',
-    'Electronic repair Technicians ',
-    'Barber',
-    'Beautician',
-    'Catering Workers',
-    'Pest Control'
+    'Senior Plumber',
+    'Junior Plumber',
+    'Skill 1',
+    'Electrician',
+    'Senior Electrician',
+    'Junior Electrician',
+    'Skill 2',
   ];
 
   _onDelete(index) {
@@ -146,7 +105,7 @@ class _BlueRegistrationState extends State<BlueRegistration> {
   }
 
   dispose() {
-    bluecontroller.name.dispose();
+    controller.name.dispose();
     super.dispose();
   }
 
@@ -186,7 +145,7 @@ class _BlueRegistrationState extends State<BlueRegistration> {
         return AlertDialog(
           title: Text("Enter OTP"),
           content: TextField(
-            controller: bluecontroller.otp,
+            controller: otpController,
             keyboardType: TextInputType.number,
             maxLength: 4,
           ),
@@ -197,16 +156,15 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                 Navigator.of(context).pop();
 
                 // Verify entered OTP
-                print("Entered OTP: ${bluecontroller.otp.text}");
+                print("Entered OTP: ${otpController.text}");
 
-                if (await myauth.verifyOTP(
-                    otp: bluecontroller.otp.text.trim())) {
+                if (await myauth.verifyOTP(otp: otpController.text.trim())) {
                   print("OTP verification success");
-                  // Navigate to BlueRegistration page
+                  // Navigate to registration page
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => BlueRegistration(),
+                      builder: (context) => Registration(),
                     ),
                   );
                 } else {
@@ -239,15 +197,15 @@ class _BlueRegistrationState extends State<BlueRegistration> {
   }
 
   Future<void> _verifyOtp() async {
-    // Perform OTP verification here using myauth.verifyOTP(otpbluecontroller.text)
-    bool isOtpValid = await myauth.verifyOTP(otp: bluecontroller.otp.text);
+    // Perform OTP verification here using myauth.verifyOTP(otpController.text)
+    bool isOtpValid = await myauth.verifyOTP(otp: otpController.text);
 
     if (isOtpValid) {
-      // Navigate to BlueRegistration page
+      // Navigate to registration page
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => BlueRegistration(),
+          builder: (context) => Registration(),
         ),
       );
     } else {
@@ -323,7 +281,7 @@ class _BlueRegistrationState extends State<BlueRegistration> {
 
   Future<bool> _signInWithMobileNumber() async {
     print("register1");
-    String mobileNumber = bluecontroller.mobile.text;
+    String mobileNumber = controller.mobile.text;
     FirebaseAuth _auth = FirebaseAuth.instance;
 
     try {
@@ -340,7 +298,7 @@ class _BlueRegistrationState extends State<BlueRegistration> {
           context: context,
           builder: (context) => AlertDialog(
             title: Text("Mobile Number Already Registered"),
-            content: Text("Try another number for BlueRegistration"),
+            content: Text("Try another number for registration"),
             actions: [
               ElevatedButton(
                 onPressed: () {
@@ -354,12 +312,12 @@ class _BlueRegistrationState extends State<BlueRegistration> {
       } else {
         // If the number is not registered, proceed with phone number verification
         await _auth.verifyPhoneNumber(
-          phoneNumber: "+91${bluecontroller.mobile.text}",
+          phoneNumber: "+91${controller.mobile.text}",
           verificationCompleted: (PhoneAuthCredential authCredential) async {
             await _auth.signInWithCredential(authCredential).then((value) {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => BlueRegistration()),
+                MaterialPageRoute(builder: (context) => Registration()),
               );
               setState(() {
                 isVerified = true;
@@ -384,7 +342,7 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     TextField(
-                      controller: bluecontroller.code,
+                      controller: controller.code,
                     ),
                   ],
                 ),
@@ -392,7 +350,7 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                   ElevatedButton(
                     onPressed: () {
                       FirebaseAuth auth = FirebaseAuth.instance;
-                      String smsCode = bluecontroller.code.text;
+                      String smsCode = controller.code.text;
                       PhoneAuthCredential _credential =
                           PhoneAuthProvider.credential(
                         verificationId: storedVerificationId,
@@ -405,7 +363,7 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => BlueRegistration()),
+                                builder: (context) => Registration()),
                           );
                           Row(
                             mainAxisSize: MainAxisSize.min,
@@ -575,11 +533,11 @@ class _BlueRegistrationState extends State<BlueRegistration> {
   Widget build(BuildContext context) {
     bool _validate = false;
 
+    var updatedUser;
     return Scaffold(
       appBar: AppBar(
         title: HireMeInIndia(),
         centerTitle: false,
-        automaticallyImplyLeading: false,
         toolbarHeight: 80,
         backgroundColor: Colors.transparent,
         elevation: 0.0,
@@ -787,7 +745,7 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                 SizedBox(
                   width: 50,
                   child: Text(
-                    'Guest User',
+                    '${updatedUser.displayName}',
                     maxLines: 2,
                     style: TextStyle(color: Colors.black),
                   ),
@@ -807,16 +765,12 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                 child: Row(
                   children: [
                     Checkbox(
-                      value: blueChecked,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          blueChecked = value ?? false;
-                        });
-                      },
+                      value: false,
+                      onChanged: null,
                       fillColor: MaterialStateProperty.resolveWith<Color>(
                         (Set<MaterialState> states) {
                           if (states.contains(MaterialState.selected)) {
-                            return Colors.indigo.shade900;
+                            return const Color.fromARGB(255, 90, 97, 168);
                           }
                           return Colors.transparent;
                         },
@@ -831,12 +785,16 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                       translation(context).blueColler,
                     ),
                     Checkbox(
-                      value: false,
-                      onChanged: null,
+                      value: greyChecked,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          greyChecked = value ?? false;
+                        });
+                      },
                       fillColor: MaterialStateProperty.resolveWith<Color>(
                         (Set<MaterialState> states) {
                           if (states.contains(MaterialState.selected)) {
-                            return const Color.fromARGB(255, 90, 97, 168);
+                            return Colors.indigo.shade900;
                           }
                           return Colors.transparent;
                         },
@@ -901,14 +859,14 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                               children: [
                                 CustomTextfield(
                                   validator: nameValidator,
-                                  controller: bluecontroller.name,
+                                  controller: controller.name,
                                 ),
                                 SizedBox(
                                   height: 40,
                                 ),
                                 CustomTextfield(
                                   validator: nameValidator,
-                                  controller: bluecontroller.worktitle,
+                                  controller: controller.worktitle,
                                 ),
                                 SizedBox(
                                   height: 40,
@@ -922,7 +880,7 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                                     }
                                     return null;
                                   },
-                                  controller: bluecontroller.aadharno,
+                                  controller: controller.aadharno,
                                 ),
                               ],
                             ),
@@ -948,7 +906,7 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                               ),
                               SizedBox(height: 60),
                               Text(
-                                translation(context).qualification,
+                                translation(context).state,
                                 style: TextStyle(
                                     fontFamily: 'Poppins',
                                     fontWeight: FontWeight.bold),
@@ -963,21 +921,21 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                               children: [
                                 CustomTextfield(
                                   validator: nameValidator,
-                                  controller: bluecontroller.gender,
+                                  controller: controller.gender,
                                 ),
                                 SizedBox(
                                   height: 40,
                                 ),
                                 CustomTextfield(
                                   validator: workexpValidator,
-                                  controller: bluecontroller.workexp,
+                                  controller: controller.workexp,
                                 ),
                                 SizedBox(
                                   height: 40,
                                 ),
                                 CustomTextfield(
                                   validator: nameValidator,
-                                  controller: bluecontroller.qualification,
+                                  controller: controller.state,
                                 ),
                               ],
                             ),
@@ -998,7 +956,7 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                         Expanded(
                             child: CustomTextfield(
                           validator: workexpValidator,
-                          controller: bluecontroller.address,
+                          controller: controller.address,
                         )),
                         SizedBox(
                           height: 40,
@@ -1022,7 +980,7 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                               password = value;
                             });
                           },
-                          controller: bluecontroller.password,
+                          controller: controller.password,
                         )),
                       ]),
                       SizedBox(
@@ -1038,15 +996,12 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                         SizedBox(width: 65),
                         Expanded(
                             child: CustomTextfield(
-                          controller: bluecontroller.mobile,
+                          controller: controller.mobile,
                           validator: (value) {
-                            if (value!.isEmpty) {
-                              return '*Required';
-                            } else if (value!.length != 10) {
+                            if (value!.length != 10)
                               return 'Mobile Number must be of 10 digit';
-                            }
-
-                            return null;
+                            else
+                              return null;
                           },
                         )),
                         SizedBox(
@@ -1060,7 +1015,7 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                             ),
                             onPressed: () async {
                               print("phone1");
-                              String mobileNumber = bluecontroller.mobile.text;
+                              String mobileNumber = controller.mobile.text;
                               print(mobileNumber);
 
                               // Check if the user is already registered or in the blocklist
@@ -1117,14 +1072,13 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                         ),
                         SizedBox(width: 55),
                         Expanded(
-                          child: CustomTextfield(
-                              controller: bluecontroller.email,
-                              validator: MultiValidator([
-                                RequiredValidator(errorText: "* Required"),
-                                EmailValidator(
-                                    errorText: "Enter valid email id"),
-                              ])),
-                        ),
+                            child: CustomTextfield(
+                                controller: controller.email,
+                                validator: MultiValidator([
+                                  RequiredValidator(errorText: "* Required"),
+                                  EmailValidator(
+                                      errorText: "Enter valid email id"),
+                                ]))),
                         SizedBox(
                           height: 30,
                           child: ElevatedButton(
@@ -1139,8 +1093,8 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                               // Set OTP configuration
                               myauth.setConfig(
                                 appEmail: "contact@hdevcoder.com",
-                                appName: "OTP for BlueRegistration",
-                                userEmail: bluecontroller.email.text,
+                                appName: "OTP for Registration",
+                                userEmail: controller.email.text,
                                 otpLength: 4,
                                 otpType: OTPType.digitsOnly,
                               );
@@ -1219,10 +1173,11 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                                 children: <Widget>[
                                   TagEditor<String>(
                                     length: _value.length,
-                                    controller: bluecontroller.skills,
+                                    controller: controller.skills,
                                     focusNode: _focusNode,
                                     delimiters: [',', ' '],
                                     resetTextOnSubmitted: true,
+                                    // This is set to grey just to illustrate the textStyle prop
                                     textStyle:
                                         const TextStyle(color: Colors.black),
                                     onSubmitted: (outstandingValue) {
@@ -1315,7 +1270,6 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                                         _value.add(item);
                                       });
                                     },
-
                                     suggestionsBoxElevation: 5,
                                     findSuggestions: (String query) {
                                       if (query.isNotEmpty) {
@@ -1366,7 +1320,7 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                                 children: <Widget>[
                                   TagEditor<String>(
                                     length: _values.length,
-                                    controller: bluecontroller.workin,
+                                    controller: controller.workin,
                                     focusNode: _focusNode,
                                     delimiters: [',', ' '],
                                     resetTextOnSubmitted: true,
@@ -1503,35 +1457,43 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                           SizedBox(width: 50),
                           CustomButton(
                             text: translation(context).next,
-                            onPressed: () {
+                            onPressed: () async {
                               if (_formKey.currentState!.validate()) {
                                 var future;
-                                var bluecandidateController =
-                                    BlueCandidateController(
-                                        blueformController: bluecontroller);
-                                if (widget.bluecandidate == null) {}
-                                if (widget.bluecandidate == null) {
-                                  future =
-                                      bluecandidateController.addCandidate();
+                                var candidateController = CandidateController(
+                                    formController: controller);
+                                if (widget.candidate == null) {}
+                                if (widget.candidate == null) {
+                                  future = candidateController.addCandidate();
                                 } else {
                                   future =
-                                      bluecandidateController.updateCandidate();
+                                      candidateController.updateCandidate();
                                 }
-
-                                FirebaseAuth.instance
-                                    .createUserWithEmailAndPassword(
-                                        email: bluecontroller.email.text,
-                                        password: bluecontroller.password.text)
-                                    .then((value) {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              BlueUserUpload()));
-                                }).onError((error, stackTrace) {
-                                  print("Error ${error.toString()}");
-                                });
                               }
+                              FirebaseAuth.instance
+                                  .createUserWithEmailAndPassword(
+                                      email: controller.email.text,
+                                      password: controller.password.text)
+                                  .then((value) {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            GreyUserUpload()));
+                              }).onError((error, stackTrace) {
+                                print("Error ${error.toString()}");
+                              });
+                              UserCredential userCredential =
+                                  await _auth.signInAnonymously();
+
+                              // Update the user's display name in Firestore
+                              await _firestore
+                                  .collection('users')
+                                  .doc(userCredential.user?.uid)
+                                  .set({
+                                'displayName':
+                                    'User', // Set a default display name
+                              });
                             },
                           ),
                         ],
@@ -1554,10 +1516,10 @@ class _BlueRegistrationState extends State<BlueRegistration> {
     RegExp regex =
         RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
     if (value!.isEmpty) {
-      return '*Required';
+      return 'Please enter password';
     } else {
       if (!regex.hasMatch(value)) {
-        return 'It must be lower & upper case, number and Symbol';
+        return 'Enter valid password';
       } else {
         return null;
       }

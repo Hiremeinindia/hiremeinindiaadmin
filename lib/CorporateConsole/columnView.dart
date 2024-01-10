@@ -4,8 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart' as firestore;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart' as database;
 import 'package:flutter/material.dart';
-import 'package:hiremeinindiaapp/corporateconsole.dart';
 
+import 'corporateconsole.dart';
 import '../Models/candidated.dart';
 import '../classes/language_constants.dart';
 import '../widgets/customcard.dart';

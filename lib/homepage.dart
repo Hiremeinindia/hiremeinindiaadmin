@@ -3,16 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:hiremeinindiaapp/gethired.dart';
 import 'package:hiremeinindiaapp/loginpage.dart';
 import 'package:hiremeinindiaapp/main.dart';
-import 'package:hiremeinindiaapp/widgets/customtextfield.dart';
 import 'package:get/get.dart';
-import 'Candidate/blueregistration.dart';
-import 'Providers/session.dart';
+import 'User/BlueUser/blueregistration.dart';
+import 'Widgets/customtextstyle.dart';
 import 'classes/language.dart';
 import 'classes/language_constants.dart';
 import 'gen_l10n/app_localizations.dart';
 import 'widgets/custombutton.dart';
 import 'widgets/hiremeinindia.dart';
-import 'widgets/textstylebutton.dart';
 
 class LocalString extends Translations {
   @override
