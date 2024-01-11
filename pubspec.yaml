@@ -95,8 +95,8 @@ flutter:
   uses-material-design: true
   generate: true
   # To add assets to your application, add an assets section, like this:
-  assets:
-    - assets/gpay.json
+  #assets:
+   # - assets/gpay.json
   
 
   # An image asset can refer to one or more resolution-specific "variants", see
