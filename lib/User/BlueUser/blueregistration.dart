@@ -41,8 +41,6 @@ class _BlueRegistrationState extends State<BlueRegistration> {
 
   List<String> _values = [];
   List<String> _value = [];
-  List<String> selectedSkill = [];
-  List<String> selectedWorkin = [];
 
   String? skillvalue;
 
@@ -177,13 +175,6 @@ class _BlueRegistrationState extends State<BlueRegistration> {
       return 'Invalid format';
     }
     return null;
-  }
-
-  void storeChipsToFirestore() async {
-    // Create a new document in the Firestore collection
-    await FirebaseFirestore.instance.collection('bluecollaruser').doc();
-
-    // Optionally, you can display a message or perform other actions after storing the data.
   }
 
   void _showOtpDialog() {
@@ -329,6 +320,26 @@ class _BlueRegistrationState extends State<BlueRegistration> {
     );
   }
 
+  void updateSkillsInFirestore(List<String> skills) async {
+    // Get the current user
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      String uid = user.uid;
+
+      try {
+        await FirebaseFirestore.instance
+            .collection('blucollaruser')
+            .doc(uid)
+            .update({'selectedSkills': bluecontroller.selectedSkills});
+
+        print('Skills updated successfully in Firestore');
+      } catch (error) {
+        print('Error updating skills in Firestore: $error');
+      }
+    }
+  }
+
   Future<bool> _signInWithMobileNumber() async {
     print("register1");
     String mobileNumber = bluecontroller.mobile.text;
@@ -410,11 +421,7 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                       auth.signInWithCredential(_credential).then((result) {
                         if (result != null) {
                           Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => BlueRegistration()),
-                          );
+
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -792,12 +799,20 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                   ),
                 ),
                 SizedBox(width: 8.0),
-                SizedBox(
-                  width: 50,
-                  child: Text(
-                    'Guest User',
-                    maxLines: 2,
-                    style: TextStyle(color: Colors.black),
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Guest',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      Text(
+                        'User',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -915,21 +930,21 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                                   height: 40,
                                 ),
                                 CustomTextfield(
-                                  //   validator: nameValidator,
+                                  validator: nameValidator,
                                   controller: bluecontroller.worktitle,
                                 ),
                                 SizedBox(
                                   height: 40,
                                 ),
                                 CustomTextfield(
-                                  //validator: (value) {
-                                  //  if (value!.isEmpty) {
+                                  // validator: (value) {
+                                  //   if (value!.isEmpty) {
                                   //     return '*Required';
                                   //   } else if (value!.length != 12) {
-                                  //    return 'Aadhar Number must be of 12 digit';
+                                  //     return 'Aadhar Number must be of 12 digit';
                                   //   }
                                   //   return null;
-                                  //   },
+                                  // },
                                   controller: bluecontroller.aadharno,
                                 ),
                               ],
@@ -1047,15 +1062,15 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                         Expanded(
                             child: CustomTextfield(
                           controller: bluecontroller.mobile,
-                          //    validator: (value) {
-                          //     if (value!.isEmpty) {
-                          //      return '*Required';
-                          //     } else if (value!.length != 10) {
-                          //       return 'Mobile Number must be of 10 digit';
-                          //      }
+                          // validator: (value) {
+                          //   if (value!.isEmpty) {
+                          //     return '*Required';
+                          //   } else if (value!.length != 10) {
+                          //     return 'Mobile Number must be of 10 digit';
+                          //   }
 
-                          //      return null;
-                          //     },
+                          //   return null;
+                          // },
                         )),
                         SizedBox(
                           height: 30,
@@ -1126,13 +1141,12 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                         SizedBox(width: 55),
                         Expanded(
                           child: CustomTextfield(
-                            controller: bluecontroller.email,
-                            //   validator: MultiValidator([
-                            //   RequiredValidator(errorText: "* Required"),
-                            // EmailValidator(
-                            //   errorText: "Enter valid email id"),
-                            // ])
-                          ),
+                              controller: bluecontroller.email,
+                              validator: MultiValidator([
+                                RequiredValidator(errorText: "* Required"),
+                                EmailValidator(
+                                    errorText: "Enter valid email id"),
+                              ])),
                         ),
                         SizedBox(
                           height: 30,
@@ -1213,14 +1227,17 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                           Text(
                             translation(context).skills,
                             style: TextStyle(
-                                fontFamily: 'Poppins',
-                                fontWeight: FontWeight.bold),
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                          SizedBox(width: 10),
+                          SizedBox(
+                            width: 120,
+                          ),
                           Wrap(
                             spacing: 8.0,
                             runSpacing: 8.0,
-                            children: selectedSkill
+                            children: bluecontroller.selectedSkills
                                 .map(
                                   (value) => Chip(
                                     backgroundColor: Colors.indigo.shade900,
@@ -1230,7 +1247,8 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                                     ),
                                     onDeleted: () {
                                       setState(() {
-                                        selectedSkill.remove(value);
+                                        bluecontroller.selectedSkills
+                                            .remove(value);
                                       });
                                     },
                                   ),
@@ -1242,99 +1260,94 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                           ),
                           Expanded(
                             child: Container(
-                              height: 30,
-                              decoration: BoxDecoration(
+                                height: 30,
+                                decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(1),
-                                  border: Border.all(color: Colors.black)),
-                              child: StreamBuilder<QuerySnapshot>(
-                                  stream: FirebaseFirestore.instance
-                                      .collection('blucollaruser')
-                                      .snapshots(),
-                                  builder: (context, snapshot) {
-                                    return DropdownButtonHideUnderline(
-                                      child: DropdownButton2<String>(
-                                        value: skillvalue,
-                                        buttonStyleData: ButtonStyleData(
-                                          height: 30,
-                                          width: 200,
-                                          elevation: 1,
-                                          padding: const EdgeInsets.only(
-                                              left: 14, right: 14),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(4),
-                                            border: Border.all(
-                                              color: Colors.black26,
-                                            ),
-                                            color: Colors.white,
-                                          ),
+                                  border: Border.all(color: Colors.black),
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                  child: DropdownButton2<String>(
+                                    value: skillvalue,
+                                    buttonStyleData: ButtonStyleData(
+                                      height: 30,
+                                      width: 200,
+                                      elevation: 1,
+                                      padding: const EdgeInsets.only(
+                                          left: 14, right: 14),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(4),
+                                        border: Border.all(
+                                          color: Colors.black26,
                                         ),
-                                        iconStyleData: const IconStyleData(
-                                          icon: Icon(
-                                            Icons.arrow_drop_down_sharp,
-                                          ),
-                                          iconSize: 25,
-                                          iconEnabledColor: Colors.white,
-                                          iconDisabledColor: null,
-                                        ),
-                                        dropdownStyleData: DropdownStyleData(
-                                          maxHeight: 210,
-                                          width: 300,
-                                          elevation: 0,
-                                          padding: EdgeInsets.only(
-                                              left: 10,
-                                              right: 10,
-                                              top: 5,
-                                              bottom: 15),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(5),
-                                            border:
-                                                Border.all(color: Colors.black),
-                                            color: Colors.indigo.shade900,
-                                          ),
-                                          scrollPadding: EdgeInsets.all(5),
-                                          scrollbarTheme: ScrollbarThemeData(
-                                            thickness: MaterialStateProperty
-                                                .all<double>(6),
-                                            thumbVisibility:
-                                                MaterialStateProperty.all<bool>(
-                                                    true),
-                                          ),
-                                        ),
-                                        menuItemStyleData:
-                                            const MenuItemStyleData(
-                                          height: 25,
-                                          padding: EdgeInsets.only(
-                                              left: 14, right: 14),
-                                        ),
-                                        style: const TextStyle(
-                                            color: Colors.white),
-                                        underline: Container(
-                                          height: 0,
-                                        ),
-                                        onChanged: (String? newValue) {
-                                          setState(() {
-                                            int selectionLimit = 2;
-                                            if (newValue != null &&
-                                                !selectedSkill
-                                                    .contains(newValue)) {
-                                              selectedSkill.add(newValue);
-                                            }
-                                          });
-                                        },
-                                        items:
-                                            Skill.map<DropdownMenuItem<String>>(
-                                                (String value) {
-                                          return DropdownMenuItem<String>(
-                                            value: value,
-                                            child: Text(value),
-                                          );
-                                        }).toList(),
+                                        color: Colors.white,
                                       ),
-                                    );
-                                  }),
-                            ),
+                                    ),
+                                    iconStyleData: const IconStyleData(
+                                      icon: Icon(
+                                        Icons.arrow_drop_down_sharp,
+                                      ),
+                                      iconSize: 25,
+                                      iconEnabledColor: Colors.white,
+                                      iconDisabledColor: null,
+                                    ),
+                                    dropdownStyleData: DropdownStyleData(
+                                      maxHeight: 210,
+                                      width: 300,
+                                      elevation: 0,
+                                      padding: EdgeInsets.only(
+                                          left: 10,
+                                          right: 10,
+                                          top: 5,
+                                          bottom: 15),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(5),
+                                        border: Border.all(color: Colors.black),
+                                        color: Colors.indigo.shade900,
+                                      ),
+                                      scrollPadding: EdgeInsets.all(5),
+                                      scrollbarTheme: ScrollbarThemeData(
+                                        thickness:
+                                            MaterialStateProperty.all<double>(
+                                                6),
+                                        thumbVisibility:
+                                            MaterialStateProperty.all<bool>(
+                                                true),
+                                      ),
+                                    ),
+                                    menuItemStyleData: const MenuItemStyleData(
+                                      height: 25,
+                                      padding:
+                                          EdgeInsets.only(left: 14, right: 14),
+                                    ),
+                                    style: const TextStyle(color: Colors.white),
+                                    underline: Container(
+                                      height: 0,
+                                    ),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        int selectionLimit = 2;
+                                        if (newValue != null &&
+                                            bluecontroller
+                                                    .selectedSkills.length <
+                                                selectionLimit) {
+                                          if (!bluecontroller.selectedSkills
+                                              .contains(newValue)) {
+                                            bluecontroller.selectedSkills
+                                                .add(newValue);
+                                          }
+                                        }
+                                      });
+                                    },
+                                    items: Skill.map<DropdownMenuItem<String>>(
+                                      (String value) {
+                                        return DropdownMenuItem<String>(
+                                          value: value,
+                                          child: Text(value),
+                                        );
+                                      },
+                                    ).toList(),
+                                  ),
+                                )),
                           ),
                         ],
                       ),
@@ -1353,7 +1366,7 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                           Wrap(
                             spacing: 8.0,
                             runSpacing: 8.0,
-                            children: selectedWorkin
+                            children: bluecontroller.selectedWorkins
                                 .map(
                                   (value) => Chip(
                                     backgroundColor: Colors.indigo.shade900,
@@ -1363,7 +1376,8 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                                     ),
                                     onDeleted: () {
                                       setState(() {
-                                        selectedWorkin.remove(value);
+                                        bluecontroller.selectedWorkins
+                                            .remove(value);
                                       });
                                     },
                                   ),
@@ -1439,8 +1453,12 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                                     setState(() {
                                       int selectionLimit = 2;
                                       if (newValue != null &&
-                                          !selectedWorkin.contains(newValue)) {
-                                        selectedWorkin.add(newValue);
+                                          !bluecontroller.selectedWorkins
+                                              .contains(newValue)) {
+                                        bluecontroller.selectedWorkins
+                                            .add(newValue);
+                                        updateSkillsInFirestore(
+                                            bluecontroller.selectedSkills);
                                       }
                                     });
                                   },
@@ -1470,35 +1488,37 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                           SizedBox(width: 50),
                           CustomButton(
                             text: translation(context).next,
-                            onPressed: () {
+                            onPressed: () async {
                               if (_formKey.currentState!.validate()) {
-                                var future;
                                 var bluecandidateController =
                                     BlueCandidateController(
-                                        blueformController: bluecontroller);
-                                if (widget.bluecandidate == null) {}
+                                  blueformController: bluecontroller,
+                                );
+
                                 if (widget.bluecandidate == null) {
-                                  future =
-                                      bluecandidateController.addCandidate();
+                                  await bluecandidateController
+                                      .addCandidate(bluecontroller);
                                 } else {
-                                  future =
-                                      bluecandidateController.updateCandidate();
+                                  await bluecandidateController
+                                      .updateCandidate();
                                 }
 
-                                storeChipsToFirestore();
-                                FirebaseAuth.instance
-                                    .createUserWithEmailAndPassword(
-                                        email: bluecontroller.email.text,
-                                        password: bluecontroller.password.text)
-                                    .then((value) {
+                                try {
+                                  await FirebaseAuth.instance
+                                      .createUserWithEmailAndPassword(
+                                    email: bluecontroller.email.text,
+                                    password: bluecontroller.password.text,
+                                  );
+
                                   Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              BlueUserUpload()));
-                                }).onError((error, stackTrace) {
-                                  print("Error ${error.toString()}");
-                                });
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => BlueUserUpload()),
+                                  );
+                                } catch (error) {
+                                  print("Error: $error");
+                                  // Handle the error as needed
+                                }
                               }
                             },
                           ),

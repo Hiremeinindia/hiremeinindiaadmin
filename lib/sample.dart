@@ -1,72 +1,95 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class Sample extends StatefulWidget {
-  const Sample();
+class OTPScreen extends StatefulWidget {
   @override
-  State<Sample> createState() => _SampleState();
+  _OTPScreenState createState() => _OTPScreenState();
 }
 
-class _SampleState extends State<Sample> {
-  List<String> selectedValues = [];
-  String? dropdownValue;
+class _OTPScreenState extends State<OTPScreen> {
+  FirebaseAuth _auth = FirebaseAuth.instance;
+  TextEditingController _phoneNumberController = TextEditingController();
+  TextEditingController _otpController = TextEditingController();
 
-  List<String> options = ['Option 1', 'Option 2', 'Option 3', 'Option 4'];
+  String verificationId = '';
+  bool isVerified = false;
+
+  void _sendOTP() async {
+    try {
+      await _auth.verifyPhoneNumber(
+        phoneNumber: '+91${_phoneNumberController.text}',
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          await _auth.signInWithCredential(credential);
+          setState(() {
+            isVerified = true;
+          });
+          print('Verification Completed');
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          print('Verification Failed: $e');
+        },
+        codeSent: (String verificationId, int? resendToken) {
+          setState(() {
+            this.verificationId = verificationId;
+          });
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {
+          // Auto-retrieval timeout
+          print('Auto-Retrieval Timeout');
+        },
+        timeout: Duration(seconds: 60),
+      );
+    } catch (e) {
+      print('Error Sending OTP: $e');
+    }
+  }
+
+  void _verifyOTP() async {
+    try {
+      PhoneAuthCredential credential = PhoneAuthProvider.credential(
+        verificationId: verificationId,
+        smsCode: _otpController.text,
+      );
+
+      await _auth.signInWithCredential(credential);
+      setState(() {
+        isVerified = true;
+      });
+      print('OTP Verified');
+    } catch (e) {
+      print('Error Verifying OTP: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Dropdown with Chips'),
-      ),
+      appBar: AppBar(title: Text('OTP Verification')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Row(
-              children: [
-                DropdownButton<String>(
-                  value: dropdownValue,
-                  icon: const Icon(Icons.arrow_downward),
-                  iconSize: 24,
-                  elevation: 16,
-                  style: const TextStyle(color: Colors.deepPurple),
-                  underline: Container(
-                    height: 2,
-                    color: Colors.deepPurpleAccent,
-                  ),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      dropdownValue = newValue;
-                      if (newValue != null) {
-                        selectedValues.add(newValue);
-                      }
-                    });
-                  },
-                  items: options.map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                ),
-              ],
+            TextField(
+              controller: _phoneNumberController,
+              keyboardType: TextInputType.phone,
+              decoration: InputDecoration(labelText: 'Phone Number'),
             ),
-            SizedBox(height: 16),
-            Wrap(
-              spacing: 8.0,
-              runSpacing: 8.0,
-              children: selectedValues
-                  .map(
-                    (value) => Chip(
-                      label: Text(value),
-                      onDeleted: () {
-                        setState(() {
-                          selectedValues.remove(value);
-                        });
-                      },
-                    ),
-                  )
-                  .toList(),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: isVerified ? null : _sendOTP,
+              child: Text(isVerified ? 'Verified' : 'Verify'),
+            ),
+            SizedBox(height: 20),
+            TextField(
+              controller: _otpController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(labelText: 'Enter OTP'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: isVerified ? null : _verifyOTP,
+              child: Text(isVerified ? 'Verified' : 'Verify OTP'),
             ),
           ],
         ),

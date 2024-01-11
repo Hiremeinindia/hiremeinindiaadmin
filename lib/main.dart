@@ -1,7 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hiremeinindiaapp/gen_l10n/app_localizations.dart';
-import 'package:hiremeinindiaapp/userpayment.dart';
+import 'package:hiremeinindiaapp/loginpage.dart';
+import 'package:hiremeinindiaapp/userdashboard.dart';
 
 import 'User/BlueUser/blueregistration.dart';
 import 'classes/language_constants.dart';

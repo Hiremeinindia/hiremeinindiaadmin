@@ -19,16 +19,6 @@ class NewUserPayment extends StatefulWidget {
 class _NewUserPayment extends State<NewUserPayment> {
   @override
   bool isChecked = false;
-  final _paymentItems = [
-    PaymentItem(
-      label: 'Total',
-      amount: '99.99',
-      status: PaymentItemStatus.final_price,
-    )
-  ];
-  void onGooglePayResult(paymentResult) {
-    debugPrint(paymentResult.toString());
-  }
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -318,11 +308,10 @@ class _NewUserPayment extends State<NewUserPayment> {
                     width: 40,
                   ),
                   Expanded(
-                    child: CustomButton(
-                      text: translation(context).gpay,
-                      onPressed: () {},
-                    ),
-                  ),
+                      child: CustomButton(
+                    text: translation(context).gpay,
+                    onPressed: () {},
+                  )),
                   SizedBox(
                     width: 40,
                   ),
@@ -344,7 +333,7 @@ class _NewUserPayment extends State<NewUserPayment> {
                   ),
                   Expanded(
                       child: CustomButton(
-                    text: translation(context).paymentGateway,
+                    text: translation(context).back,
                     onPressed: () {},
                   )),
                   SizedBox(
