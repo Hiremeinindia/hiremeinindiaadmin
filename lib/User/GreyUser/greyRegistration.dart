@@ -1172,14 +1172,17 @@ class _RegistrationState extends State<Registration> {
                           Text(
                             translation(context).skills,
                             style: TextStyle(
-                                fontFamily: 'Poppins',
-                                fontWeight: FontWeight.bold),
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                          SizedBox(width: 10),
+                          SizedBox(
+                            width: 120,
+                          ),
                           Wrap(
                             spacing: 8.0,
                             runSpacing: 8.0,
-                            children: selectedSkill
+                            children: controller.selectedSkills
                                 .map(
                                   (value) => Chip(
                                     backgroundColor: Colors.indigo.shade900,
@@ -1189,7 +1192,7 @@ class _RegistrationState extends State<Registration> {
                                     ),
                                     onDeleted: () {
                                       setState(() {
-                                        selectedSkill.remove(value);
+                                        controller.selectedSkills.remove(value);
                                       });
                                     },
                                   ),
@@ -1201,99 +1204,93 @@ class _RegistrationState extends State<Registration> {
                           ),
                           Expanded(
                             child: Container(
-                              height: 30,
-                              decoration: BoxDecoration(
+                                height: 30,
+                                decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(1),
-                                  border: Border.all(color: Colors.black)),
-                              child: StreamBuilder<QuerySnapshot>(
-                                  stream: FirebaseFirestore.instance
-                                      .collection('greycollaruser')
-                                      .snapshots(),
-                                  builder: (context, snapshot) {
-                                    return DropdownButtonHideUnderline(
-                                      child: DropdownButton2<String>(
-                                        value: skillvalue,
-                                        buttonStyleData: ButtonStyleData(
-                                          height: 30,
-                                          width: 200,
-                                          elevation: 1,
-                                          padding: const EdgeInsets.only(
-                                              left: 14, right: 14),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(4),
-                                            border: Border.all(
-                                              color: Colors.black26,
-                                            ),
-                                            color: Colors.white,
-                                          ),
+                                  border: Border.all(color: Colors.black),
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                  child: DropdownButton2<String>(
+                                    value: skillvalue,
+                                    buttonStyleData: ButtonStyleData(
+                                      height: 30,
+                                      width: 200,
+                                      elevation: 1,
+                                      padding: const EdgeInsets.only(
+                                          left: 14, right: 14),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(4),
+                                        border: Border.all(
+                                          color: Colors.black26,
                                         ),
-                                        iconStyleData: const IconStyleData(
-                                          icon: Icon(
-                                            Icons.arrow_drop_down_sharp,
-                                          ),
-                                          iconSize: 25,
-                                          iconEnabledColor: Colors.white,
-                                          iconDisabledColor: null,
-                                        ),
-                                        dropdownStyleData: DropdownStyleData(
-                                          maxHeight: 210,
-                                          width: 300,
-                                          elevation: 0,
-                                          padding: EdgeInsets.only(
-                                              left: 10,
-                                              right: 10,
-                                              top: 5,
-                                              bottom: 15),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(5),
-                                            border:
-                                                Border.all(color: Colors.black),
-                                            color: Colors.indigo.shade900,
-                                          ),
-                                          scrollPadding: EdgeInsets.all(5),
-                                          scrollbarTheme: ScrollbarThemeData(
-                                            thickness: MaterialStateProperty
-                                                .all<double>(6),
-                                            thumbVisibility:
-                                                MaterialStateProperty.all<bool>(
-                                                    true),
-                                          ),
-                                        ),
-                                        menuItemStyleData:
-                                            const MenuItemStyleData(
-                                          height: 25,
-                                          padding: EdgeInsets.only(
-                                              left: 14, right: 14),
-                                        ),
-                                        style: const TextStyle(
-                                            color: Colors.white),
-                                        underline: Container(
-                                          height: 0,
-                                        ),
-                                        onChanged: (String? newValue) {
-                                          setState(() {
-                                            int selectionLimit = 2;
-                                            if (newValue != null &&
-                                                !selectedSkill
-                                                    .contains(newValue)) {
-                                              selectedSkill.add(newValue);
-                                            }
-                                          });
-                                        },
-                                        items:
-                                            Skill.map<DropdownMenuItem<String>>(
-                                                (String value) {
-                                          return DropdownMenuItem<String>(
-                                            value: value,
-                                            child: Text(value),
-                                          );
-                                        }).toList(),
+                                        color: Colors.white,
                                       ),
-                                    );
-                                  }),
-                            ),
+                                    ),
+                                    iconStyleData: const IconStyleData(
+                                      icon: Icon(
+                                        Icons.arrow_drop_down_sharp,
+                                      ),
+                                      iconSize: 25,
+                                      iconEnabledColor: Colors.white,
+                                      iconDisabledColor: null,
+                                    ),
+                                    dropdownStyleData: DropdownStyleData(
+                                      maxHeight: 210,
+                                      width: 300,
+                                      elevation: 0,
+                                      padding: EdgeInsets.only(
+                                          left: 10,
+                                          right: 10,
+                                          top: 5,
+                                          bottom: 15),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(5),
+                                        border: Border.all(color: Colors.black),
+                                        color: Colors.indigo.shade900,
+                                      ),
+                                      scrollPadding: EdgeInsets.all(5),
+                                      scrollbarTheme: ScrollbarThemeData(
+                                        thickness:
+                                            MaterialStateProperty.all<double>(
+                                                6),
+                                        thumbVisibility:
+                                            MaterialStateProperty.all<bool>(
+                                                true),
+                                      ),
+                                    ),
+                                    menuItemStyleData: const MenuItemStyleData(
+                                      height: 25,
+                                      padding:
+                                          EdgeInsets.only(left: 14, right: 14),
+                                    ),
+                                    style: const TextStyle(color: Colors.white),
+                                    underline: Container(
+                                      height: 0,
+                                    ),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        int selectionLimit = 2;
+                                        if (newValue != null &&
+                                            controller.selectedSkills.length <
+                                                selectionLimit) {
+                                          if (!controller.selectedSkills
+                                              .contains(newValue)) {
+                                            controller.selectedSkills
+                                                .add(newValue);
+                                          }
+                                        }
+                                      });
+                                    },
+                                    items: Skill.map<DropdownMenuItem<String>>(
+                                      (String value) {
+                                        return DropdownMenuItem<String>(
+                                          value: value,
+                                          child: Text(value),
+                                        );
+                                      },
+                                    ).toList(),
+                                  ),
+                                )),
                           ),
                         ],
                       ),
@@ -1312,7 +1309,7 @@ class _RegistrationState extends State<Registration> {
                           Wrap(
                             spacing: 8.0,
                             runSpacing: 8.0,
-                            children: selectedWorkin
+                            children: controller.selectedWorkins
                                 .map(
                                   (value) => Chip(
                                     backgroundColor: Colors.indigo.shade900,
@@ -1322,7 +1319,8 @@ class _RegistrationState extends State<Registration> {
                                     ),
                                     onDeleted: () {
                                       setState(() {
-                                        selectedWorkin.remove(value);
+                                        controller.selectedWorkins
+                                            .remove(value);
                                       });
                                     },
                                   ),
@@ -1396,10 +1394,11 @@ class _RegistrationState extends State<Registration> {
                                   ),
                                   onChanged: (String? newValue) {
                                     setState(() {
-                                      int selectionLimit = 2;
                                       if (newValue != null &&
-                                          !selectedWorkin.contains(newValue)) {
-                                        selectedWorkin.add(newValue);
+                                          !controller.selectedWorkins
+                                              .contains(newValue)) {
+                                        controller.selectedWorkins
+                                            .add(newValue);
                                       }
                                     });
                                   },
@@ -1431,30 +1430,34 @@ class _RegistrationState extends State<Registration> {
                             text: translation(context).next,
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
-                                var future;
                                 var candidateController = CandidateController(
-                                    formController: controller);
-                                if (widget.candidate == null) {}
+                                  formController: controller,
+                                );
+
                                 if (widget.candidate == null) {
-                                  future = candidateController.addCandidate();
+                                  await candidateController
+                                      .addCandidate(controller);
                                 } else {
-                                  future =
-                                      candidateController.updateCandidate();
+                                  await candidateController.updateCandidate();
                                 }
-                              }
-                              FirebaseAuth.instance
-                                  .createUserWithEmailAndPassword(
-                                      email: controller.email.text,
-                                      password: controller.password.text)
-                                  .then((value) {
-                                Navigator.push(
+
+                                try {
+                                  await FirebaseAuth.instance
+                                      .createUserWithEmailAndPassword(
+                                    email: controller.email.text,
+                                    password: controller.password.text,
+                                  );
+
+                                  Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) =>
-                                            GreyUserUpload()));
-                              }).onError((error, stackTrace) {
-                                print("Error ${error.toString()}");
-                              });
+                                        builder: (context) => GreyUserUpload()),
+                                  );
+                                } catch (error) {
+                                  print("Error: $error");
+                                  // Handle the error as needed
+                                }
+                              }
                             },
                           ),
                         ],
