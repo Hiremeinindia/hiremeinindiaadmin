@@ -41,8 +41,6 @@ class _BlueRegistrationState extends State<BlueRegistration> {
 
   List<String> _values = [];
   List<String> _value = [];
-  List<String> selectedSkills = [];
-  List<String> selectedWorkin = [];
 
   String? skillvalue;
 
@@ -333,7 +331,7 @@ class _BlueRegistrationState extends State<BlueRegistration> {
         await FirebaseFirestore.instance
             .collection('blucollaruser')
             .doc(uid)
-            .update({'selectedSkills': selectedSkills});
+            .update({'selectedSkills': bluecontroller.selectedSkills});
 
         print('Skills updated successfully in Firestore');
       } catch (error) {
@@ -1233,14 +1231,17 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                           Text(
                             translation(context).skills,
                             style: TextStyle(
-                                fontFamily: 'Poppins',
-                                fontWeight: FontWeight.bold),
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                          SizedBox(width: 10),
+                          SizedBox(
+                            width: 120,
+                          ),
                           Wrap(
                             spacing: 8.0,
                             runSpacing: 8.0,
-                            children: selectedSkills
+                            children: bluecontroller.selectedSkills
                                 .map(
                                   (value) => Chip(
                                     backgroundColor: Colors.indigo.shade900,
@@ -1250,7 +1251,8 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                                     ),
                                     onDeleted: () {
                                       setState(() {
-                                        selectedSkills.remove(value);
+                                        bluecontroller.selectedSkills
+                                            .remove(value);
                                       });
                                     },
                                   ),
@@ -1262,110 +1264,94 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                           ),
                           Expanded(
                             child: Container(
-                              height: 30,
-                              decoration: BoxDecoration(
+                                height: 30,
+                                decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(1),
-                                  border: Border.all(color: Colors.black)),
-                              child: StreamBuilder<QuerySnapshot>(
-                                  stream: FirebaseFirestore.instance
-                                      .collection('blucollaruser')
-                                      .snapshots(),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.hasError) {
-                                      return Text('Error: ${snapshot.error}');
-                                    }
-
-                                    if (!snapshot.hasData) {
-                                      return CircularProgressIndicator();
-                                    }
-
-                                    return DropdownButtonHideUnderline(
-                                      child: DropdownButton2<String>(
-                                        value: null,
-                                        buttonStyleData: ButtonStyleData(
-                                          height: 30,
-                                          width: 200,
-                                          elevation: 1,
-                                          padding: const EdgeInsets.only(
-                                              left: 14, right: 14),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(4),
-                                            border: Border.all(
-                                              color: Colors.black26,
-                                            ),
-                                            color: Colors.white,
-                                          ),
+                                  border: Border.all(color: Colors.black),
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                  child: DropdownButton2<String>(
+                                    value: skillvalue,
+                                    buttonStyleData: ButtonStyleData(
+                                      height: 30,
+                                      width: 200,
+                                      elevation: 1,
+                                      padding: const EdgeInsets.only(
+                                          left: 14, right: 14),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(4),
+                                        border: Border.all(
+                                          color: Colors.black26,
                                         ),
-                                        iconStyleData: const IconStyleData(
-                                          icon: Icon(
-                                            Icons.arrow_drop_down_sharp,
-                                          ),
-                                          iconSize: 25,
-                                          iconEnabledColor: Colors.white,
-                                          iconDisabledColor: null,
-                                        ),
-                                        dropdownStyleData: DropdownStyleData(
-                                          maxHeight: 210,
-                                          width: 300,
-                                          elevation: 0,
-                                          padding: EdgeInsets.only(
-                                              left: 10,
-                                              right: 10,
-                                              top: 5,
-                                              bottom: 15),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(5),
-                                            border:
-                                                Border.all(color: Colors.black),
-                                            color: Colors.indigo.shade900,
-                                          ),
-                                          scrollPadding: EdgeInsets.all(5),
-                                          scrollbarTheme: ScrollbarThemeData(
-                                            thickness: MaterialStateProperty
-                                                .all<double>(6),
-                                            thumbVisibility:
-                                                MaterialStateProperty.all<bool>(
-                                                    true),
-                                          ),
-                                        ),
-                                        menuItemStyleData:
-                                            const MenuItemStyleData(
-                                          height: 25,
-                                          padding: EdgeInsets.only(
-                                              left: 14, right: 14),
-                                        ),
-                                        style: const TextStyle(
-                                            color: Colors.white),
-                                        underline: Container(
-                                          height: 0,
-                                        ),
-                                        onChanged: (String? newValue) {
-                                          setState(() {
-                                            int selectionLimit = 2;
-                                            if (newValue != null &&
-                                                selectedSkills.length <
-                                                    selectionLimit) {
-                                              if (!selectedSkills
-                                                  .contains(newValue)) {
-                                                selectedSkills.add(newValue);
-                                              }
-                                            }
-                                          });
-                                        },
-                                        items:
-                                            Skill.map<DropdownMenuItem<String>>(
-                                                (String value) {
-                                          return DropdownMenuItem<String>(
-                                            value: value,
-                                            child: Text(value),
-                                          );
-                                        }).toList(),
+                                        color: Colors.white,
                                       ),
-                                    );
-                                  }),
-                            ),
+                                    ),
+                                    iconStyleData: const IconStyleData(
+                                      icon: Icon(
+                                        Icons.arrow_drop_down_sharp,
+                                      ),
+                                      iconSize: 25,
+                                      iconEnabledColor: Colors.white,
+                                      iconDisabledColor: null,
+                                    ),
+                                    dropdownStyleData: DropdownStyleData(
+                                      maxHeight: 210,
+                                      width: 300,
+                                      elevation: 0,
+                                      padding: EdgeInsets.only(
+                                          left: 10,
+                                          right: 10,
+                                          top: 5,
+                                          bottom: 15),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(5),
+                                        border: Border.all(color: Colors.black),
+                                        color: Colors.indigo.shade900,
+                                      ),
+                                      scrollPadding: EdgeInsets.all(5),
+                                      scrollbarTheme: ScrollbarThemeData(
+                                        thickness:
+                                            MaterialStateProperty.all<double>(
+                                                6),
+                                        thumbVisibility:
+                                            MaterialStateProperty.all<bool>(
+                                                true),
+                                      ),
+                                    ),
+                                    menuItemStyleData: const MenuItemStyleData(
+                                      height: 25,
+                                      padding:
+                                          EdgeInsets.only(left: 14, right: 14),
+                                    ),
+                                    style: const TextStyle(color: Colors.white),
+                                    underline: Container(
+                                      height: 0,
+                                    ),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        int selectionLimit = 2;
+                                        if (newValue != null &&
+                                            bluecontroller
+                                                    .selectedSkills.length <
+                                                selectionLimit) {
+                                          if (!bluecontroller.selectedSkills
+                                              .contains(newValue)) {
+                                            bluecontroller.selectedSkills
+                                                .add(newValue);
+                                          }
+                                        }
+                                      });
+                                    },
+                                    items: Skill.map<DropdownMenuItem<String>>(
+                                      (String value) {
+                                        return DropdownMenuItem<String>(
+                                          value: value,
+                                          child: Text(value),
+                                        );
+                                      },
+                                    ).toList(),
+                                  ),
+                                )),
                           ),
                         ],
                       ),
@@ -1384,7 +1370,7 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                           Wrap(
                             spacing: 8.0,
                             runSpacing: 8.0,
-                            children: selectedWorkin
+                            children: bluecontroller.selectedWorkins
                                 .map(
                                   (value) => Chip(
                                     backgroundColor: Colors.indigo.shade900,
@@ -1394,7 +1380,8 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                                     ),
                                     onDeleted: () {
                                       setState(() {
-                                        selectedWorkin.remove(value);
+                                        bluecontroller.selectedWorkins
+                                            .remove(value);
                                       });
                                     },
                                   ),
@@ -1468,11 +1455,11 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                                   ),
                                   onChanged: (String? newValue) {
                                     setState(() {
-                                      int selectionLimit = 2;
                                       if (newValue != null &&
-                                          !selectedWorkin.contains(newValue)) {
-                                        selectedWorkin.add(newValue);
-                                        updateSkillsInFirestore(selectedSkills);
+                                          !bluecontroller.selectedWorkins
+                                              .contains(newValue)) {
+                                        bluecontroller.selectedWorkins
+                                            .add(newValue);
                                       }
                                     });
                                   },
@@ -1502,34 +1489,37 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                           SizedBox(width: 50),
                           CustomButton(
                             text: translation(context).next,
-                            onPressed: () {
+                            onPressed: () async {
                               if (_formKey.currentState!.validate()) {
-                                var future;
                                 var bluecandidateController =
                                     BlueCandidateController(
-                                        blueformController: bluecontroller);
-                                if (widget.bluecandidate == null) {}
+                                  blueformController: bluecontroller,
+                                );
+
                                 if (widget.bluecandidate == null) {
-                                  future =
-                                      bluecandidateController.addCandidate();
+                                  await bluecandidateController
+                                      .addCandidate(bluecontroller);
                                 } else {
-                                  future =
-                                      bluecandidateController.updateCandidate();
+                                  await bluecandidateController
+                                      .updateCandidate();
                                 }
 
-                                FirebaseAuth.instance
-                                    .createUserWithEmailAndPassword(
-                                        email: bluecontroller.email.text,
-                                        password: bluecontroller.password.text)
-                                    .then((value) {
+                                try {
+                                  await FirebaseAuth.instance
+                                      .createUserWithEmailAndPassword(
+                                    email: bluecontroller.email.text,
+                                    password: bluecontroller.password.text,
+                                  );
+
                                   Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              BlueUserUpload()));
-                                }).onError((error, stackTrace) {
-                                  print("Error ${error.toString()}");
-                                });
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => BlueUserUpload()),
+                                  );
+                                } catch (error) {
+                                  print("Error: $error");
+                                  // Handle the error as needed
+                                }
                               }
                             },
                           ),
