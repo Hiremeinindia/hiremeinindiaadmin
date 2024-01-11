@@ -421,11 +421,7 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                       auth.signInWithCredential(_credential).then((result) {
                         if (result != null) {
                           Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => BlueRegistration()),
-                          );
+
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -1455,11 +1451,14 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                                   ),
                                   onChanged: (String? newValue) {
                                     setState(() {
+                                      int selectionLimit = 2;
                                       if (newValue != null &&
                                           !bluecontroller.selectedWorkins
                                               .contains(newValue)) {
                                         bluecontroller.selectedWorkins
                                             .add(newValue);
+                                        updateSkillsInFirestore(
+                                            bluecontroller.selectedSkills);
                                       }
                                     });
                                   },

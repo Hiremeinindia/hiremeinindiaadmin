@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hiremeinindiaapp/Admin/adminconsole.dart';
@@ -19,24 +20,32 @@ class UserDashboard extends StatefulWidget {
 }
 
 class _UserDashboard extends State<UserDashboard> {
-  @override
   bool isChecked = false;
   bool dropdownValue = false;
-  late User
-      _user; // Make sure to import the User class from 'package:firebase_auth/firebase_auth.dart'
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  late User _user;
+  late String _userName;
 
   @override
   void initState() {
     super.initState();
-    _getUser(); // Fetch the user during initialization
+    _user = _auth.currentUser!;
+    _retrieveUserName();
   }
 
-  Future<void> _getUser() async {
-    User? currentUser = FirebaseAuth.instance.currentUser;
-    if (currentUser != null) {
-      setState(() {
-        _user = currentUser;
-      });
+  Future<void> _retrieveUserName() async {
+    try {
+      DocumentSnapshot<Map<String, dynamic>> userDoc =
+          await _firestore.collection('users').doc(_user.uid).get();
+
+      if (userDoc.exists) {
+        setState(() {
+          _userName = userDoc.get('name');
+        });
+      }
+    } catch (error) {
+      print('Error retrieving user information: $error');
     }
   }
 
@@ -256,7 +265,7 @@ class _UserDashboard extends State<UserDashboard> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '  ${_user.displayName ?? 'Guest'}',
+                          _userName ?? "Guest",
                           style: TextStyle(color: Colors.black),
                         ),
                         Text(
