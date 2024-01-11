@@ -19,6 +19,10 @@ class _NewUserPayment extends State<NewUserPayment> {
   @override
   bool isChecked = false;
 
+  void onGooglePayResult(paymentResult) {
+    debugPrint(paymentResult.toString());
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
@@ -307,10 +311,11 @@ class _NewUserPayment extends State<NewUserPayment> {
                     width: 40,
                   ),
                   Expanded(
-                      child: CustomButton(
-                    text: translation(context).gpay,
-                    onPressed: () {},
-                  )),
+                    child: CustomButton(
+                      text: translation(context).gpay,
+                      onPressed: () {},
+                    ),
+                  ),
                   SizedBox(
                     width: 40,
                   ),
@@ -332,7 +337,7 @@ class _NewUserPayment extends State<NewUserPayment> {
                   ),
                   Expanded(
                       child: CustomButton(
-                    text: translation(context).back,
+                    text: translation(context).paymentGateway,
                     onPressed: () {},
                   )),
                 ],
