@@ -18,7 +18,7 @@ class AppSession extends ChangeNotifier {
     firbaseAuth.authStateChanges().listen((event) async {
       if (event != null) {
         FirebaseFirestore.instance
-            .collection('greycollaruser')
+            .collection('users')
             .snapshots()
             .listen((value) {
           candidates =
