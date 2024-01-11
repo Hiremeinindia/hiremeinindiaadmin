@@ -5,17 +5,15 @@ import '../Models/candidated.dart';
 
 class CandidateFormController {
   CandidateFormController();
-  TextEditingController name = TextEditingController();
-  TextEditingController mobile = TextEditingController();
-  TextEditingController email = TextEditingController();
+  final name = TextEditingController();
+  final mobile = TextEditingController();
+  final email = TextEditingController();
   final worktitle = TextEditingController();
   final aadharno = TextEditingController();
   final gender = TextEditingController();
   final workexp = TextEditingController();
   final state = TextEditingController();
   final address = TextEditingController();
-  final skills = TextEditingController();
-  final workin = TextEditingController();
   final password = TextEditingController();
   final otpm = TextEditingController();
   final code = TextEditingController();
@@ -27,23 +25,19 @@ class CandidateFormController {
   final currentWage = TextEditingController();
   final bluecoller = TextEditingController();
   final country = TextEditingController();
-
-  TextEditingController confirmPassword = TextEditingController();
-
-  bool isAdmin = false;
-  double commissionAmount = 0;
+  final confirmPassword = TextEditingController();
+  List<String> selectedSkills = [];
+  List<String> selectedWorkins = [];
 
   // String get newDocId => FirebaseFirestore.instance.collection('Candidates').doc().id;
 
   DocumentReference? _reference;
 
   DocumentReference get reference {
-    _reference ??= FirebaseFirestore.instance.collection('users').doc();
+    _reference ??=
+        FirebaseFirestore.instance.collection('greycollaruser').doc();
     return _reference!;
   }
-
-  int leadCount = 0;
-  int successfullLeadCount = 0;
 
   Candidate get candidate => Candidate(
         reference: reference,
@@ -56,51 +50,27 @@ class CandidateFormController {
         workexp: workexp.text,
         state: state.text,
         address: address.text,
-        skills: skills.text,
-        workin: workin.text,
+        selectedSkills: selectedSkills,
+        selectedWorkins: selectedWorkins,
         password: password.text,
         otpm: otpm.text,
         code: code.text,
         confirmPassword: confirmPassword.text,
         country: country.text,
       );
-
-  factory CandidateFormController.fromCandidate(Candidate candidate) {
-    var controller = CandidateFormController();
-    controller.name.text = candidate.name!;
-    controller.mobile.text = candidate.mobile!;
-    controller.email.text = candidate.email!;
-    controller.worktitle.text = candidate.worktitle!;
-    controller._reference = candidate.reference;
-    controller.aadharno.text = candidate.aadharno!;
-    controller.gender.text = candidate.gender!;
-    controller.workexp.text = candidate.workexp!;
-    controller.state.text = candidate.state!;
-    controller.address.text = candidate.address!;
-    controller.skills.text = candidate.skills!;
-    controller.workin.text = candidate.workin!;
-    controller.password.text = candidate.password!;
-    controller.otpm.text = candidate.otpm!;
-    controller.code.text = candidate.code!;
-    controller.confirmPassword.text = candidate.confirmPassword!;
-    controller.country.text = candidate.country!;
-    return controller;
-  }
 }
 
 class BlueCandidateFormController {
   BlueCandidateFormController();
-  TextEditingController name = TextEditingController();
-  TextEditingController mobile = TextEditingController();
-  TextEditingController email = TextEditingController();
+  final name = TextEditingController();
+  final mobile = TextEditingController();
+  final email = TextEditingController();
   final worktitle = TextEditingController();
   final aadharno = TextEditingController();
   final gender = TextEditingController();
   final workexp = TextEditingController();
   final state = TextEditingController();
   final address = TextEditingController();
-  final skills = TextEditingController();
-  final workin = TextEditingController();
   final password = TextEditingController();
   final otpm = TextEditingController();
   final code = TextEditingController();
@@ -112,11 +82,9 @@ class BlueCandidateFormController {
   final currentWage = TextEditingController();
   final bluecoller = TextEditingController();
   final country = TextEditingController();
-
-  TextEditingController confirmPassword = TextEditingController();
-
-  bool isAdmin = false;
-  double commissionAmount = 0;
+  final confirmPassword = TextEditingController();
+  List<String> selectedSkills = [];
+  List<String> selectedWorkins = [];
 
   // String get newDocId => FirebaseFirestore.instance.collection('Candidates').doc().id;
 
@@ -127,9 +95,6 @@ class BlueCandidateFormController {
         FirebaseFirestore.instance.collection('bluecollaruser').doc();
     return _reference!;
   }
-
-  int leadCount = 0;
-  int successfullLeadCount = 0;
 
   BlueCandidate get bluecandidate => BlueCandidate(
         reference: reference,
@@ -142,33 +107,12 @@ class BlueCandidateFormController {
         workexp: workexp.text,
         state: state.text,
         address: address.text,
-        skills: skills.text,
-        workin: workin.text,
+        selectedSkills: selectedSkills,
+        selectedWorkins: selectedWorkins,
         password: password.text,
         otpm: otpm.text,
         code: code.text,
         confirmPassword: confirmPassword.text,
         country: country.text,
       );
-  factory BlueCandidateFormController.fromCandidate(
-      BlueCandidate bluecandidate) {
-    var controller = BlueCandidateFormController();
-    controller.name.text = bluecandidate.name!;
-    controller.mobile.text = bluecandidate.mobile!;
-    controller.email.text = bluecandidate.email!;
-    controller.worktitle.text = bluecandidate.worktitle!;
-    controller._reference = bluecandidate.reference;
-    controller.aadharno.text = bluecandidate.aadharno!;
-    controller.gender.text = bluecandidate.gender!;
-    controller.workexp.text = bluecandidate.workexp!;
-    controller.state.text = bluecandidate.state!;
-    controller.address.text = bluecandidate.address!;
-    controller.skills.text = bluecandidate.skills!;
-    controller.workin.text = bluecandidate.workin!;
-    controller.password.text = bluecandidate.password!;
-    controller.otpm.text = bluecandidate.otpm!;
-    controller.code.text = bluecandidate.code!;
-    controller.confirmPassword.text = bluecandidate.confirmPassword!;
-    return controller;
-  }
 }

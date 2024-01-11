@@ -339,19 +339,6 @@ class _NewUserPayment extends State<NewUserPayment> {
                   SizedBox(
                     width: 40,
                   ),
-                  Container(
-                    color: Colors.red, // Change color as needed
-                    child: GooglePayButton(
-                      paymentConfigurationAsset: 'assets/gpay.json',
-                      paymentItems: _paymentItems,
-                      type: GooglePayButtonType.pay,
-                      margin: const EdgeInsets.only(top: 15.0),
-                      onPaymentResult: onGooglePayResult,
-                      loadingIndicator: const Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    ),
-                  )
                 ],
               ),
               SizedBox(

@@ -10,7 +10,9 @@ class Candidate {
   final String? workexp;
   final String? state;
   final String? address;
-  final String? skills;
+  final List<String>? selectedSkills;
+
+  final List<String>? selectedWorkins;
   final String? workin;
   final String? password;
   final String? otpm;
@@ -29,7 +31,8 @@ class Candidate {
     this.workexp,
     this.state,
     this.address,
-    this.skills,
+    this.selectedSkills,
+    this.selectedWorkins,
     this.workin,
     this.password,
     this.otpm,
@@ -50,7 +53,8 @@ class Candidate {
         "workexp": workexp,
         "state": state,
         "address": address,
-        "skills": skills,
+        "selectedSkill": selectedSkills,
+        "selectedWorkin": selectedWorkins,
         "workin": workin,
         "password": password,
         "otpm": otpm,
@@ -72,7 +76,8 @@ class Candidate {
         worktitle: data["worktitle"],
         state: data["state"],
         address: data["address"],
-        skills: data["skills"],
+        selectedSkills: List<String>.from(data["selectedSkills"] ?? []),
+        selectedWorkins: List<String>.from(data["selectedWorkins"] ?? []),
         workin: data["workin"],
         password: data["password"],
         otpm: data["otpm"],
@@ -93,7 +98,8 @@ class Candidate {
         worktitle: data["worktitle"],
         state: data["state"],
         address: data["address"],
-        skills: data["skills"],
+        selectedSkills: List<String>.from(data["selectedSkills"] ?? []),
+        selectedWorkins: List<String>.from(data["selectedWorkins"] ?? []),
         workin: data["workin"],
         password: data["password"],
         otpm: data["otpm"],
@@ -103,7 +109,7 @@ class Candidate {
   }
 
   static Future<List<Candidate>> getCandidates() {
-    return FirebaseFirestore.instance.collection('users').get().then(
+    return FirebaseFirestore.instance.collection('greycollaruser').get().then(
         (value) => value.docs.map((e) => Candidate.fromSnapshot(e)).toList());
   }
 }
@@ -118,7 +124,8 @@ class BlueCandidate {
   final String? workexp;
   final String? state;
   final String? address;
-  final String? skills;
+  final List<String>? selectedSkills;
+  final List<String>? selectedWorkins;
   final String? workin;
   final String? password;
   final String? otpm;
@@ -138,7 +145,8 @@ class BlueCandidate {
     this.workexp,
     this.state,
     this.address,
-    this.skills,
+    this.selectedSkills,
+    this.selectedWorkins,
     this.workin,
     this.password,
     this.otpm,
@@ -158,7 +166,8 @@ class BlueCandidate {
         "workexp": workexp,
         "state": state,
         "address": address,
-        "skills": skills,
+        "selectedSkills": selectedSkills,
+        "selectedWorkin": selectedWorkins,
         "workin": workin,
         "password": password,
         "otpm": otpm,
@@ -180,7 +189,8 @@ class BlueCandidate {
         worktitle: data["worktitle"],
         state: data["state"],
         address: data["address"],
-        skills: data["skills"],
+        selectedSkills: List<String>.from(data["selectedSkills"] ?? []),
+        selectedWorkins: List<String>.from(data["selectedWorkins"] ?? []),
         workin: data["workin"],
         password: data["password"],
         otpm: data["otpm"],
@@ -201,7 +211,8 @@ class BlueCandidate {
         worktitle: data["worktitle"],
         state: data["state"],
         address: data["address"],
-        skills: data["skills"],
+        selectedSkills: List<String>.from(data["selectedSkills"] ?? []),
+        selectedWorkins: List<String>.from(data["selectedWorkins"] ?? []),
         workin: data["workin"],
         password: data["password"],
         otpm: data["otpm"],
