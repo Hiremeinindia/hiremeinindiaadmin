@@ -69,7 +69,7 @@ class _AdminDashboard extends State<AdminConsole> {
   }
 
   Future<void> sendCashNotification() async {
-    final String serverUrl = 'http://localhost:3008';
+    final String serverUrl = 'http://localhost:3009';
     final String endpoint = '/cashNotification';
 
     try {
