@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:hiremeinindiaapp/Admin/adminconsole.dart';
+
 import 'package:hiremeinindiaapp/widgets/customcard.dart';
 
 import 'Widgets/customtextstyle.dart';
@@ -362,11 +362,11 @@ class _UserDashboard extends State<UserDashboard> {
                 child: CustomButton(
                   text: translation(context).registerforOther,
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const AdminConsole()),
-                    );
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //       builder: (context) => const AdminConsole()),
+                    // );
                   },
                 ),
               ))

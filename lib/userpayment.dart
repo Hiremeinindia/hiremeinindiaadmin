@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:hiremeinindiaapp/loginpage.dart';
 import 'Widgets/customtextstyle.dart';
@@ -8,6 +10,7 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'classes/language.dart';
 import 'gen_l10n/app_localizations.dart';
 import 'main.dart';
+import 'package:http/http.dart' as http;
 
 class NewUserPayment extends StatefulWidget {
   const NewUserPayment();
@@ -18,6 +21,56 @@ class NewUserPayment extends StatefulWidget {
 class _NewUserPayment extends State<NewUserPayment> {
   @override
   bool isChecked = false;
+
+  Future<void> sendCashNotification() async {
+    print("cash2");
+    final String serverUrl = 'http://localhost:3006';
+    final String endpoint = '/cashNotification';
+
+    try {
+      print('Sending cash notification...');
+      final response = await http.post(
+        Uri.parse('$serverUrl$endpoint'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+
+      print('Response status code: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        print("cash3");
+        print('Waiting for 3 minutes before showing verification result...');
+        // Wait for 3 minutes before showing verification result
+        await Future.delayed(Duration(minutes: 3));
+
+        // Display a popup message
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Cash Received and Verified'),
+              content: Text('The cash payment has been received and verified.'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        print(
+          'Failed to send notification. Status code: ${response.statusCode}',
+        );
+      }
+    } catch (error) {
+      print('Error sending notification: $error');
+    }
+  }
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -323,16 +376,43 @@ class _NewUserPayment extends State<NewUserPayment> {
                     width: 40,
                   ),
                   Expanded(
-                      child: CustomButton(
-                    text: translation(context).cash,
-                    onPressed: () {},
-                  )),
+                    child: CustomButton(
+                      text: translation(context).cash,
+                      onPressed: () async {
+                        print("cash1");
+                        // Call the method to send cash notification
+                        await sendCashNotification();
+
+                        // Instead of navigating back immediately, you can handle the response here
+                        // For example, you can show a message or navigate to another page based on the response
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('Cash Received and Verified'),
+                              content: Text(
+                                  'The cash payment has been received and verified@@@.'),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context)
+                                        .pop(); // Close the dialog
+                                  },
+                                  child: Text('OK'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
                   SizedBox(
                     width: 40,
                   ),
                   Expanded(
                       child: CustomButton(
-                    text: translation(context).back,
+                    text: translation(context).paymentGateway,
                     onPressed: () {},
                   )),
                   SizedBox(

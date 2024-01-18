@@ -69,6 +69,9 @@ dependencies:
   cached_network_image: ^3.3.1
   country_state_city_picker: ^1.2.8
   country_state_city_pro: ^0.0.6
+  win32: ^5.2.0
+  firebase_messaging: ^14.7.10
+  flutter_local_notifications: ^16.3.0
   
 
 dev_dependencies:
