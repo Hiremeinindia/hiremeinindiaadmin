@@ -429,9 +429,7 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.check, color: Colors.green),
-                              SizedBox(width: 8),
-                              Text('Verified'),
+                              Text(isVerified ? 'Verified' : 'Verify OTP'),
                             ],
                           );
                         }
@@ -1108,25 +1106,7 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                                 // isVerified = true;
                               }
                             },
-                            child: isVerified
-                                ? Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(Icons.check, color: Colors.green),
-                                      SizedBox(width: 8),
-                                      Text(
-                                        translation(context).verified,
-                                      ),
-                                    ],
-                                  )
-                                : Text(
-                                    translation(context).verify,
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.normal,
-                                      color: Colors.white,
-                                    ),
-                                  ),
+                            child: Text(isVerified ? 'Verified' : 'Verify OTP'),
                           ),
                         ),
                         SizedBox(
@@ -1224,25 +1204,7 @@ class _BlueRegistrationState extends State<BlueRegistration> {
                                 // bluecontroller.email.text = '';
                               }
                             },
-                            child: isVerified
-                                ? Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(Icons.check, color: Colors.green),
-                                      SizedBox(width: 8),
-                                      Text(
-                                        translation(context).verified,
-                                      ),
-                                    ],
-                                  )
-                                : Text(
-                                    translation(context).verify,
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.normal,
-                                      color: Colors.white,
-                                    ),
-                                  ),
+                            child: Text(isVerified ? 'Verified' : 'Verify OTP'),
                           ),
                         ),
                       ]),
