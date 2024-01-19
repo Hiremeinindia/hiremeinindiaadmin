@@ -1,0 +1,136 @@
+{
+  "@@locale": "ml",
+  "hireMeInIndia": "എന്നെ ഇന്ത്യയിൽ നിയമിക്കൂ",
+  "findaJob" : "ഒരു ജോലി കണ്ടെത്തു",
+  "english": "English",
+  "malayalam": "Malayalam",
+  "tamil": "Tamil",
+  "hindi": "Hindi",
+  "name": "പേര്",
+  "password": "Password",
+  "signIn": "സൈൻ ഇൻ",
+  "blueColler": "നീല കോളർ",
+  "greyColler": "ഗ്രേ കോളർ",
+  "uploadEssentialDocument": "അത്യാവശ്യ പ്രമാണം അപ്‌ലോഡ് ചെയ്യുക",
+  "picture": "ചിത്രം",
+  "aadhar": "ആധാർ",
+  "voterId": "വോട്ടർ ഐഡി",
+  "experienceProof": "അനുഭവ തെളിവ്",
+  "cv": "സിവി",
+  "currentWage": "നിലവിലെ കൂലി",
+  "currentCity": "നിലവിലെ നഗരം",
+  "expectedWage": "പ്രതീക്ഷിച്ച കൂലി",
+  "currentState": "നിലവിലുള്ള അവസ്ഥ",
+  "back": "തിരികെ",
+  "register": "രജിസ്റ്റർ",
+  "next": "അടുത്തത്",
+"registerAsANewUser": 
+"ഒരു പുതിയ ഉപയോക്താവായി രജിസ്റ്റർ ചെയ്യുക",
+  "workTitle": 
+"ജോലിയുടെ പേര്",
+  "aadharNo": 
+"ആധാർ നമ്പർ",
+  "Address": 
+"വിലാസം",
+  "mobile": 
+"മൊബൈൽ",
+  "skills": 
+"കഴിവുകൾ",
+  "lookingWork": 
+"ജോലി അന്വേഷിക്കുന്നു",
+  "gender": 
+"ലിംഗം",
+  "workExperience": 
+"ജോലി പരിചയം",
+  "state": 
+"സംസ്ഥാനം",
+  "email": 
+"ഇമെയിൽ",
+  "verify": 
+"സ്ഥിരീകരിക്കുക",
+  "add": 
+"ചേർക്കുക",
+  "verified": 
+"പരിശോധിച്ചു",
+  "jobClassification": 
+"ജോലി വർഗ്ഗീകരണം",
+  "jobClassifications": 
+"ജോലി വർഗ്ഗീകരണങ്ങൾ",
+  "qualificationSet": 
+"യോഗ്യത സെറ്റ്",
+  "qualificationSets": 
+"യോഗ്യത സെറ്റുകൾ",
+  "query": 
+"ചോദ്യം",
+  "save": 
+"രക്ഷിക്കും",
+  "run": 
+"ഓടുക",
+  "create": 
+"സൃഷ്ടിക്കാൻ",
+  "candidates": 
+"സ്ഥാനാർത്ഥികൾ",
+  "qualification": 
+"യോഗ്യത",
+  "label": 
+"ലേബൽ",
+  "noOfDaysOpen": 
+"തുറന്ന ദിവസങ്ങളുടെ എണ്ണം",
+  "cvDoc": 
+"കറിക്കുലം വീറ്റ ഡോക്",
+  "hello": 
+"ഹലോ",
+  "gpay": 
+"ജി പേ",
+  "neft": 
+"നെഫ്റ്റ്",
+  "cash": 
+"പണം",
+  "paymentGateway": 
+"പേയ്‌മെന്റ് ഗേറ്റ്‌വേ",
+  "pay": 
+"പണം",
+  "jobs": 
+"ജോലികൾ",
+  "getHiredFromTheBest": 
+"മികച്ചവരിൽ നിന്ന് നിയമനം നേടുക",
+  "indiasBestPortalforBlue": 
+"ഇന്ത്യയിലെ ഏറ്റവും മികച്ച നീല പോർട്ടൽ",
+  "andGreyCollarJob": 
+"കൂടാതെ ഗ്രേ കോളർ ജോബ്",
+  "hireNow": 
+"ഇപ്പോൾ നിയമിക്കുക",
+  "getJob": 
+"ജോലി നേടുക",
+  "noOfOffers": 
+"നമ്പർ ഓഫറുകൾ",
+  "noOfProfileVisits": 
+"പ്രൊഫൈൽ സന്ദർശനങ്ങളുടെ എണ്ണം",
+  "registerforOther": 
+"മറ്റുള്ളവർക്കായി രജിസ്റ്റർ ചെയ്യുക",
+  "noOfCandidates": 
+"സ്ഥാനാർത്ഥികളുടെ എണ്ണം",
+  "noOfCompanies": 
+"കമ്പനികളുടെ എണ്ണം",
+"candidatesToday": 
+"ഇന്നത്തെ സ്ഥാനാർത്ഥികൾ",
+  "today": 
+"ഇന്ന്",
+  "payments": 
+"പേയ്മെന്റുകൾ",
+  "online": 
+"ഓൺലൈൻ",
+  "cash": 
+"പണം",
+  "total": 
+"ആകെ",
+  "curatedCandidates": 
+"ക്യൂറേറ്റ് ചെയ്ത സ്ഥാനാർത്ഥികൾ",
+  "selectedCandidates": 
+"തിരഞ്ഞെടുത്ത സ്ഥാനാർത്ഥികൾ",
+  "blueCollerJobs": "ഗ്രേ കോളർ ജോലികൾ",
+  "greyCollerJobs": "ബ്ലൂ കോളർ ജോലികൾ",
+  "hire": "Hire",
+  "meIn": "mein",
+  "india": "India"
+}
