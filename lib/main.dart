@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/adminconsole.dart';
+import 'package:flutter_application_1/admintest.dart';
 
 Future<void> main() async {
   print("Initializing Firebase...");
@@ -54,7 +55,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      home: AdminConsole(),
+      debugShowCheckedModeBanner: false,
+      home: AdminConsole1(),
     );
   }
 }

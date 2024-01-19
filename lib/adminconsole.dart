@@ -3,24 +3,20 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
+
+import '../Widgets/customTextstyle.dart';
+import '../widgets/customcard.dart';
+import '../widgets/hiremeinindia.dart';
 
 class AdminConsole extends StatefulWidget {
   const AdminConsole();
 
   @override
-  State<AdminConsole> createState() => _AdminDashboard();
+  State<AdminConsole> createState() => _AdminConsoleState();
 }
 
-class _AdminDashboard extends State<AdminConsole> {
-  String? selectedValue;
-
-  @override
-  void initState() {
-    super.initState();
-    initializeLocalNotifications();
-    selectedValue = items.first; // Set the initial value
-  }
-
+class _AdminConsoleState extends State<AdminConsole> {
   bool isChecked = false;
   final List<String> items = [
     'Item1',
@@ -32,6 +28,7 @@ class _AdminDashboard extends State<AdminConsole> {
     'Item7',
     'Item8',
   ];
+  String? selectedValue;
 
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
@@ -69,7 +66,7 @@ class _AdminDashboard extends State<AdminConsole> {
   }
 
   Future<void> sendCashNotification() async {
-    final String serverUrl = 'http://localhost:3009';
+    final String serverUrl = 'http://localhost:3010';
     final String endpoint = '/cashNotification';
 
     try {
@@ -112,26 +109,69 @@ class _AdminDashboard extends State<AdminConsole> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    initializeLocalNotifications();
+    selectedValue = items.first; // Set the initial value
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          // ... (existing app bar configuration)
-          ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                // Simulate the cash notification by calling the method
-                sendCashNotification();
-              },
-              child: Text('Simulate Cash Notification'),
+        centerTitle: false,
+        toolbarHeight: 80,
+        backgroundColor: Colors.transparent,
+        elevation: 0.0,
+        title: HireMeInIndia(),
+        actions: [
+          Padding(
+            padding: EdgeInsets.only(right: 50.0, top: 10),
+            child: Row(
+              children: [
+                Text(
+                  'Admin Console',
+                  style: TextStyle(
+                      fontSize: 25,
+                      color: Colors.indigo.shade900,
+                      fontFamily: 'Poppins'),
+                ),
+                SizedBox(width: 40),
+                SizedBox(
+                  height: 30,
+                  width: 30,
+                  child: CircleAvatar(
+                    backgroundColor: Colors.black,
+                    child: CircleAvatar(
+                      backgroundColor: Colors.white,
+                      child: Icon(
+                        Icons.person,
+                        color: Colors.indigo.shade900,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 8.0),
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Suresh',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      Text(
+                        'Admin',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
