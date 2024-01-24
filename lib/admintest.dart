@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/widgets/hiremeinindia.dart';
@@ -66,7 +68,7 @@ class _AdminDashboard extends State<AdminConsole1> {
   }
 
   Future<void> sendCashNotification() async {
-    final String serverUrl = 'http://localhost:3010';
+    final String serverUrl = 'http://localhost:3013';
     final String endpoint = '/cashNotification';
 
     try {
@@ -78,14 +80,26 @@ class _AdminDashboard extends State<AdminConsole1> {
       );
 
       if (response.statusCode == 200) {
-        // Display a popup message
+        // Extract cash receipt information from the response
+        Map<String, dynamic> receiptInfo = json.decode(response.body);
+
+        // Fetch the image from Firebase Storage
+        final imageUrl = receiptInfo['receiptImagePath'];
+        final imageBytes = await http.readBytes(Uri.parse(imageUrl));
+
+        // Show the dialog after fetching the image
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text('Cash Received and Verified'),
-              content:
-                  Text('The cash payment has been received and verified!!!.'),
+              content: Column(
+                children: [
+                  Text('The cash payment has been received and verified.'),
+                  SizedBox(height: 10),
+                  Image.memory(imageBytes), // Display the image
+                ],
+              ),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
@@ -106,6 +120,27 @@ class _AdminDashboard extends State<AdminConsole1> {
     } catch (error) {
       print('Error sending notification: $error');
     }
+  }
+
+  void showCashReceiptImage(String imagePath) {
+    // Display the received cash receipt image
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Received Cash Receipt Image'),
+          content: Image.network(imagePath), // Assuming imagePath is a URL
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -432,6 +467,10 @@ class _AdminDashboard extends State<AdminConsole1> {
                       color: const Color.fromARGB(255, 125, 83, 196),
                       title1: "Cash",
                       title2: '1',
+                      onTap: () {
+                        // Call the sendCashNotification method when Cash card is pressed
+                        sendCashNotification();
+                      },
                     ),
                     SizedBox(
                       width: 60,

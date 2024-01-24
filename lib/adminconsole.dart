@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
-
+import 'package:flutter_app_badger/flutter_app_badger.dart';
 import '../Widgets/customTextstyle.dart';
 import '../widgets/customcard.dart';
 import '../widgets/hiremeinindia.dart';
@@ -65,27 +65,40 @@ class _AdminConsoleState extends State<AdminConsole> {
     );
   }
 
-  Future<void> sendCashNotification() async {
-    final String serverUrl = 'http://localhost:3010';
+  Future<void> sendCashNotification(http.MultipartFile cashReceipt) async {
+    final String serverUrl = 'http://localhost:3013';
     final String endpoint = '/cashNotification';
 
     try {
-      final response = await http.post(
-        Uri.parse('$serverUrl$endpoint'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-      );
+      var request =
+          http.MultipartRequest('POST', Uri.parse('$serverUrl$endpoint'))
+            ..files.add(cashReceipt);
+
+      final response = await request.send();
 
       if (response.statusCode == 200) {
+        // Read the response body as a string
+        String responseBody = await response.stream.bytesToString();
+
         // Display a popup message
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text('Cash Received and Verified'),
-              content:
+              content: Column(
+                children: [
                   Text('The cash payment has been received and verified!!!.'),
+                  SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: () {
+                      // Show the received cash receipt
+                      showCashReceiptDialog(responseBody);
+                    },
+                    child: Text('View Cash Receipt'),
+                  ),
+                ],
+              ),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
@@ -98,6 +111,10 @@ class _AdminConsoleState extends State<AdminConsole> {
             );
           },
         );
+
+        // Increment badge count and show notification in the top left corner
+        FlutterAppBadger.updateBadgeCount(1); // Set badge count to 1
+        showNotification();
       } else {
         print(
           'Failed to send notification. Status code: ${response.statusCode}',
@@ -106,6 +123,27 @@ class _AdminConsoleState extends State<AdminConsole> {
     } catch (error) {
       print('Error sending notification: $error');
     }
+  }
+
+  void showCashReceiptDialog(String cashReceiptData) {
+    // Display a dialog to show the received cash receipt
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Received Cash Receipt'),
+          content: Text('Cash Receipt Data: $cashReceiptData'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
