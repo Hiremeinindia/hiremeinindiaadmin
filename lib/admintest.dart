@@ -68,7 +68,8 @@ class _AdminDashboard extends State<AdminConsole1> {
   }
 
   Future<void> sendCashNotification() async {
-    final String serverUrl = 'http://localhost:3013';
+    print("hello2");
+    final String serverUrl = 'http://localhost:3015';
     final String endpoint = '/cashNotification';
 
     try {
@@ -87,6 +88,7 @@ class _AdminDashboard extends State<AdminConsole1> {
         final imageUrl = receiptInfo['receiptImagePath'];
 
         if (imageUrl != null) {
+          print("hello3");
           // Declare 'imageBytes' within the scope where it's used
           final imageBytes = await http.readBytes(Uri.parse(imageUrl));
 
@@ -106,6 +108,7 @@ class _AdminDashboard extends State<AdminConsole1> {
                 actions: <Widget>[
                   TextButton(
                     onPressed: () {
+                      print("hello4");
                       Navigator.of(context).pop(); // Close the dialog
                       showNotification(); // Show the notification
                     },
@@ -125,6 +128,25 @@ class _AdminDashboard extends State<AdminConsole1> {
       }
     } catch (error) {
       print('Error sending notification: $error');
+      // Handle network-related errors gracefully
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text(
+                'Failed to send notification. Please check your internet connection and try again.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
     }
   }
 
@@ -481,6 +503,7 @@ class _AdminDashboard extends State<AdminConsole1> {
                       title1: "Cash",
                       title2: '1',
                       onTap: () {
+                        print("hello1");
                         // Call the sendCashNotification method when Cash card is pressed
                         sendCashNotification();
                       },
