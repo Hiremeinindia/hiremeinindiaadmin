@@ -66,7 +66,7 @@ class _AdminConsoleState extends State<AdminConsole> {
   }
 
   Future<void> sendCashNotification(http.MultipartFile cashReceipt) async {
-    final String serverUrl = 'http://localhost:3014';
+    final String serverUrl = 'http://localhost:3015';
     final String endpoint = '/cashNotification';
 
     try {
