@@ -85,33 +85,39 @@ class _AdminDashboard extends State<AdminConsole1> {
 
         // Fetch the image from Firebase Storage
         final imageUrl = receiptInfo['receiptImagePath'];
-        final imageBytes = await http.readBytes(Uri.parse(imageUrl));
 
-        // Show the dialog after fetching the image
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Cash Received and Verified'),
-              content: Column(
-                children: [
-                  Text('The cash payment has been received and verified.'),
-                  SizedBox(height: 10),
-                  Image.memory(imageBytes), // Display the image
-                ],
-              ),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(); // Close the dialog
-                    showNotification(); // Show the notification
-                  },
-                  child: Text('OK'),
+        if (imageUrl != null) {
+          // Declare 'imageBytes' within the scope where it's used
+          final imageBytes = await http.readBytes(Uri.parse(imageUrl));
+
+          // Show the dialog after fetching the image
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Cash Received and Verified'),
+                content: Column(
+                  children: [
+                    Text('The cash payment has been received and verified.'),
+                    SizedBox(height: 10),
+                    Image.memory(imageBytes), // Display the image
+                  ],
                 ),
-              ],
-            );
-          },
-        );
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Close the dialog
+                      showNotification(); // Show the notification
+                    },
+                    child: Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
+        } else {
+          print('Error: receiptImagePath is null');
+        }
       } else {
         print(
           'Failed to send notification. Status code: ${response.statusCode}',
@@ -122,25 +128,32 @@ class _AdminDashboard extends State<AdminConsole1> {
     }
   }
 
-  void showCashReceiptImage(String imagePath) {
-    // Display the received cash receipt image
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Received Cash Receipt Image'),
-          content: Image.network(imagePath), // Assuming imagePath is a URL
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-              child: Text('Close'),
-            ),
-          ],
-        );
-      },
-    );
+  void showCashReceiptImage(String imagePath) async {
+    try {
+      // Fetch the image from Firebase Storage
+      final imageBytes = await http.readBytes(Uri.parse(imagePath));
+
+      // Display the received cash receipt image
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Received Cash Receipt Image'),
+            content: Image.memory(imageBytes), // Display the image
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+                child: Text('Close'),
+              ),
+            ],
+          );
+        },
+      );
+    } catch (error) {
+      print('Error fetching and displaying image: $error');
+    }
   }
 
   @override
