@@ -1,12 +1,16 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const fetchImageUrlRouter = require('./routes/fetchImageUrl');
 
-const app = express();
-const port = 3015;
+const app = express(); // Create an Express app instance
+
+const port = 3018;
 
 app.use(cors());
 app.use(bodyParser.json());
+
+app.use('/fetchImageUrl', fetchImageUrlRouter); // Define routes and middleware
 
 app.post('/cashNotification', async (req, res) => {
   console.log('Received cash notification request');
@@ -28,9 +32,9 @@ app.post('/cashNotification', async (req, res) => {
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
 });
+
 app.get('/getCashReceipt', (req, res) => {
   console.log('GET request received for /getCashReceipt');
   // Handle the request and send the cash receipt data
   // ...
 });
-
