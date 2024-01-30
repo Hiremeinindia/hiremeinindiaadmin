@@ -426,9 +426,32 @@ class _AdminDashboard extends State<AdminConsole1> {
                 Row(
                   children: [
                     CustomCard(
+                      color: Color.fromARGB(255, 153, 51, 49),
+                      title1: "NoOfCandidates",
+                      title2: '1',
+                    ),
+                    SizedBox(
+                      width: 60,
+                    ),
+                    CustomCard(
+                      color: Color.fromARGB(255, 105, 182, 46),
+                      title1: "NoOfCompanies",
+                      title2: '100',
+                    ),
+                    SizedBox(
+                      width: 60,
+                    ),
+                    CustomCard(
                       color: Color.fromARGB(255, 138, 40, 156),
                       title1: "Candidates",
                       title2: '100',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const AdminConsole1()),
+                        );
+                      },
                     ),
                     SizedBox(
                       width: 60,
