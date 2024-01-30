@@ -18,8 +18,8 @@ Future<void> main() async {
           projectId: "hiremeinindia-14695",
           storageBucket: "hiremeinindia-14695.appspot.com",
           messagingSenderId: "316659430730",
-          appId: "1:316659430730:web:5d15ce005979a646cffdb3",
-          measurementId: "G-0H13BWH831"));
+          appId: "1:316659430730:web:b340e5bd5b9ca6e0cffdb3",
+          measurementId: "G-RQLDRBK5CL"));
   print("Firebase initialized successfully!");
   runApp(const MyApp());
   final server = await HttpServer.bind(InternetAddress.anyIPv4, 8080);
