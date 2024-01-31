@@ -15,6 +15,7 @@ class AdminConsole1 extends StatefulWidget {
 }
 
 class _AdminDashboard extends State<AdminConsole1> {
+  int cashReceiptCount = 0;
   bool isChecked = false;
   String? imageUrl;
   final List<String> items = [
@@ -99,6 +100,7 @@ class _AdminDashboard extends State<AdminConsole1> {
   }
 
   Future<void> sendCashNotification(String imageUrl) async {
+    cashReceiptCount++;
     print("cash1");
     final String serverUrl = 'http://localhost:3018';
     final String endpoint = '/cashNotification';
@@ -114,6 +116,7 @@ class _AdminDashboard extends State<AdminConsole1> {
           },
           body: jsonEncode(<String, dynamic>{
             'imageUrl': imageUrl, // Pass the imageUrl parameter
+            'cashReceiptCount': cashReceiptCount,
           }),
         );
 
@@ -580,7 +583,8 @@ class _AdminDashboard extends State<AdminConsole1> {
                       child: CustomCard(
                         color: const Color.fromARGB(255, 125, 83, 196),
                         title1: "Cash",
-                        title2: '1',
+                        title2:
+                            '$cashReceiptCount', // Display the actual count dynamically
                       ),
                     ),
 // Add the ElevatedButton and SizedBox here
