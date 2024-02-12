@@ -5,7 +5,8 @@ const fetchImageUrlRouter = require('./routes/fetchImageUrl');
 
 const app = express(); // Create an Express app instance
 
-const port = 3019;
+const port = 3019
+;
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -18,7 +19,7 @@ app.post('/cashNotification', async (req, res) => {
     // Perform cash verification logic here
 
     // Simulate a delay of 3 minutes for verification
-    await new Promise(resolve => setTimeout(resolve, 180000));
+    await new Promise(resolve => setTimeout(resolve,  60000));
 
     // Send a response indicating success
     console.log('Sending response: Cash Received and Verified');
