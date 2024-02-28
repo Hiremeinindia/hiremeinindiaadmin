@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/adminRegistration.dart';
 import 'package:flutter_application_1/adminconsole.dart';
-import 'package:flutter_application_1/admintest.dart';
+import 'package:flutter_application_1/loginPage.dart';
 import 'package:provider/provider.dart';
 
 import 'classes/language_constants.dart';
@@ -96,7 +96,7 @@ class _HireAppState extends State<HireApp> {
         supportedLocales: AppLocalizations.supportedLocales,
         locale: _locale,
         debugShowCheckedModeBanner: false,
-        home: AdminRegistration(),
+        home: LoginPage(),
       ),
     );
   }

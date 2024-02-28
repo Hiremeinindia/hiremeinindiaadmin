@@ -72,7 +72,7 @@ class _AdminRegistrationState extends State<AdminRegistration> {
     return Sizer(builder: (context, orientation, deviceType) {
       return LayoutBuilder(
           builder: (BuildContext ctx, BoxConstraints constraints) {
-        if (constraints.maxWidth >= 633) {
+        if (constraints.maxWidth >= 700) {
           return Scaffold(
             appBar: PreferredSize(
               preferredSize: Size.fromHeight(75),
@@ -308,8 +308,7 @@ class _AdminRegistrationState extends State<AdminRegistration> {
                 child: SingleChildScrollView(
               child: Container(
                 padding: EdgeInsets.all(10),
-                height: 600,
-                width: 700,
+                width: 60.h,
                 decoration: BoxDecoration(
                     border: Border.all(color: Colors.black),
                     borderRadius: BorderRadius.circular(10)),
@@ -385,20 +384,67 @@ class _AdminRegistrationState extends State<AdminRegistration> {
                       SizedBox(
                         height: 40,
                       ),
-                      CustomButton(
-                        text: translation(context).login,
-                        onPressed: () async {
-                          // Sign in with email and password
-                          UserCredential userCredential =
-                              await _auth.createUserWithEmailAndPassword(
-                            email: controller.email.text,
-                            password: controller.password.text,
-                          );
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => LoginPage()));
-                        },
+                      Align(
+                        alignment: Alignment.center,
+                        child: CustomButton(
+                          text: translation(context).register,
+                          onPressed: () async {
+                            // Sign in with email and password
+                            UserCredential userCredential =
+                                await _auth.createUserWithEmailAndPassword(
+                              email: controller.email.text,
+                              password: controller.password.text,
+                            );
+                            await FirebaseFirestore.instance
+                                .collection('adminuser')
+                                .doc(userCredential.user!.uid)
+                                .set({
+                              'name': controller.name.text,
+                              'email': controller.email.text,
+                            });
+
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => LoginPage()));
+                          },
+                        ),
+                      ),
+                      SizedBox(
+                        height: 25,
+                      ),
+                      Divider(),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Already have an account?',
+                            style:
+                                TextStyle(fontFamily: 'Poppins', fontSize: 15),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => LoginPage()),
+                              );
+                            },
+                            child: Text(
+                              'Sign in',
+                              style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  color: Colors.indigo.shade900,
+                                  fontSize: 13),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 25,
                       ),
                     ],
                   ),
@@ -515,6 +561,7 @@ class _AdminRegistrationState extends State<AdminRegistration> {
               preferredSize: Size.fromHeight(80),
               child: Container(
                 height: 80,
+                width: 55.h,
                 child: Material(
                   elevation: 3,
                   child: Padding(
@@ -624,18 +671,31 @@ class _AdminRegistrationState extends State<AdminRegistration> {
                         Align(
                           alignment: Alignment.center,
                           child: CustomButton(
-                            text: translation(context).login,
+                            text: translation(context).register,
                             onPressed: () async {
-                              // Sign in with email and password
-                              UserCredential userCredential =
-                                  await _auth.createUserWithEmailAndPassword(
-                                email: controller.email.text,
-                                password: controller.password.text,
-                              );
-                              Navigator.push(
+                              if (_formKey.currentState!.validate()) {
+                                // Sign up with email and password
+                                UserCredential userCredential =
+                                    await _auth.createUserWithEmailAndPassword(
+                                  email: controller.email.text,
+                                  password: controller.password.text,
+                                );
+
+                                // Assign the admin role to the user
+                                await FirebaseFirestore.instance
+                                    .collection('adminuser')
+                                    .doc(userCredential.user!.uid)
+                                    .set({
+                                  'name': controller.name.text,
+                                  'email': controller.email.text,
+                                });
+
+                                Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => LoginPage()));
+                                      builder: (context) => LoginPage()),
+                                );
+                              }
                             },
                           ),
                         )
@@ -649,5 +709,23 @@ class _AdminRegistrationState extends State<AdminRegistration> {
         }
       });
     });
+  }
+
+  Future<void> assignUserRole(String uid) async {
+    try {
+      String adminCollection = 'adminuser';
+
+      // Assign the admin role to the user
+      await FirebaseFirestore.instance
+          .collection(adminCollection)
+          .doc(uid)
+          .set({
+        'name': controller.name.text,
+        'email': controller.email.text,
+        // Add additional admin-related fields as needed
+      });
+    } catch (e) {
+      print('Error assigning admin role: $e');
+    }
   }
 }
