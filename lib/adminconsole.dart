@@ -27,7 +27,7 @@ class _AdminDashboard extends State<AdminConsole> {
   bool isChecked = false;
   bool isRequestRecived = false;
   String _userName = '';
-  late String imageUrl;
+  String imageUrl = '';
   String? _cashReceiptUrl;
   bool isArrowClick = false;
   late Stream<Map<String, dynamic>?> userStream;
@@ -316,529 +316,672 @@ class _AdminDashboard extends State<AdminConsole> {
   void initState() {
     super.initState();
     initializeLocalNotifications();
-    fetchImageUrl();
     userStream = fetchUserName().map((data) => data);
     selectedValue = items.first; // Set the initial value
   }
 
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(75),
-        child: Material(
-          elevation: 3,
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(5.w, 0, 2.5.w, 0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                HireMeInIndia(),
-                Row(
-                  children: [
-                    Text(
-                      'Admin Console',
-                      style: TextStyle(
-                          fontSize: 25,
-                          color: Colors.indigo.shade900,
-                          fontFamily: 'Poppins'),
-                    ),
-                    SizedBox(width: 20),
-                    CircleAvatar(
-                      backgroundColor: Colors.black,
-                      child: CircleAvatar(
-                        backgroundColor: Colors.white,
-                        child: Icon(
-                          Icons.person_outline_outlined,
-                          size: 35,
-                          color: Colors.indigo.shade900,
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 0.5.w,
-                    ),
-                    StreamBuilder<Map<String, dynamic>?>(
-                      stream: userStream,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData && snapshot.data != null) {
-                          // Display the user's name
-                          return Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '$_userName',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.indigo.shade900,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              Text(
-                                'Admin',
-                                style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.indigo.shade900,
-                                    height: 0),
-                              ),
-                            ],
-                          );
-                        } else {
-                          // Loading or error state
-                          return Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-                      },
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Container(
-          padding:
-              EdgeInsets.only(left: 7.w, right: 7.w, top: 7.h, bottom: 7.h),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: StreamBuilder<Map<String, dynamic>?>(
-                  stream: userStream,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData && snapshot.data != null) {
-                      // Display the user's name
-                      return Center(
-                        child: Row(
-                          children: [
-                            Text(
-                              "${translation(context).hello} $_userName",
-                              style: CustomTextStyle.nameOfUser,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            IconButton(
-                              hoverColor: Colors.transparent,
-                              icon: Icon(Icons.arrow_drop_down_sharp),
-                              iconSize: 30,
-                              color: Colors.indigo.shade900,
-                              onPressed: () {
-                                setState(() {
-                                  isArrowClick = !isArrowClick;
-                                });
-                              },
-                            ),
-                          ],
-                        ),
-                      );
-                    } else {
-                      // Loading or error state
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                  },
-                ),
-              ),
-              StreamBuilder<Map<String, dynamic>?>(
-                stream: userStream,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData && snapshot.data != null) {
-                    // Display the user's name
-                    return Visibility(
-                      visible: isArrowClick,
-                      child: Row(
+    return Sizer(builder: (context, orientation, deviceType) {
+      return LayoutBuilder(
+          builder: (BuildContext ctx, BoxConstraints constraints) {
+        if (constraints.maxWidth >= 700) {
+          return Scaffold(
+            appBar: PreferredSize(
+              preferredSize: Size.fromHeight(75),
+              child: Material(
+                elevation: 3,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(5.w, 0, 2.5.w, 0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      HireMeInIndia(),
+                      Row(
                         children: [
                           Text(
-                            'Admin',
+                            'Admin Console',
                             style: TextStyle(
-                                fontSize: 15,
+                                fontSize: 25,
                                 color: Colors.indigo.shade900,
-                                fontWeight: FontWeight.bold,
                                 fontFamily: 'Poppins'),
                           ),
-                          // Text('|'),
-                          // Text(
-                          //   '$_companyName',
-                          //   style: TextStyle(
-                          //       fontSize: 15,
-                          //       color: Colors.indigo.shade900,
-                          //       fontWeight: FontWeight.bold,
-                          //       fontFamily: 'Poppins'),
-                          // ),
-                        ],
-                      ),
-                    );
-                  } else {
-                    // Loading or error state
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                },
-              ),
-              SizedBox(
-                height: 30,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  InkWell(
-                    // onTap: () {
-                    //   setState(() {
-                    //     _currentStream = AllCandidates();
-                    //   });
-                    // },
-                    child: Container(
-                      height: 12.h,
-                      width: 11.w,
-                      decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color.fromARGB(255, 140, 138, 138),
-                            spreadRadius: 0.5, //spread radius
-                            blurRadius: 4, // blu
-                          ),
-                        ],
-                        borderRadius: BorderRadius.circular(10.0),
-                        color: Color.fromARGB(255, 160, 67, 66),
-                      ),
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              translation(context).noOfCandidates,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
+                          SizedBox(width: 20),
+                          CircleAvatar(
+                            backgroundColor: Colors.black,
+                            child: CircleAvatar(
+                              backgroundColor: Colors.white,
+                              child: Icon(
+                                Icons.person_outline_outlined,
+                                size: 35,
+                                color: Colors.indigo.shade900,
                               ),
                             ),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            FutureBuilder<int>(
-                              future: CompanyCount(),
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return CircularProgressIndicator();
-                                } else if (snapshot.hasError) {
-                                  return Text('Error: ${snapshot.error}');
-                                } else {
-                                  int totalDocCount = snapshot.data ?? 0;
-                                  return Text(
-                                    ' $totalDocCount',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.normal,
-                                      color: Colors.white,
+                          ),
+                          SizedBox(
+                            width: 0.5.w,
+                          ),
+                          StreamBuilder<Map<String, dynamic>?>(
+                            stream: userStream,
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData && snapshot.data != null) {
+                                // Display the user's name
+                                return Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '$_userName',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.indigo.shade900,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
-                                  );
-                                }
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 5.w,
-                  ),
-                  InkWell(
-                    // onTap: () {
-                    //   setState(() {
-                    //     _currentStream = BlueCandidates();
-                    //   });
-                    // },
-                    child: Container(
-                      height: 12.h,
-                      width: 11.w,
-                      decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color.fromARGB(255, 140, 138, 138),
-                            spreadRadius: 0.5, //spread radius
-                            blurRadius: 4, // blu
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Text(
+                                      'Admin',
+                                      style: TextStyle(
+                                          fontSize: 15,
+                                          color: Colors.indigo.shade900,
+                                          height: 0),
+                                    ),
+                                  ],
+                                );
+                              } else {
+                                // Loading or error state
+                                return Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              }
+                            },
                           ),
                         ],
-                        borderRadius: BorderRadius.circular(10.0),
-                        color: const Color.fromARGB(255, 118, 170, 73),
                       ),
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              translation(context).noOfCompanies,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            FutureBuilder<int>(
-                              future: UserCount(),
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return CircularProgressIndicator();
-                                } else if (snapshot.hasError) {
-                                  return Text('Error: ${snapshot.error}');
-                                } else {
-                                  int docCount = snapshot.data ?? 0;
-                                  return Text(
-                                    '$docCount',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.normal,
-                                      color: Colors.white,
-                                    ),
-                                  );
-                                }
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                    ],
                   ),
-                  SizedBox(
-                    width: 5.w,
-                  ),
-                  InkWell(
-                    // onTap: () {
-                    //   setState(() {
-                    //     _currentStream = GreyCandidates();
-                    //   });
-                    // },
-                    child: Container(
-                      height: 12.h,
-                      width: 11.w,
-                      decoration: BoxDecoration(
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color.fromARGB(255, 140, 138, 138),
-                              spreadRadius: 0.5, //spread radius
-                              blurRadius: 4, // blu
-                            ),
-                          ],
-                          borderRadius: BorderRadius.circular(10.0),
-                          color: Color.fromARGB(192, 190, 56, 116)),
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              translation(context).greyColler,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            FutureBuilder<int>(
-                              future: UserCount(),
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return CircularProgressIndicator();
-                                } else if (snapshot.hasError) {
-                                  return Text('Error: ${snapshot.error}');
-                                } else {
-                                  int docCount = snapshot.data ?? 0;
-                                  return Text(
-                                    ' $docCount',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.normal,
-                                      color: Colors.white,
-                                    ),
-                                  );
-                                }
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
-              SizedBox(
-                height: 150,
-              ),
-              Divider(),
-              SizedBox(
-                height: 20,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Payments",
-                    style: TextStyle(
-                        fontSize: 28,
-                        color: Colors.indigo.shade900,
-                        fontWeight: FontWeight.w100,
-                        fontFamily: 'Poppins'),
-                  ),
-                  SizedBox(
-                    width: 100,
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton2<String>(
-                        isExpanded: true,
-                        hint: Row(
-                          children: [
-                            Text(
-                              "Today",
-                              // style: CustomTextStyle.nameOfHeading,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                        items: items
-                            .map((String item) => DropdownMenuItem<String>(
-                                  value: item,
-                                  child: Text(
-                                    item,
-                                    // style: CustomTextStyle.nameOflist,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ))
-                            .toList(),
-                        value: selectedValue,
-                        onChanged: (String? value) {
-                          setState(() {
-                            selectedValue = value;
-                          });
-                        },
-                        buttonStyleData: ButtonStyleData(
-                          height: 30,
-                          width: 200,
-                          elevation: 1,
-                          padding: const EdgeInsets.only(left: 14, right: 14),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4),
-                            border: Border.all(
-                              color: Colors.black26,
-                            ),
-                            color: Colors.indigo.shade900,
-                          ),
-                        ),
-                        iconStyleData: const IconStyleData(
-                          icon: Icon(
-                            Icons.arrow_drop_down_sharp,
-                          ),
-                          iconSize: 14,
-                          iconEnabledColor: Colors.grey,
-                          iconDisabledColor: null,
-                        ),
-                        dropdownStyleData: DropdownStyleData(
-                          maxHeight: 210,
-                          width: 270,
-                          elevation: 0,
-                          padding: EdgeInsets.only(
-                              left: 10, right: 10, top: 5, bottom: 15),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            border: Border.all(color: Colors.black),
-                            color: Colors.white,
-                          ),
-                          scrollPadding: EdgeInsets.all(5),
-                          scrollbarTheme: ScrollbarThemeData(
-                            thickness: MaterialStateProperty.all<double>(6),
-                            thumbVisibility:
-                                MaterialStateProperty.all<bool>(true),
-                          ),
-                        ),
-                        menuItemStyleData: const MenuItemStyleData(
-                          height: 25,
-                          padding: EdgeInsets.only(left: 14, right: 14),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 75,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            ),
+            body: Center(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                      left: 7.w, right: 7.w, top: 7.h, bottom: 7.h),
+                  child: Column(
                     children: [
-                      Container(
-                        height: 115,
-                        width: 215,
-                        color: Colors.red.shade200,
-                        child: Stack(
-                          children: [
-                            Positioned(
-                              top: 10,
-                              child: InkWell(
-                                onTap: () {
-                                  showDialog(
-                                    context: context,
-                                    barrierColor: Color(0x00ffffff),
-                                    builder: (context) {
-                                      return Dialog(
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: StreamBuilder<Map<String, dynamic>?>(
+                          stream: userStream,
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData && snapshot.data != null) {
+                              // Display the user's name
+                              return Center(
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      "${translation(context).hello} $_userName",
+                                      style: CustomTextStyle.nameOfUser,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    IconButton(
+                                      hoverColor: Colors.transparent,
+                                      icon: Icon(Icons.arrow_drop_down_sharp),
+                                      iconSize: 30,
+                                      color: Colors.indigo.shade900,
+                                      onPressed: () {
+                                        setState(() {
+                                          isArrowClick = !isArrowClick;
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              );
+                            } else {
+                              // Loading or error state
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                      StreamBuilder<Map<String, dynamic>?>(
+                        stream: userStream,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData && snapshot.data != null) {
+                            // Display the user's name
+                            return Visibility(
+                              visible: isArrowClick,
+                              child: Row(
+                                children: [
+                                  Text(
+                                    'Admin',
+                                    style: TextStyle(
+                                        fontSize: 15,
+                                        color: Colors.indigo.shade900,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'Poppins'),
+                                  ),
+                                  // Text('|'),
+                                  // Text(
+                                  //   '$_companyName',
+                                  //   style: TextStyle(
+                                  //       fontSize: 15,
+                                  //       color: Colors.indigo.shade900,
+                                  //       fontWeight: FontWeight.bold,
+                                  //       fontFamily: 'Poppins'),
+                                  // ),
+                                ],
+                              ),
+                            );
+                          } else {
+                            // Loading or error state
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                        },
+                      ),
+                      SizedBox(
+                        height: 30,
+                      ),
+                      Row(
+                        children: [
+                          InkWell(
+                            // onTap: () {
+                            //   setState(() {
+                            //     _currentStream = AllCandidates();
+                            //   });
+                            // },
+                            child: Container(
+                              padding: EdgeInsets.fromLTRB(1.w, 2.h, 1.w, 2.h),
+                              height: 110,
+                              width: 11.w,
+                              decoration: BoxDecoration(
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color.fromARGB(
+                                        255, 140, 138, 138),
+                                    spreadRadius: 0.5, //spread radius
+                                    blurRadius: 4, // blu
+                                  ),
+                                ],
+                                borderRadius: BorderRadius.circular(10.0),
+                                color: Color.fromARGB(255, 160, 67, 66),
+                              ),
+                              child: Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      translation(context).noOfCandidates,
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    FutureBuilder<int>(
+                                      future: CompanyCount(),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.waiting) {
+                                          return CircularProgressIndicator();
+                                        } else if (snapshot.hasError) {
+                                          return Text(
+                                              'Error: ${snapshot.error}');
+                                        } else {
+                                          int totalDocCount =
+                                              snapshot.data ?? 0;
+                                          return Text(
+                                            ' $totalDocCount',
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.normal,
+                                              color: Colors.white,
+                                            ),
+                                          );
+                                        }
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 2.5.w,
+                          ),
+                          InkWell(
+                            // onTap: () {
+                            //   setState(() {
+                            //     _currentStream = BlueCandidates();
+                            //   });
+                            // },
+                            child: Container(
+                              padding: EdgeInsets.fromLTRB(1.w, 2.h, 1.w, 2.h),
+                              height: 110,
+                              width: 11.w,
+                              decoration: BoxDecoration(
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color.fromARGB(
+                                        255, 140, 138, 138),
+                                    spreadRadius: 0.5, //spread radius
+                                    blurRadius: 4, // blu
+                                  ),
+                                ],
+                                borderRadius: BorderRadius.circular(10.0),
+                                color: const Color.fromARGB(255, 118, 170, 73),
+                              ),
+                              child: Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      translation(context).noOfCompanies,
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    FutureBuilder<int>(
+                                      future: UserCount(),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.waiting) {
+                                          return CircularProgressIndicator();
+                                        } else if (snapshot.hasError) {
+                                          return Text(
+                                              'Error: ${snapshot.error}');
+                                        } else {
+                                          int docCount = snapshot.data ?? 0;
+                                          return Text(
+                                            '$docCount',
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.normal,
+                                              color: Colors.white,
+                                            ),
+                                          );
+                                        }
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 2.5.w,
+                          ),
+                          InkWell(
+                            // onTap: () {
+                            //   setState(() {
+                            //     _currentStream = GreyCandidates();
+                            //   });
+                            // },
+                            child: Container(
+                              padding: EdgeInsets.fromLTRB(2.w, 2.h, 2.w, 2.h),
+                              height: 110,
+                              width: 11.w,
+                              decoration: BoxDecoration(
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color.fromARGB(
+                                          255, 140, 138, 138),
+                                      spreadRadius: 0.5, //spread radius
+                                      blurRadius: 4, // blu
+                                    ),
+                                  ],
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  color: Color.fromARGB(192, 190, 56, 116)),
+                              child: Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      translation(context).candidatesToday,
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    FutureBuilder<int>(
+                                      future: UserCount(),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.waiting) {
+                                          return CircularProgressIndicator();
+                                        } else if (snapshot.hasError) {
+                                          return Text(
+                                              'Error: ${snapshot.error}');
+                                        } else {
+                                          int docCount = snapshot.data ?? 0;
+                                          return Text(
+                                            ' $docCount',
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.normal,
+                                              color: Colors.white,
+                                            ),
+                                          );
+                                        }
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 150,
+                      ),
+                      Divider(),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Payments",
+                            style: TextStyle(
+                                fontSize: 28,
+                                color: Colors.indigo.shade900,
+                                fontWeight: FontWeight.w100,
+                                fontFamily: 'Poppins'),
+                          ),
+                          SizedBox(
+                            width: 100,
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton2<String>(
+                                isExpanded: true,
+                                hint: Row(
+                                  children: [
+                                    Text(
+                                      "Today",
+                                      // style: CustomTextStyle.nameOfHeading,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                                items: items
+                                    .map((String item) =>
+                                        DropdownMenuItem<String>(
+                                          value: item,
+                                          child: Text(
+                                            item,
+                                            // style: CustomTextStyle.nameOflist,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ))
+                                    .toList(),
+                                value: selectedValue,
+                                onChanged: (String? value) {
+                                  setState(() {
+                                    selectedValue = value;
+                                  });
+                                },
+                                buttonStyleData: ButtonStyleData(
+                                  height: 30,
+                                  width: 200,
+                                  elevation: 1,
+                                  padding: const EdgeInsets.only(
+                                      left: 14, right: 14),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(4),
+                                    border: Border.all(
+                                      color: Colors.black26,
+                                    ),
+                                    color: Colors.indigo.shade900,
+                                  ),
+                                ),
+                                iconStyleData: const IconStyleData(
+                                  icon: Icon(
+                                    Icons.arrow_drop_down_sharp,
+                                  ),
+                                  iconSize: 14,
+                                  iconEnabledColor: Colors.grey,
+                                  iconDisabledColor: null,
+                                ),
+                                dropdownStyleData: DropdownStyleData(
+                                  maxHeight: 210,
+                                  width: 270,
+                                  elevation: 0,
+                                  padding: EdgeInsets.only(
+                                      left: 10, right: 10, top: 5, bottom: 15),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                    border: Border.all(color: Colors.black),
+                                    color: Colors.white,
+                                  ),
+                                  scrollPadding: EdgeInsets.all(5),
+                                  scrollbarTheme: ScrollbarThemeData(
+                                    thickness:
+                                        MaterialStateProperty.all<double>(6),
+                                    thumbVisibility:
+                                        MaterialStateProperty.all<bool>(true),
+                                  ),
+                                ),
+                                menuItemStyleData: const MenuItemStyleData(
+                                  height: 25,
+                                  padding: EdgeInsets.only(left: 14, right: 14),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 75,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                height: 125,
+                                width: 12.w,
+                                child: Stack(
+                                  children: [
+                                    Positioned(
+                                      top: 10,
+                                      child: InkWell(
+                                        onTap: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return Dialog(
+                                                child: Container(
+                                                  alignment: Alignment.center,
+                                                  decoration: BoxDecoration(
+                                                      color: Colors.white,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              30)),
+                                                  height: 500,
+                                                  width: 500,
+                                                  child: _cashReceiptUrl != null
+                                                      ? SizedBox(
+                                                          width: 100,
+                                                          height: 100,
+                                                          child: Image.network(
+                                                              _cashReceiptUrl!),
+                                                        )
+                                                      : Text(
+                                                          'No new cash receipt received',
+                                                          style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                ),
+                                              );
+                                            },
+                                          );
+                                          _getCashReceipt;
+                                        },
                                         child: Container(
-                                          color: Colors.amber.shade200,
-                                          height: 200,
-                                          width: 200,
-                                          child: _cashReceiptUrl != null
-                                              ? Image.network(_cashReceiptUrl!)
-                                              : Text(
-                                                  'Cash receipt not available',
+                                          padding: EdgeInsets.fromLTRB(
+                                              1.w, 2.h, 1.w, 2.h),
+                                          height: 110,
+                                          width: 11.w,
+                                          decoration: BoxDecoration(
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: const Color.fromARGB(
+                                                    255, 140, 138, 138),
+                                                spreadRadius: 0.5,
+                                                blurRadius: 4,
+                                              ),
+                                            ],
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                            color: const Color.fromARGB(
+                                                255, 125, 83, 196),
+                                          ),
+                                          child: Center(
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  'Cash',
                                                   style: TextStyle(
                                                     color: Colors.white,
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
+                                                SizedBox(
+                                                  height: 5,
+                                                ),
+                                                FutureBuilder<int>(
+                                                  future: UserCount(),
+                                                  builder: (context, snapshot) {
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return CircularProgressIndicator();
+                                                    } else if (snapshot
+                                                        .hasError) {
+                                                      return Text(
+                                                          'Error: ${snapshot.error}');
+                                                    } else {
+                                                      int totalDocCount =
+                                                          snapshot.data ?? 0;
+                                                      return Text(
+                                                        ' $totalDocCount',
+                                                        style: TextStyle(
+                                                          fontSize: 18,
+                                                          fontWeight:
+                                                              FontWeight.normal,
+                                                          color: Colors.white,
+                                                        ),
+                                                      );
+                                                    }
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+                                          ),
                                         ),
+                                      ),
+                                    ),
+                                    Positioned(
+                                        left: 180,
+                                        bottom: 90,
+                                        child: isRequestRecived != null
+                                            ? Icon(
+                                                Icons.circle,
+                                                color: Colors.red,
+                                                // Set icon color based on flag
+                                              )
+                                            : SizedBox())
+                                  ],
+                                ),
+                              ),
+                              // Only show the button if imageUrl is null
+                              ElevatedButton(
+                                onPressed: _getCashReceipt,
+                                child: Text('Fetch Image URL'),
+                              ),
+                              if (imageUrl !=
+                                  null) // Only show the button if imageUrl is null
+                                ElevatedButton(
+                                  onPressed: () {},
+                                  child: Text(' Image URL'),
+                                ),
+                              if (_cashReceiptUrl !=
+                                  null) // Only show the image if imageUrl is not null
+                                SizedBox(
+                                  width: 100,
+                                  height: 100,
+                                  child: Image.network(
+                                    _cashReceiptUrl!,
+                                    width: 200,
+                                    height: 200,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      // Handle the error here
+                                      return Center(
+                                        child: Text('Error loading image'),
                                       );
                                     },
-                                  );
-                                },
+                                  ),
+                                ),
+                              SizedBox(
+                                width: 2.5.w,
+                              ),
+                              InkWell(
+                                // onTap: () {
+                                //   setState(() {
+                                //     _currentStream = BlueCandidates();
+                                //   });
+                                // },
                                 child: Container(
-                                  height: 100,
+                                  padding:
+                                      EdgeInsets.fromLTRB(1.w, 2.h, 1.w, 2.h),
+                                  height: 110,
+                                  width: 11.w,
                                   decoration: BoxDecoration(
                                     boxShadow: [
                                       BoxShadow(
                                         color: const Color.fromARGB(
                                             255, 140, 138, 138),
-                                        spreadRadius: 0.5,
-                                        blurRadius: 4,
+                                        spreadRadius: 0.5, //spread radius
+                                        blurRadius: 4, // blu
                                       ),
                                     ],
                                     borderRadius: BorderRadius.circular(10.0),
                                     color:
                                         const Color.fromARGB(255, 125, 83, 196),
                                   ),
-                                  width: 200,
                                   child: Center(
                                     child: Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
                                         Text(
-                                          'Cash',
+                                          translation(context).online,
                                           style: TextStyle(
                                             color: Colors.white,
                                             fontWeight: FontWeight.bold,
@@ -857,10 +1000,9 @@ class _AdminDashboard extends State<AdminConsole> {
                                               return Text(
                                                   'Error: ${snapshot.error}');
                                             } else {
-                                              int totalDocCount =
-                                                  snapshot.data ?? 0;
+                                              int docCount = snapshot.data ?? 0;
                                               return Text(
-                                                ' $totalDocCount',
+                                                '$docCount',
                                                 style: TextStyle(
                                                   fontSize: 18,
                                                   fontWeight: FontWeight.normal,
@@ -875,125 +1017,707 @@ class _AdminDashboard extends State<AdminConsole> {
                                   ),
                                 ),
                               ),
-                            ),
-                            Positioned(
-                                left: 180,
-                                bottom: 90,
-                                child: _cashReceiptUrl != null
-                                    ? Icon(
-                                        Icons.circle,
-                                        color: Colors.red,
-                                        // Set icon color based on flag
-                                      )
-                                    : SizedBox())
-                          ],
-                        ),
-                      ),
-                      // Only show the button if imageUrl is null
-                      ElevatedButton(
-                        onPressed: _getCashReceipt,
-                        child: Text('Fetch Image URL'),
-                      ),
-                      if (imageUrl !=
-                          null) // Only show the button if imageUrl is null
-                        ElevatedButton(
-                          onPressed: () {},
-                          child: Text(' Image URL'),
-                        ),
-                      if (_cashReceiptUrl !=
-                          null) // Only show the image if imageUrl is not null
-                        SizedBox(
-                          width: 100,
-                          height: 100,
-                          child: Image.network(
-                            _cashReceiptUrl!,
-                            width: 200,
-                            height: 200,
-                            errorBuilder: (context, error, stackTrace) {
-                              // Handle the error here
-                              return Center(
-                                child: Text('Error loading image'),
-                              );
-                            },
-                          ),
-                        ),
-                      InkWell(
-                        // onTap: () {
-                        //   setState(() {
-                        //     _currentStream = BlueCandidates();
-                        //   });
-                        // },
-                        child: Container(
-                          height: 12.h,
-                          width: 11.w,
-                          decoration: BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color.fromARGB(255, 140, 138, 138),
-                                spreadRadius: 0.5, //spread radius
-                                blurRadius: 4, // blu
-                              ),
                             ],
-                            borderRadius: BorderRadius.circular(10.0),
-                            color: const Color.fromARGB(255, 125, 83, 196),
                           ),
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  translation(context).online,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                FutureBuilder<int>(
-                                  future: UserCount(),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.connectionState ==
-                                        ConnectionState.waiting) {
-                                      return CircularProgressIndicator();
-                                    } else if (snapshot.hasError) {
-                                      return Text('Error: ${snapshot.error}');
-                                    } else {
-                                      int docCount = snapshot.data ?? 0;
-                                      return Text(
-                                        '$docCount',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.normal,
-                                          color: Colors.white,
-                                        ),
-                                      );
-                                    }
-                                  },
-                                ),
-                              ],
-                            ),
+                          Text(
+                            "Total",
+                            style: TextStyle(
+                                fontSize: 28,
+                                color: Colors.indigo.shade900,
+                                fontWeight: FontWeight.w100,
+                                fontFamily: 'Poppins'),
                           ),
-                        ),
+                          // Check if request is received
+                        ],
                       ),
                     ],
                   ),
-                  Text(
-                    "Total",
-                    style: TextStyle(
-                        fontSize: 28,
-                        color: Colors.indigo.shade900,
-                        fontWeight: FontWeight.w100,
-                        fontFamily: 'Poppins'),
-                  ),
-                  // Check if request is received
-                ],
+                ),
               ),
-            ],
-          ),
-        ),
-      ),
-    );
+            ),
+          );
+        } else {
+          return Scaffold(
+            appBar: PreferredSize(
+              preferredSize: Size.fromHeight(75),
+              child: Material(
+                elevation: 3,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(5.w, 0, 2.5.w, 0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      HireMeInIndia(),
+                      Row(
+                        children: [
+                          Text(
+                            'Admin Console',
+                            style: TextStyle(
+                                fontSize: 25,
+                                color: Colors.indigo.shade900,
+                                fontFamily: 'Poppins'),
+                          ),
+                          SizedBox(width: 20),
+                          CircleAvatar(
+                            backgroundColor: Colors.black,
+                            child: CircleAvatar(
+                              backgroundColor: Colors.white,
+                              child: Icon(
+                                Icons.person_outline_outlined,
+                                size: 35,
+                                color: Colors.indigo.shade900,
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 0.5.w,
+                          ),
+                          StreamBuilder<Map<String, dynamic>?>(
+                            stream: userStream,
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData && snapshot.data != null) {
+                                // Display the user's name
+                                return Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '$_userName',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.indigo.shade900,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Text(
+                                      'Admin',
+                                      style: TextStyle(
+                                          fontSize: 15,
+                                          color: Colors.indigo.shade900,
+                                          height: 0),
+                                    ),
+                                  ],
+                                );
+                              } else {
+                                // Loading or error state
+                                return Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            body: SingleChildScrollView(
+              child: Container(
+                padding: EdgeInsets.only(
+                    left: 7.w, right: 7.w, top: 7.h, bottom: 7.h),
+                child: Column(
+                  children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: StreamBuilder<Map<String, dynamic>?>(
+                        stream: userStream,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData && snapshot.data != null) {
+                            // Display the user's name
+                            return Center(
+                              child: Row(
+                                children: [
+                                  Text(
+                                    "${translation(context).hello} $_userName",
+                                    style: CustomTextStyle.nameOfUser,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  IconButton(
+                                    hoverColor: Colors.transparent,
+                                    icon: Icon(Icons.arrow_drop_down_sharp),
+                                    iconSize: 30,
+                                    color: Colors.indigo.shade900,
+                                    onPressed: () {
+                                      setState(() {
+                                        isArrowClick = !isArrowClick;
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
+                            );
+                          } else {
+                            // Loading or error state
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                    StreamBuilder<Map<String, dynamic>?>(
+                      stream: userStream,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData && snapshot.data != null) {
+                          // Display the user's name
+                          return Visibility(
+                            visible: isArrowClick,
+                            child: Row(
+                              children: [
+                                Text(
+                                  'Admin',
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.indigo.shade900,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'Poppins'),
+                                ),
+                                // Text('|'),
+                                // Text(
+                                //   '$_companyName',
+                                //   style: TextStyle(
+                                //       fontSize: 15,
+                                //       color: Colors.indigo.shade900,
+                                //       fontWeight: FontWeight.bold,
+                                //       fontFamily: 'Poppins'),
+                                // ),
+                              ],
+                            ),
+                          );
+                        } else {
+                          // Loading or error state
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                      },
+                    ),
+                    SizedBox(
+                      height: 30,
+                    ),
+                    Row(
+                      children: [
+                        InkWell(
+                          // onTap: () {
+                          //   setState(() {
+                          //     _currentStream = AllCandidates();
+                          //   });
+                          // },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                  color:
+                                      const Color.fromARGB(255, 140, 138, 138),
+                                  spreadRadius: 0.5, //spread radius
+                                  blurRadius: 4, // blu
+                                ),
+                              ],
+                              borderRadius: BorderRadius.circular(10.0),
+                              color: Color.fromARGB(255, 160, 67, 66),
+                            ),
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    translation(context).noOfCandidates,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  FutureBuilder<int>(
+                                    future: CompanyCount(),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return CircularProgressIndicator();
+                                      } else if (snapshot.hasError) {
+                                        return Text('Error: ${snapshot.error}');
+                                      } else {
+                                        int totalDocCount = snapshot.data ?? 0;
+                                        return Text(
+                                          ' $totalDocCount',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.normal,
+                                            color: Colors.white,
+                                          ),
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 5.w,
+                        ),
+                        InkWell(
+                          // onTap: () {
+                          //   setState(() {
+                          //     _currentStream = BlueCandidates();
+                          //   });
+                          // },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                  color:
+                                      const Color.fromARGB(255, 140, 138, 138),
+                                  spreadRadius: 0.5, //spread radius
+                                  blurRadius: 4, // blu
+                                ),
+                              ],
+                              borderRadius: BorderRadius.circular(10.0),
+                              color: const Color.fromARGB(255, 118, 170, 73),
+                            ),
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    translation(context).noOfCompanies,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  FutureBuilder<int>(
+                                    future: UserCount(),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return CircularProgressIndicator();
+                                      } else if (snapshot.hasError) {
+                                        return Text('Error: ${snapshot.error}');
+                                      } else {
+                                        int docCount = snapshot.data ?? 0;
+                                        return Text(
+                                          '$docCount',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.normal,
+                                            color: Colors.white,
+                                          ),
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 5.w,
+                        ),
+                        InkWell(
+                          // onTap: () {
+                          //   setState(() {
+                          //     _currentStream = GreyCandidates();
+                          //   });
+                          // },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color.fromARGB(
+                                        255, 140, 138, 138),
+                                    spreadRadius: 0.5, //spread radius
+                                    blurRadius: 4, // blu
+                                  ),
+                                ],
+                                borderRadius: BorderRadius.circular(10.0),
+                                color: Color.fromARGB(192, 190, 56, 116)),
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    translation(context).greyColler,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  FutureBuilder<int>(
+                                    future: UserCount(),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return CircularProgressIndicator();
+                                      } else if (snapshot.hasError) {
+                                        return Text('Error: ${snapshot.error}');
+                                      } else {
+                                        int docCount = snapshot.data ?? 0;
+                                        return Text(
+                                          ' $docCount',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.normal,
+                                            color: Colors.white,
+                                          ),
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 150,
+                    ),
+                    Divider(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Payments",
+                          style: TextStyle(
+                              fontSize: 28,
+                              color: Colors.indigo.shade900,
+                              fontWeight: FontWeight.w100,
+                              fontFamily: 'Poppins'),
+                        ),
+                        SizedBox(
+                          width: 100,
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton2<String>(
+                              isExpanded: true,
+                              hint: Row(
+                                children: [
+                                  Text(
+                                    "Today",
+                                    // style: CustomTextStyle.nameOfHeading,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                              items: items
+                                  .map(
+                                      (String item) => DropdownMenuItem<String>(
+                                            value: item,
+                                            child: Text(
+                                              item,
+                                              // style: CustomTextStyle.nameOflist,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ))
+                                  .toList(),
+                              value: selectedValue,
+                              onChanged: (String? value) {
+                                setState(() {
+                                  selectedValue = value;
+                                });
+                              },
+                              buttonStyleData: ButtonStyleData(
+                                height: 30,
+                                width: 200,
+                                elevation: 1,
+                                padding:
+                                    const EdgeInsets.only(left: 14, right: 14),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(4),
+                                  border: Border.all(
+                                    color: Colors.black26,
+                                  ),
+                                  color: Colors.indigo.shade900,
+                                ),
+                              ),
+                              iconStyleData: const IconStyleData(
+                                icon: Icon(
+                                  Icons.arrow_drop_down_sharp,
+                                ),
+                                iconSize: 14,
+                                iconEnabledColor: Colors.grey,
+                                iconDisabledColor: null,
+                              ),
+                              dropdownStyleData: DropdownStyleData(
+                                maxHeight: 210,
+                                width: 270,
+                                elevation: 0,
+                                padding: EdgeInsets.only(
+                                    left: 10, right: 10, top: 5, bottom: 15),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(5),
+                                  border: Border.all(color: Colors.black),
+                                  color: Colors.white,
+                                ),
+                                scrollPadding: EdgeInsets.all(5),
+                                scrollbarTheme: ScrollbarThemeData(
+                                  thickness:
+                                      MaterialStateProperty.all<double>(6),
+                                  thumbVisibility:
+                                      MaterialStateProperty.all<bool>(true),
+                                ),
+                              ),
+                              menuItemStyleData: const MenuItemStyleData(
+                                height: 25,
+                                padding: EdgeInsets.only(left: 14, right: 14),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 75,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              height: 115,
+                              width: 215,
+                              color: Colors.red.shade200,
+                              child: Stack(
+                                children: [
+                                  Positioned(
+                                    top: 10,
+                                    child: InkWell(
+                                      onTap: () {
+                                        showDialog(
+                                          context: context,
+                                          barrierColor: Color(0x00ffffff),
+                                          builder: (context) {
+                                            return Dialog(
+                                              child: Container(
+                                                color: Colors.amber.shade200,
+                                                height: 200,
+                                                width: 200,
+                                                child: _cashReceiptUrl != null
+                                                    ? Image.network(
+                                                        _cashReceiptUrl!)
+                                                    : Text(
+                                                        'Cash receipt not available',
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      },
+                                      child: Container(
+                                        height: 100,
+                                        decoration: BoxDecoration(
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: const Color.fromARGB(
+                                                  255, 140, 138, 138),
+                                              spreadRadius: 0.5,
+                                              blurRadius: 4,
+                                            ),
+                                          ],
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                          color: const Color.fromARGB(
+                                              255, 125, 83, 196),
+                                        ),
+                                        width: 200,
+                                        child: Center(
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                'Cash',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: 5,
+                                              ),
+                                              FutureBuilder<int>(
+                                                future: UserCount(),
+                                                builder: (context, snapshot) {
+                                                  if (snapshot
+                                                          .connectionState ==
+                                                      ConnectionState.waiting) {
+                                                    return CircularProgressIndicator();
+                                                  } else if (snapshot
+                                                      .hasError) {
+                                                    return Text(
+                                                        'Error: ${snapshot.error}');
+                                                  } else {
+                                                    int totalDocCount =
+                                                        snapshot.data ?? 0;
+                                                    return Text(
+                                                      ' $totalDocCount',
+                                                      style: TextStyle(
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.normal,
+                                                        color: Colors.white,
+                                                      ),
+                                                    );
+                                                  }
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned(
+                                      left: 180,
+                                      bottom: 90,
+                                      child: _cashReceiptUrl != null
+                                          ? Icon(
+                                              Icons.circle,
+                                              color: Colors.red,
+                                              // Set icon color based on flag
+                                            )
+                                          : SizedBox())
+                                ],
+                              ),
+                            ),
+                            // Only show the button if imageUrl is null
+                            ElevatedButton(
+                              onPressed: _getCashReceipt,
+                              child: Text('Fetch Image URL'),
+                            ),
+                            if (imageUrl !=
+                                null) // Only show the button if imageUrl is null
+                              ElevatedButton(
+                                onPressed: () {},
+                                child: Text(' Image URL'),
+                              ),
+                            if (_cashReceiptUrl !=
+                                null) // Only show the image if imageUrl is not null
+                              SizedBox(
+                                width: 100,
+                                height: 100,
+                                child: Image.network(
+                                  _cashReceiptUrl!,
+                                  width: 200,
+                                  height: 200,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    // Handle the error here
+                                    return Center(
+                                      child: Text('Error loading image'),
+                                    );
+                                  },
+                                ),
+                              ),
+                            InkWell(
+                              // onTap: () {
+                              //   setState(() {
+                              //     _currentStream = BlueCandidates();
+                              //   });
+                              // },
+                              child: Container(
+                                height: 12.h,
+                                width: 11.w,
+                                decoration: BoxDecoration(
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color.fromARGB(
+                                          255, 140, 138, 138),
+                                      spreadRadius: 0.5, //spread radius
+                                      blurRadius: 4, // blu
+                                    ),
+                                  ],
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  color:
+                                      const Color.fromARGB(255, 125, 83, 196),
+                                ),
+                                child: Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        translation(context).online,
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      FutureBuilder<int>(
+                                        future: UserCount(),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.connectionState ==
+                                              ConnectionState.waiting) {
+                                            return CircularProgressIndicator();
+                                          } else if (snapshot.hasError) {
+                                            return Text(
+                                                'Error: ${snapshot.error}');
+                                          } else {
+                                            int docCount = snapshot.data ?? 0;
+                                            return Text(
+                                              '$docCount',
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.normal,
+                                                color: Colors.white,
+                                              ),
+                                            );
+                                          }
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Text(
+                          "Total",
+                          style: TextStyle(
+                              fontSize: 28,
+                              color: Colors.indigo.shade900,
+                              fontWeight: FontWeight.w100,
+                              fontFamily: 'Poppins'),
+                        ),
+                        // Check if request is received
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+      });
+    });
   }
 }
